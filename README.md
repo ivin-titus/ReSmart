@@ -49,7 +49,7 @@ ReSmart addresses the growing e-waste problem by providing an innovative way to 
 ### **For Developers**
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/resmart.git
+   git clone https://github.com/ivin-titus/ReSmart
    ```
 2. Navigate to the project directory:
    ```bash
