@@ -26,7 +26,7 @@ by giving a new purpose to outdated devices. It includes features like always-on
   - Secure login for syncing features and data across devices.
 - **PC Client**
   - A companion app for managing connected features on your PC.
-- **Themes Support**
+- **Theme Support**
 
 ## **Technologies Used**
 
