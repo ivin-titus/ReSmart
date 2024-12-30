@@ -64,15 +64,15 @@ ReSmart addresses the growing e-waste problem by providing an innovative way to 
    flutter run
    ```
 
+
+## **Project Status**
+This project is currently in its early development stage. While the planning phase is underway, active development will commence soon.
+
 ## **Contribution**
 Contributions are welcome! Feel free to fork the repository, make changes, and submit a pull request.
 
 ## **License**
 This project is licensed under the MIT License. See the LICENSE file for details.
-
-## **Project Status**
-This project is currently in its early development stage. While the planning phase is underway, active development will commence soon.
-
 
 ### **Contact**
 For any queries, reach out to ivintitus@hotmail.com
