@@ -53,7 +53,7 @@ ReSmart addresses the growing e-waste problem by providing an innovative way to 
    ```
 2. Navigate to the project directory:
    ```bash
-   cd resmart
+   cd ReSmart
    ```
 3. Install dependencies:
    ```bash
