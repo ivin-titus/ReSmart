@@ -5,9 +5,11 @@ import 'dart:convert';
 import './config/env.dart';
 
 class WeatherWidget extends StatefulWidget {
+  // ignore: use_super_parameters
   const WeatherWidget({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _WeatherWidgetState createState() => _WeatherWidgetState();
 }
 
