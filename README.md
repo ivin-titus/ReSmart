@@ -65,8 +65,19 @@ ReSmart addresses the growing e-waste problem by providing an innovative way to 
    ```
 
 
+Here's an enhanced, professional version of your GitHub documentation section:
+
+---
+
 ## **Project Status**
-This project is currently in its early development stage. While the planning phase is underway, active development will commence soon.
+
+This project is currently in the early stages of development. Implementation has begun from scratch, and progress is being made incrementally. Below is a summary of the current features and their statuses:
+
+### **Implemented Features**
+- **Always-On Display**: Basic functionality is in place.
+- **Date**: Fully operational.
+- **Time**: Fully operational.
+- **Weather**: Initial implementation completed, but stability requires further testing.
 
 ## **Contribution**
 Contributions are welcome! Feel free to fork the repository, make changes, and submit a pull request.
