@@ -62,7 +62,7 @@ android {
 
 // android/app/build.gradle
 android {
-    compileSdk 32  // Lower this value
+    compileSdk 34  // Lower this value
 }
 
 flutter {
