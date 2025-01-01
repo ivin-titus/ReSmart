@@ -12,13 +12,17 @@ dependencies:
     sdk: flutter
   intl: ^0.19.0
   flutter_dotenv: ^5.0.2
-  geolocator: ^10.0.0
   http: ^1.1.0
+  location: ^5.0.0
+  flutter_displaymode: ^0.5.0
+  flutter_native_splash: ^2.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
 
 flutter:
   uses-material-design: true
