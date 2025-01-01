@@ -60,11 +60,6 @@ android {
     }
 }
 
-// android/app/build.gradle
-android {
-    compileSdk 34  // Lower this value
-}
-
 flutter {
     source '../..'
 }
