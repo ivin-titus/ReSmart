@@ -6,7 +6,7 @@ on:
       - master
   pull_request:
     branches:
-      - mast
+      - master
 
 jobs:
   build:
@@ -38,7 +38,7 @@ jobs:
         run: flutter build apk --release
 
       - name: Upload APK as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3  # Updated to version 3
         with:
           name: app-release.apk
           path: build/app/outputs/flutter-apk/app-release.apk
