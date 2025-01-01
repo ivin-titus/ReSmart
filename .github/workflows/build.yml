@@ -1,4 +1,4 @@
-name: Build APK
+name: Build and Release APK
 
 on:
   push:
@@ -11,29 +11,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # Step 2: Set up Flutter with specified version
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0' # Use the latest stable version
+          flutter-version: '3.19.2' # Your Flutter version
           channel: stable
 
+      # Step 3: Install dependencies
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Add .env File
-        run: |
-          echo "$ENV_FILE_CONTENT" > .env
+      # Step 4: Add .env file (if applicable)
+      - name: Add Environment File
+        run: echo "$ENV_FILE_CONTENT" > .env
         env:
           ENV_FILE_CONTENT: ${{ secrets.ENV_FILE }}
 
-      - name: Build APK
+      # Step 5: Build APK
+      - name: Build Release APK
         run: flutter build apk --release
 
-      - name: Upload APK
+      # Step 6: Upload the APK as an artifact
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: app-release.apk
+          name: resmart-release.apk
           path: build/app/outputs/flutter-apk/app-release.apk
