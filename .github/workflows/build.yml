@@ -19,7 +19,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.2'  # Replace with the latest stable version
+          flutter-version: '3.19.2'
 
       - name: Cache Flutter dependencies
         uses: actions/cache@v2

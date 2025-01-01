@@ -4,6 +4,8 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -26,6 +28,8 @@ android {
     namespace "com.example.resmart"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
+    compileSdkVersion 34  // Or any version compatible with your AGP
+
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
