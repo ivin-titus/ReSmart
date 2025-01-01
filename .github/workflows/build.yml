@@ -3,41 +3,35 @@ name: Build APK
 on:
   push:
     branches:
-      - master # Run workflow on pushes to the main branch
-  workflow_dispatch: # Allow manual trigger from GitHub Actions
+      - master
+  workflow_dispatch:
 
 jobs:
   build:
-    name: Build Flutter APK
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout Code
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up Flutter
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable' # Use the stable channel
+          flutter-version: '3.13.0' # Use the latest stable version
+          channel: stable
 
-      # Step 3: Install Dependencies
       - name: Install Dependencies
         run: flutter pub get
 
-      # Step 4: Inject .env File
       - name: Add .env File
         run: |
           echo "$ENV_FILE_CONTENT" > .env
         env:
           ENV_FILE_CONTENT: ${{ secrets.ENV_FILE }}
 
-      # Step 5: Build APK
       - name: Build APK
         run: flutter build apk --release
 
-      # Step 6: Upload APK Artifact
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
