@@ -6,7 +6,11 @@ import 'dart:async';
 import './config/env.dart';
 
 class WeatherWidget extends StatefulWidget {
-  const WeatherWidget({Key? key}) : super(key: key);
+  final VoidCallback? onClose;
+  const WeatherWidget({
+    Key? key, 
+    this.onClose,
+  }) : super(key: key);
 
   @override
   _WeatherWidgetState createState() => _WeatherWidgetState();
@@ -326,17 +330,39 @@ Future<void> _fetchWeatherByCity(String city) async {
   Widget build(BuildContext context) {
     super.build(context);
     
-    return Container(
+    
+  return Center(
+    child: Container(
+      constraints: const BoxConstraints(maxWidth: 400),
       decoration: BoxDecoration(
         color: Colors.black87,
         borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.white24, width: 1),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _buildContent(),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: _buildContent(),
+          ),
+          if (widget.onClose != null)
+            Positioned(
+              right: 8,
+              top: 8,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white70),
+                onPressed: widget.onClose,
+                constraints: const BoxConstraints(),
+                padding: EdgeInsets.zero,
+              ),
+            ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+  
 
   Widget _buildContent() {
     if (_loading) {
