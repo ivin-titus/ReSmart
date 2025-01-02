@@ -8,9 +8,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    
+
     <!-- Hardware Features -->
-    <uses-feature android:name="android.hardware.location.gps" android:required="true" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />  <!-- Optional for older devices -->
 
     <!-- SDK Versions -->
     <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="33" />
@@ -50,7 +50,7 @@
             android:value="2" />
     </application>
 
-    <!-- Query Intent -->
+    <!-- Optional: Query Intent for text processing -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />

@@ -3,10 +3,10 @@ name: Build Flutter App
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -28,7 +28,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.19.0'  # Adjust to the desired version of Flutter
+        flutter-version: '3.27.1'  # Adjust to the desired version of Flutter
 
     # Step 4: Install dependencies
     - name: Install dependencies

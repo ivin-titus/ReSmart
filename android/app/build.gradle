@@ -1,3 +1,5 @@
+/*  Old
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -54,6 +56,75 @@ dependencies {
 
     // Other dependencies that Flutter packages may use
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'  // For HTTP requests
+}
+
+flutter {
+    source = "../.."
+}
+
+*/
+
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace = "com.example.resmart"
+    
+    // Ensure compatibility with both older and modern devices
+    compileSdk = flutter.compileSdkVersion  // This should target the latest SDK
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        applicationId = "com.example.resmart"
+        
+        // Set the minimum SDK to 17 for Android 4.2 and above
+        minSdkVersion flutter.minSdkVersion  // Android 4.2 (Jelly Bean)
+        
+        // Set the target SDK to a recent version for compatibility with modern devices
+        targetSdkVersion 34 // Android 13 (latest)
+        
+        versionCode flutter.versionCode
+        versionName flutter.versionName
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.debug  // Ensure signing config is correct for release builds
+        }
+    }
+
+    packagingOptions {
+        pickFirst 'META-INF/gradle/incremental.annotation.processors'  // Fix for some dependencies
+    }
+}
+
+dependencies {
+    // Flutter dependencies (only if this is a Flutter module inside an Android project)
+    // implementation project(':flutter')
+    
+    // Backward compatibility for Material components
+    implementation 'com.google.android.material:material:1.6.0'
+
+    // Support for backward compatibility
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+
+    // Location services
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+    // For HTTP requests
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 }
 
 flutter {
