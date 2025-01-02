@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'time_widget.dart';
 import 'date_widget.dart';
 import 'weather_widget.dart';
+import 'weather_widget_mini.dart';
 
 // Convert to StatefulWidget
 class AODScreen extends StatefulWidget {
@@ -12,17 +13,18 @@ class AODScreen extends StatefulWidget {
 }
 
 // Separate state class with AutomaticKeepAliveClientMixin
-class _AODScreenState extends State<AODScreen> with AutomaticKeepAliveClientMixin {
+class _AODScreenState extends State<AODScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => false; // Don't keep in memory when not visible
 
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required by AutomaticKeepAliveClientMixin
-    
+
     // Get screen size once instead of multiple calculations
     final Size screenSize = MediaQuery.of(context).size;
-    
+
     return RepaintBoundary(
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -54,7 +56,7 @@ class _AODScreenState extends State<AODScreen> with AutomaticKeepAliveClientMixi
                       RepaintBoundary(
                         child: SizedBox(
                           width: constraints.maxWidth * 0.8,
-                          child: const WeatherWidget(),
+                          child: const MiniWeatherWidget(),
                         ),
                       ),
                     ],
