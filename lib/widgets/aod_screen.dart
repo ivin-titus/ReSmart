@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'time_widget.dart';
 import 'date_widget.dart';
-import 'weather_widget.dart';
+//import 'weather_widget.dart';
 import 'weather_widget_mini.dart';
 
 // Convert to StatefulWidget
