@@ -23,8 +23,22 @@ class _WeatherWidgetState extends State<WeatherWidget> with AutomaticKeepAliveCl
   Timer? _weatherUpdateTimer;
   bool _isDisposed = false;
   
-  // Cache weather icon
   Map<String, Image> _iconCache = {};
+
+  // Weather icon mapping
+  final Map<String, IconData> _weatherIcons = {
+    'Clear': Icons.wb_sunny_rounded,
+    'Clouds': Icons.cloud_rounded,
+    'Rain': Icons.water_drop_rounded,
+    'Drizzle': Icons.grain_rounded,
+    'Thunderstorm': Icons.flash_on_rounded,
+    'Snow': Icons.ac_unit_rounded,
+    'Mist': Icons.cloud_rounded,
+    'Smoke': Icons.cloud_rounded,
+    'Haze': Icons.cloud_rounded,
+    'Dust': Icons.cloud_rounded,
+    'Fog': Icons.cloud_rounded,
+  };
 
   @override
   bool get wantKeepAlive => false;
@@ -34,7 +48,7 @@ class _WeatherWidgetState extends State<WeatherWidget> with AutomaticKeepAliveCl
     super.initState();
     _initializeWithDelay();
   }
-
+  
   // Delayed initialization to prevent UI jank during app startup
   Future<void> _initializeWithDelay() async {
     await Future.delayed(const Duration(milliseconds: 500));
@@ -308,16 +322,25 @@ Future<void> _fetchWeatherByCity(String city) async {
     }
   }
 }
-
-  @override
+@override
   Widget build(BuildContext context) {
     super.build(context);
     
     return RepaintBoundary(
-      child: Card(
-        elevation: 2,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.white..withAlpha(25),
+              blurRadius: 10,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: _buildContent(),
         ),
       ),
@@ -327,9 +350,11 @@ Future<void> _fetchWeatherByCity(String city) async {
   Widget _buildContent() {
     if (_loading) {
       return const SizedBox(
-        height: 100,
+        height: 120,
         child: Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: Colors.white,
+          ),
         ),
       );
     }
@@ -343,9 +368,12 @@ Future<void> _fetchWeatherByCity(String city) async {
     }
 
     return const SizedBox(
-      height: 100,
+      height: 120,
       child: Center(
-        child: Text('No data'),
+        child: Text(
+          'No weather data available',
+          style: TextStyle(color: Colors.white70),
+        ),
       ),
     );
   }
@@ -354,19 +382,36 @@ Future<void> _fetchWeatherByCity(String city) async {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(Icons.error_outline, color: Colors.red),
+        const Icon(
+          Icons.error_outline,
+          color: Colors.redAccent,
+          size: 32,
+        ),
         const SizedBox(height: 8),
-        Text(_error ?? 'Error'),
-        const SizedBox(height: 8),
-        TextButton(
+        Text(
+          _error ?? 'Error loading weather data',
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextButton.icon(
           onPressed: _initializeLocationWithRetry,
-          child: const Text('Retry'),
+          icon: const Icon(Icons.refresh, color: Colors.white),
+          label: const Text(
+            'Try Again',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ],
     );
   }
 
   Widget _buildWeatherInfo() {
+    final weatherMain = _weatherData!['weather'][0]['main'] as String;
+    final IconData weatherIcon = _weatherIcons[weatherMain] ?? Icons.question_mark_rounded;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -374,51 +419,146 @@ Future<void> _fetchWeatherByCity(String city) async {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: Text(
-                _weatherData!['name'],
-                style: const TextStyle(fontSize: 20),
-                overflow: TextOverflow.ellipsis,
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.location_on_rounded,
+                    color: Colors.white70,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _weatherData!['name'],
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(
+                Icons.refresh_rounded,
+                color: Colors.white70,
+              ),
               onPressed: _fetchWeatherWithLocation,
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              weatherIcon,
+              color: Colors.white,
+              size: 40,
+            ),
+            const SizedBox(width: 16),
+            Text(
+              '${_weatherData!['main']['temp'].round()}°C',
+              style: const TextStyle(
+                fontSize: 36,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
         const SizedBox(height: 8),
         Text(
-          '${_weatherData!['main']['temp'].round()}°C',
-          style: const TextStyle(fontSize: 24),
-        ),
-        Text(
-          _weatherData!['weather'][0]['description'].toString(),
+          _weatherData!['weather'][0]['description'].toString().toUpperCase(),
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 14,
+            letterSpacing: 1.2,
+          ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         _buildWeatherDetails(),
       ],
     );
   }
 
   Widget _buildWeatherDetails() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        _buildDetailColumn('Humidity', '${_weatherData!['main']['humidity']}%'),
-        _buildDetailColumn('Wind', '${_weatherData!['wind']['speed']} m/s'),
-        _buildDetailColumn('Feels', '${_weatherData!['main']['feels_like'].round()}°C'),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white..withAlpha(25),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildDetailColumn(
+            Icons.water_drop_outlined,
+            'Humidity',
+            '${_weatherData!['main']['humidity']}%',
+            'Current air moisture',
+          ),
+          Container(
+            height: 40,
+            width: 1,
+            color: Colors.white24,
+          ),
+          _buildDetailColumn(
+            Icons.air_rounded,
+            'Wind',
+            '${_weatherData!['wind']['speed']} m/s',
+            'Wind speed',
+          ),
+          Container(
+            height: 40,
+            width: 1,
+            color: Colors.white24,
+          ),
+          _buildDetailColumn(
+            Icons.thermostat_rounded,
+            'Feels',
+            '${_weatherData!['main']['feels_like'].round()}°C',
+            'Feels like temperature',
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildDetailColumn(String label, String value) {
-    return Column(
-      children: [
-        Text(label, style: const TextStyle(fontSize: 12)),
-        Text(value, style: const TextStyle(fontSize: 12)),
-      ],
+  Widget _buildDetailColumn(IconData icon, String label, String value, String tooltip) {
+    return Tooltip(
+      message: tooltip,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: Colors.white70,
+            size: 20,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
-
