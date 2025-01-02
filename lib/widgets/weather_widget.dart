@@ -48,7 +48,7 @@ class _WeatherWidgetState extends State<WeatherWidget> with AutomaticKeepAliveCl
     super.initState();
     _initializeWithDelay();
   }
-  
+
   // Delayed initialization to prevent UI jank during app startup
   Future<void> _initializeWithDelay() async {
     await Future.delayed(const Duration(milliseconds: 500));
@@ -322,27 +322,18 @@ Future<void> _fetchWeatherByCity(String city) async {
     }
   }
 }
-@override
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     
-    return RepaintBoundary(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.white..withAlpha(25),
-              blurRadius: 10,
-              spreadRadius: 1,
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: _buildContent(),
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black87,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: _buildContent(),
       ),
     );
   }
@@ -378,42 +369,13 @@ Future<void> _fetchWeatherByCity(String city) async {
     );
   }
 
-  Widget _buildErrorWidget() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(
-          Icons.error_outline,
-          color: Colors.redAccent,
-          size: 32,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          _error ?? 'Error loading weather data',
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: 12),
-        TextButton.icon(
-          onPressed: _initializeLocationWithRetry,
-          icon: const Icon(Icons.refresh, color: Colors.white),
-          label: const Text(
-            'Try Again',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildWeatherInfo() {
     final weatherMain = _weatherData!['weather'][0]['main'] as String;
     final IconData weatherIcon = _weatherIcons[weatherMain] ?? Icons.question_mark_rounded;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -447,6 +409,8 @@ Future<void> _fetchWeatherByCity(String city) async {
                 color: Colors.white70,
               ),
               onPressed: _fetchWeatherWithLocation,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
           ],
         ),
@@ -481,84 +445,110 @@ Future<void> _fetchWeatherByCity(String city) async {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
-        _buildWeatherDetails(),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IntrinsicHeight(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: _buildDetailColumn(
+                    Icons.water_drop_outlined,
+                    'Humidity',
+                    '${_weatherData!['main']['humidity']}%',
+                  ),
+                ),
+                VerticalDivider(
+                  color: Colors.white.withOpacity(0.2),
+                  thickness: 1,
+                ),
+                Expanded(
+                  child: _buildDetailColumn(
+                    Icons.air_rounded,
+                    'Wind',
+                    '${_weatherData!['wind']['speed']} m/s',
+                  ),
+                ),
+                VerticalDivider(
+                  color: Colors.white.withOpacity(0.2),
+                  thickness: 1,
+                ),
+                Expanded(
+                  child: _buildDetailColumn(
+                    Icons.thermostat_rounded,
+                    'Feels Like',
+                    '${_weatherData!['main']['feels_like'].round()}°C',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildWeatherDetails() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white..withAlpha(25),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildDetailColumn(
-            Icons.water_drop_outlined,
-            'Humidity',
-            '${_weatherData!['main']['humidity']}%',
-            'Current air moisture',
+  Widget _buildDetailColumn(IconData icon, String label, String value) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          color: Colors.white70,
+          size: 20,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 12,
           ),
-          Container(
-            height: 40,
-            width: 1,
-            color: Colors.white24,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
           ),
-          _buildDetailColumn(
-            Icons.air_rounded,
-            'Wind',
-            '${_weatherData!['wind']['speed']} m/s',
-            'Wind speed',
-          ),
-          Container(
-            height: 40,
-            width: 1,
-            color: Colors.white24,
-          ),
-          _buildDetailColumn(
-            Icons.thermostat_rounded,
-            'Feels',
-            '${_weatherData!['main']['feels_like'].round()}°C',
-            'Feels like temperature',
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildDetailColumn(IconData icon, String label, String value, String tooltip) {
-    return Tooltip(
-      message: tooltip,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
+  Widget _buildErrorWidget() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(
+          Icons.error_outline,
+          color: Colors.redAccent,
+          size: 32,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          _error ?? 'Error loading weather data',
+          style: const TextStyle(
             color: Colors.white70,
-            size: 20,
+            fontSize: 14,
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 12,
-            ),
+        ),
+        const SizedBox(height: 12),
+        TextButton.icon(
+          onPressed: _initializeLocationWithRetry,
+          icon: const Icon(Icons.refresh, color: Colors.white),
+          label: const Text(
+            'Try Again',
+            style: TextStyle(color: Colors.white),
           ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
