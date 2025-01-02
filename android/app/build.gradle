@@ -1,7 +1,6 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -36,12 +35,6 @@ android {
         }
     }
 
-    // Ensuring your app supports the required permissions and features for the dependencies
-    buildFeatures {
-        // Enable Flutter features
-        flutter = true
-    }
-
     // For location and GPS feature
     packagingOptions {
         pickFirst 'META-INF/gradle/incremental.annotation.processors'  // Fix for some dependencies
@@ -49,9 +42,9 @@ android {
 }
 
 dependencies {
-    // Flutter dependencies
-    implementation project(':flutter')
-
+    // Flutter dependencies (if using Flutter in an Android app)
+    //implementation project(':flutter')  // Only if this is a Flutter module inside an Android project
+    
     // Additional dependencies
     implementation 'com.google.android.material:material:1.6.0'  // For material UI components
     implementation 'androidx.appcompat:appcompat:1.4.0'  // Support for backward compatibility
@@ -61,8 +54,6 @@ dependencies {
 
     // Other dependencies that Flutter packages may use
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'  // For HTTP requests
-
-    // Other relevant dependencies can go here
 }
 
 flutter {

@@ -1,45 +1,50 @@
-name: Build APK
+name: Build Flutter App
 
 on:
   push:
     branches:
-      - master # Adjust to your default branch name
+      - main
   pull_request:
+    branches:
+      - main
 
 jobs:
-  build-apk:
-    name: Build APK
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+    # Step 1: Check out the repository
+    - name: Check out the code
+      uses: actions/checkout@v2
 
-      # Set up Flutter
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.27.1'
-          channel: stable
+    # Step 2: Set up Java 17
+    - name: Set up Java 17
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'temurin'
 
-      # Recreate the .env file from secrets
-      - name: Create .env file
-        run: echo "${{ secrets.ENV_FILE }}" > .env
+    # Step 3: Set up Flutter
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'  # Adjust to the desired version of Flutter
 
-      # Install dependencies
-      - name: Install Dependencies
-        run: flutter pub get
+    # Step 4: Install dependencies
+    - name: Install dependencies
+      run: flutter pub get
 
-      # Build the APK
-      - name: Build APK
-        run: flutter build apk --release
+    # Step 5: Build the Flutter project (Release)
+    - name: Build Flutter Release APK
+      run: flutter build apk --release
 
-      # Upload APK as an artifact
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+    # Optional: If you're targeting other platforms, add them here (e.g., iOS, Web, macOS, etc.)
+    # - name: Build Flutter Web
+    #   run: flutter build web
 
-          
+    # Optional: Upload artifacts if needed
+    - name: Upload APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: flutter-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
