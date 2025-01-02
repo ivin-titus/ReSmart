@@ -18,8 +18,6 @@ class CustomErrorWidget extends StatelessWidget {
   }
 }
 
-// some changes
-
 Future<void> initializeApp() async {
   try {
     // Ensure Flutter bindings are initialized
