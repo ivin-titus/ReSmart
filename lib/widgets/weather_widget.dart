@@ -12,7 +12,7 @@ class WeatherWidget extends StatefulWidget {
   _WeatherWidgetState createState() => _WeatherWidgetState();
 }
 
-class _WeatherWidgetState extends State<WeatherWidget> {
+class _WeatherWidgetState extends State<WeatherWidget> with AutomaticKeepAliveClientMixin {
   Map<String, dynamic>? _weatherData;
   String? _error;
   bool _loading = false;
@@ -20,164 +20,176 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   String? _fallbackCity;
   final TextEditingController _cityController = TextEditingController();
   Timer? _locationUpdateTimer;
+  Timer? _weatherUpdateTimer;
+  bool _isDisposed = false;
+  
+  // Cache weather icon
+  Map<String, Image> _iconCache = {};
+
+  @override
+  bool get wantKeepAlive => false;
 
   @override
   void initState() {
     super.initState();
-    _initializeLocationWithRetry();
+    _initializeWithDelay();
+  }
+
+  // Delayed initialization to prevent UI jank during app startup
+  Future<void> _initializeWithDelay() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (!_isDisposed) {
+      _initializeLocationWithRetry();
+    }
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
     _locationUpdateTimer?.cancel();
+    _weatherUpdateTimer?.cancel();
     _cityController.dispose();
+    _iconCache.clear();
     super.dispose();
   }
 
   Future<void> _initializeLocationWithRetry() async {
-    int retryCount = 0;
-    const maxRetries = 3;
+    if (_loading || _isDisposed) return;
 
-    while (retryCount < maxRetries) {
+    int retryCount = 0;
+    const maxRetries = 2;
+
+    while (retryCount < maxRetries && !_isDisposed) {
       try {
         await _initializeLocationAndWeather();
         break;
       } catch (e) {
         retryCount++;
         if (retryCount == maxRetries) {
-          _showFallbackCityInput();
+          if (!_isDisposed) {
+            _showFallbackCityInput();
+          }
           break;
         }
-        // Wait before retrying
-        await Future.delayed(Duration(seconds: 2 * retryCount));
+        await Future.delayed(Duration(seconds: retryCount));
       }
     }
   }
 
   Future<void> _initializeLocationAndWeather() async {
+    if (_isDisposed) return;
+
     setState(() {
       _loading = true;
       _error = null;
     });
 
     try {
-      // Configure location settings for better accuracy on older devices
+      // Optimize location settings for legacy devices
       await _location.changeSettings(
-        accuracy: LocationAccuracy.high,
-        interval: 10000, // Update interval in milliseconds
-        distanceFilter: 10, // Minimum distance (meters) before updates
+        accuracy: LocationAccuracy.balanced,
+        interval: 30000,
+        distanceFilter: 100,
       );
 
-      // Check if location service is enabled
       bool serviceEnabled = await _location.serviceEnabled();
       if (!serviceEnabled) {
         serviceEnabled = await _location.requestService();
-        if (!serviceEnabled) {
-          throw Exception('Location services are disabled');
-        }
+        if (!serviceEnabled) throw Exception('Location disabled');
       }
 
-      // Check permissions
       PermissionStatus permission = await _location.hasPermission();
       if (permission == PermissionStatus.denied) {
         permission = await _location.requestPermission();
         if (permission != PermissionStatus.granted) {
-          throw Exception('Location permission denied');
+          throw Exception('Permission denied');
         }
       }
 
-      // Get location with timeout
-      LocationData? locationData = await _getLocationWithTimeout();
-      
+      final locationData = await _getLocationWithTimeout();
       if (locationData != null) {
         await _fetchWeather(
           lat: locationData.latitude,
           lon: locationData.longitude,
         );
-        
-        // Set up periodic location updates
-        _setupLocationUpdates();
+        _setupUpdates();
       } else {
-        throw Exception('Could not get location');
+        throw Exception('Location unavailable');
       }
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _loading = false;
-      });
-      _showFallbackCityInput();
+      if (!_isDisposed) {
+        setState(() {
+          _error = 'Location error';
+          _loading = false;
+        });
+        _showFallbackCityInput();
+      }
     }
   }
 
   Future<LocationData?> _getLocationWithTimeout() async {
     try {
       return await _location.getLocation().timeout(
-        const Duration(seconds: 15),
-        onTimeout: () => throw TimeoutException('Location request timed out'),
+        const Duration(seconds: 10),
+        onTimeout: () => throw TimeoutException('Timeout'),
       );
-    } on TimeoutException {
+    } catch (e) {
       return null;
     }
   }
 
-  void _setupLocationUpdates() {
+  void _setupUpdates() {
+    // Cancel existing timers
     _locationUpdateTimer?.cancel();
-    _locationUpdateTimer = Timer.periodic(const Duration(minutes: 15), (timer) {
-      _fetchWeatherWithLocation();
-    });
+    _weatherUpdateTimer?.cancel();
+
+    // Update weather every 30 minutes
+    _weatherUpdateTimer = Timer.periodic(
+      const Duration(minutes: 30),
+      (_) => _fetchWeatherWithLocation(),
+    );
+
+    // Update location every hour
+    _locationUpdateTimer = Timer.periodic(
+      const Duration(hours: 1),
+      (_) => _fetchWeatherWithLocation(),
+    );
   }
 
   Future<void> _fetchWeatherWithLocation() async {
+    if (_loading || _isDisposed) return;
+
     try {
-      LocationData locationData = await _location.getLocation();
+      final locationData = await _location.getLocation();
       await _fetchWeather(
         lat: locationData.latitude,
         lon: locationData.longitude,
       );
     } catch (e) {
-      if (_weatherData == null) {
+      // Don't update state if we already have weather data
+      if (_weatherData == null && !_isDisposed) {
         setState(() {
-          _error = 'Error updating location';
+          _error = 'Update failed';
           _loading = false;
         });
       }
-    }
-  }
-
-  Future<void> _fetchWeatherByCity(String city) async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-
-    try {
-      final response = await http.get(Uri.parse(
-          'https://api.openweathermap.org/data/2.5/weather?q=$city&appid=${Environment.weatherApiKey}&units=metric'));
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _weatherData = json.decode(response.body);
-          _loading = false;
-          _fallbackCity = city;
-        });
-      } else {
-        throw Exception('Failed to load weather data for $city');
-      }
-    } catch (e) {
-      setState(() {
-        _error = 'Error loading weather data. Please try again.';
-        _loading = false;
-      });
     }
   }
 
   Future<void> _fetchWeather({double? lat, double? lon}) async {
+    if (_isDisposed) return;
+
     try {
       final String url = lat != null && lon != null
           ? 'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=${Environment.weatherApiKey}&units=metric'
           : 'https://api.openweathermap.org/data/2.5/weather?q=${_fallbackCity ?? "London"}&appid=${Environment.weatherApiKey}&units=metric';
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Accept': 'application/json'},
+      ).timeout(const Duration(seconds: 5));
+
+      if (_isDisposed) return;
 
       if (response.statusCode == 200) {
         setState(() {
@@ -185,197 +197,228 @@ class _WeatherWidgetState extends State<WeatherWidget> {
           _loading = false;
         });
       } else {
-        throw Exception('Failed to load weather data');
+        throw Exception('API Error');
       }
     } catch (e) {
-      setState(() {
-        _error = 'Error loading weather data. Please try again.';
-        _loading = false;
-      });
+      if (!_isDisposed) {
+        setState(() {
+          _error = 'Weather update failed';
+          _loading = false;
+        });
+      }
     }
   }
 
-  void _showFallbackCityInput() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Enter Your City'),
-          content: Column(
+void _showFallbackCityInput() {
+  if (_isDisposed || !mounted) return;
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Enter City'),
+        content: SizedBox(
+          width: double.minPositive,
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Location services not available. Please enter your city manually.',
+              const Text(
+                'Location unavailable. Enter city manually.',
                 style: TextStyle(fontSize: 14),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 8),
               TextField(
                 controller: _cityController,
                 decoration: const InputDecoration(
-                  hintText: 'Enter city name',
+                  hintText: 'City name',
+                  isDense: true,
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.location_city),
                 ),
                 textCapitalization: TextCapitalization.words,
-                autofocus: true,
                 onSubmitted: (value) {
-                  Navigator.of(context).pop();
                   if (value.isNotEmpty) {
+                    Navigator.of(context).pop();
                     _fetchWeatherByCity(value);
                   }
                 },
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _initializeLocationWithRetry();
+            },
+            child: const Text('Try Location'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (_cityController.text.isNotEmpty) {
                 Navigator.of(context).pop();
-                _initializeLocationWithRetry();
-              },
-              child: const Text('Try Location Again'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (_cityController.text.isNotEmpty) {
-                  _fetchWeatherByCity(_cityController.text);
-                }
-              },
-              child: const Text('Submit'),
-            ),
-          ],
-        );
-      },
-    );
+                _fetchWeatherByCity(_cityController.text);
+              }
+            },
+            child: const Text('Submit'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _fetchWeatherByCity(String city) async {
+  if (_isDisposed || !mounted) return;
+
+  setState(() {
+    _loading = true;
+    _error = null;
+  });
+
+  try {
+    final response = await http.get(
+      Uri.parse(
+        'https://api.openweathermap.org/data/2.5/weather?q=$city&appid=${Environment.weatherApiKey}&units=metric'
+      ),
+      headers: {'Accept': 'application/json'},
+    ).timeout(const Duration(seconds: 5));
+
+    if (_isDisposed) return;
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _weatherData = json.decode(response.body);
+        _loading = false;
+        _fallbackCity = city;
+      });
+
+      // Setup updates after successful manual city entry
+      _setupUpdates();
+    } else {
+      throw Exception('City not found');
+    }
+  } catch (e) {
+    if (!_isDisposed) {
+      setState(() {
+        _error = 'Invalid city. Please try again.';
+        _loading = false;
+      });
+    }
   }
+}
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (_loading)
-              const Center(
-                child: Column(
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Getting weather information...'),
-                  ],
-                ),
-              )
-            else if (_error != null) ...[
-              Icon(Icons.error_outline, color: Colors.red, size: 48),
-              SizedBox(height: 16),
-              Text(
-                _error!,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.red),
-              ),
-              SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: _initializeLocationWithRetry,
-                    child: const Text('Try Again'),
-                  ),
-                  SizedBox(width: 16),
-                  TextButton(
-                    onPressed: _showFallbackCityInput,
-                    child: const Text('Enter City Manually'),
-                  ),
-                ],
-              ),
-            ] else if (_weatherData != null) ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _weatherData!['name'],
-                          style: Theme.of(context).textTheme.titleLarge,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (_weatherData!['sys']?['country'] != null)
-                          Text(
-                            _weatherData!['sys']['country'],
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.edit_location),
-                    onPressed: _showFallbackCityInput,
-                    tooltip: 'Change location',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Image.network(
-                'https://openweathermap.org/img/wn/${_weatherData!['weather'][0]['icon']}@2x.png',
-                width: 100,
-                height: 100,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons.cloud, size: 100, color: Colors.blue);
-                },
-              ),
-              Text(
-                '${_weatherData!['main']['temp'].round()}°C',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              Text(
-                _weatherData!['weather'][0]['description'].toString().toUpperCase(),
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: [
-                      Text('Humidity'),
-                      Text('${_weatherData!['main']['humidity']}%'),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text('Wind'),
-                      Text('${_weatherData!['wind']['speed']} m/s'),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text('Feels Like'),
-                      Text('${_weatherData!['main']['feels_like'].round()}°C'),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: _initializeLocationWithRetry,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Update Location'),
-              ),
-            ] else
-              const Center(
-                child: Text('No weather data available'),
-              ),
-          ],
+    super.build(context);
+    
+    return RepaintBoundary(
+      child: Card(
+        elevation: 2,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildContent(),
         ),
       ),
     );
   }
+
+  Widget _buildContent() {
+    if (_loading) {
+      return const SizedBox(
+        height: 100,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_error != null) {
+      return _buildErrorWidget();
+    }
+
+    if (_weatherData != null) {
+      return _buildWeatherInfo();
+    }
+
+    return const SizedBox(
+      height: 100,
+      child: Center(
+        child: Text('No data'),
+      ),
+    );
+  }
+
+  Widget _buildErrorWidget() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(Icons.error_outline, color: Colors.red),
+        const SizedBox(height: 8),
+        Text(_error ?? 'Error'),
+        const SizedBox(height: 8),
+        TextButton(
+          onPressed: _initializeLocationWithRetry,
+          child: const Text('Retry'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWeatherInfo() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                _weatherData!['name'],
+                style: const TextStyle(fontSize: 20),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: _fetchWeatherWithLocation,
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '${_weatherData!['main']['temp'].round()}°C',
+          style: const TextStyle(fontSize: 24),
+        ),
+        Text(
+          _weatherData!['weather'][0]['description'].toString(),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        _buildWeatherDetails(),
+      ],
+    );
+  }
+
+  Widget _buildWeatherDetails() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _buildDetailColumn('Humidity', '${_weatherData!['main']['humidity']}%'),
+        _buildDetailColumn('Wind', '${_weatherData!['wind']['speed']} m/s'),
+        _buildDetailColumn('Feels', '${_weatherData!['main']['feels_like'].round()}°C'),
+      ],
+    );
+  }
+
+  Widget _buildDetailColumn(String label, String value) {
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(fontSize: 12)),
+        Text(value, style: const TextStyle(fontSize: 12)),
+      ],
+    );
+  }
 }
+
