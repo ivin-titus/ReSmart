@@ -12,7 +12,8 @@ class CustomErrorWidget extends StatelessWidget {
     return Container(
       color: Colors.black,
       child: const Center(
-        child: Text('An error occurred', style: TextStyle(color: Colors.white)),
+        child: Text('An error occurred',
+            style: TextStyle(color: Colors.white)),
       ),
     );
   }
@@ -23,15 +24,18 @@ Future<void> initializeApp() async {
     // Ensure Flutter bindings are initialized
     WidgetsFlutterBinding.ensureInitialized();
 
-    // Set preferred orientations to portrait only to save memory
+    // Enable all orientations
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
     ]);
 
-    // Optimize system UI for older devices
+    // Set fullscreen mode - hide status bar and navigation buttons
     await SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+      SystemUiMode.immersiveSticky,
+      overlays: [], // Empty array means hide all system UI overlays
     );
 
     // Load environment variables with error handling
@@ -41,7 +45,7 @@ Future<void> initializeApp() async {
     });
 
     // Optimize memory usage
-    imageCache.maximumSize = 50; // Reduce image cache size
+    imageCache.maximumSize = 50;
     imageCache.maximumSizeBytes = 50 * 1024 * 1024; // 50 MB limit
   } catch (e) {
     debugPrint('Initialization error: $e');
@@ -49,11 +53,10 @@ Future<void> initializeApp() async {
 }
 
 void main() async {
-  ErrorWidget.builder =
-      (FlutterErrorDetails details) => const CustomErrorWidget();
-
+  ErrorWidget.builder = (FlutterErrorDetails details) => const CustomErrorWidget();
+  
   await initializeApp();
-
+  
   runApp(const MyApp());
 }
 
@@ -66,7 +69,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'ReSmart AOD',
       theme: ThemeData.dark().copyWith(
-        // Optimize theme for performance
         platform: TargetPlatform.android,
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
@@ -74,19 +76,36 @@ class MyApp extends StatelessWidget {
           },
         ),
         visualDensity: VisualDensity.compact,
-        // Use system fonts instead of downloading custom fonts
         textTheme: ThemeData.dark().textTheme.apply(
-              fontFamily: 'Roboto',
-            ),
+          fontFamily: 'Roboto',
+        ),
       ),
       builder: (context, child) {
-        // Add error boundary and performance optimizations
-        return ScrollConfiguration(
-          behavior: ScrollBehavior().copyWith(
-            physics: const ClampingScrollPhysics(),
-            platform: TargetPlatform.android,
-          ),
-          child: child ?? const SizedBox.shrink(),
+        // Add responsive layout support
+        return OrientationBuilder(
+          builder: (context, orientation) {
+            // Apply orientation-specific layout adjustments
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                // Handle different screen sizes and orientations
+                return MediaQuery(
+                  // Update media query data to account for system UI visibility
+                  data: MediaQuery.of(context).copyWith(
+                    padding: EdgeInsets.zero,
+                    viewPadding: EdgeInsets.zero,
+                    viewInsets: EdgeInsets.zero,
+                  ),
+                  child: ScrollConfiguration(
+                    behavior: ScrollBehavior().copyWith(
+                      physics: const ClampingScrollPhysics(),
+                      platform: TargetPlatform.android,
+                    ),
+                    child: child ?? const SizedBox.shrink(),
+                  ),
+                );
+              },
+            );
+          },
         );
       },
       home: const AODScreen(),
