@@ -1,3 +1,22 @@
+/*allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
+*/
 allprojects {
     repositories {
         google()
@@ -5,14 +24,37 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
+rootProject.buildDir = "../build"
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
 subprojects {
-    project.evaluationDependsOn(':app')
+    project.evaluationDependsOn(":app")
 }
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
+}
+
+// Update Kotlin Version (This is necessary for compatibility)
+buildscript {
+    ext.kotlin_version = '2.1.0' // Replace with the latest Kotlin version
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+// Ensure that the correct Kotlin version is used for Kotlin-based tasks
+task useKotlinVersion {
+    doLast {
+        println "Using Kotlin version: $kotlin_version"
+    }
 }
