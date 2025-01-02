@@ -12,12 +12,13 @@ class CustomErrorWidget extends StatelessWidget {
     return Container(
       color: Colors.black,
       child: const Center(
-        child: Text('An error occurred',
-            style: TextStyle(color: Colors.white)),
+        child: Text('An error occurred', style: TextStyle(color: Colors.white)),
       ),
     );
   }
 }
+
+// some changes
 
 Future<void> initializeApp() async {
   try {
@@ -50,10 +51,11 @@ Future<void> initializeApp() async {
 }
 
 void main() async {
-  ErrorWidget.builder = (FlutterErrorDetails details) => const CustomErrorWidget();
-  
+  ErrorWidget.builder =
+      (FlutterErrorDetails details) => const CustomErrorWidget();
+
   await initializeApp();
-  
+
   runApp(const MyApp());
 }
 
@@ -76,8 +78,8 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.compact,
         // Use system fonts instead of downloading custom fonts
         textTheme: ThemeData.dark().textTheme.apply(
-          fontFamily: 'Roboto',
-        ),
+              fontFamily: 'Roboto',
+            ),
       ),
       builder: (context, child) {
         // Add error boundary and performance optimizations
