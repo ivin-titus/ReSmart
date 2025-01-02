@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'time_widget.dart';
 import 'date_widget.dart';
-import 'weather_widget.dart';
+// import 'weather_widget.dart';
+import 'weather_widget_mini.dart';
+
 
 // Convert to StatefulWidget
 class AODScreen extends StatefulWidget {
@@ -54,7 +56,7 @@ class _AODScreenState extends State<AODScreen> with AutomaticKeepAliveClientMixi
                       RepaintBoundary(
                         child: SizedBox(
                           width: constraints.maxWidth * 0.8,
-                          child: const WeatherWidget(),
+                          child: const MiniWeatherWidget(),
                         ),
                       ),
                     ],
