@@ -1,9 +1,6 @@
-# **ReSmart**
+## **ReSmart**
 
-ReSmart is a Flutter-based application designed to repurpose old smartphones 
-into smart side decks or remote controllers. This project aims to enhance productivity and sustainability 
-by giving a new purpose to outdated devices. It includes features like always-on displays, IoT device control, voice assistant integration, and customizable shortcuts.
-
+ReSmart is a Flutter-based application designed to repurpose old smartphones into smart side decks or remote controllers. This project aims to enhance productivity and sustainability by giving a new purpose to outdated devices. It includes features like always-on displays, IoT device control, voice assistant integration, and customizable shortcuts.
 
 ## **Features**
 
@@ -38,7 +35,7 @@ by giving a new purpose to outdated devices. It includes features like always-on
 - Firebase (for online storage and user authentication)
 
 ### **APIs and Plugins**
-- **Weather Data**: TBD
+- **Weather Data**: OpenWeatherMap
 - **Notifications**: Firebase Cloud Messaging (FCM)
 - **IoT Communication**: WebSocket, MQTT (optional)
 
@@ -64,16 +61,7 @@ ReSmart addresses the growing e-waste problem by providing an innovative way to 
    flutter run
    ```
 
-
-Here's an enhanced, professional version of your GitHub documentation section:
-
----
-
-Here's how you can present the progress in a more professional manner:
-
----
-
-### **Current Project Status**
+## **Current Project Status**
 
 The project is currently in its early stages of development, with implementation progressing incrementally. Several basic features have been successfully added, and stability has been thoroughly checked.
 
@@ -84,6 +72,10 @@ The project is currently in its early stages of development, with implementation
 - **Weather**: Fully operational.
 
 Progress is ongoing, and the foundation for additional features is being laid.
+
+### **Device Compatibility**
+- The app works perfectly on Android 5.0 and above.
+- Efforts are being made to provide support for Android 4.2 and 4.4, and compatibility improvements are in progress.
 
 ## **Contribution**
 Contributions are welcome! Feel free to fork the repository, make changes, and submit a pull request.
