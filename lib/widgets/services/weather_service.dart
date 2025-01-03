@@ -10,19 +10,20 @@ import '../config/env.dart';
 class WeatherService {
   static final WeatherService _instance = WeatherService._internal();
   factory WeatherService() => _instance;
-  
+
   final _weatherController = StreamController<Map<String, dynamic>>.broadcast();
   final Location _location = Location();
   Timer? _updateTimer;
   DateTime? _lastFetch;
   bool _isDisposed = false;
-  
-  static const String _baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
+
+  static const String _baseUrl =
+      'https://api.openweathermap.org/data/2.5/weather';
   static const Duration _cacheValidity = Duration(minutes: 15);
   static const String _lastLocationKey = 'last_location';
   static const String _lastWeatherKey = 'last_weather';
   static const String _locationPermissionKey = 'location_permission_status';
-  
+
   WeatherService._internal();
 
   Stream<Map<String, dynamic>> get weatherStream => _weatherController.stream;
@@ -49,8 +50,9 @@ class WeatherService {
     try {
       // Check if we already have permission
       final prefs = await SharedPreferences.getInstance();
-      final hasStoredPermission = prefs.getBool(_locationPermissionKey) ?? false;
-      
+      final hasStoredPermission =
+          prefs.getBool(_locationPermissionKey) ?? false;
+
       if (hasStoredPermission) {
         // Try to get last known location first
         final lastLocation = await getLastLocation();
@@ -90,9 +92,9 @@ class WeatherService {
       }
 
       return await _location.getLocation().timeout(
-        const Duration(seconds: 10),
-        onTimeout: () => throw TimeoutException('Location timeout'),
-      );
+            const Duration(seconds: 10),
+            onTimeout: () => throw TimeoutException('Location timeout'),
+          );
     } catch (e) {
       return _fallbackToLastLocation();
     }
@@ -191,7 +193,8 @@ class WeatherService {
     required double longitude,
     bool forceRefresh = false,
   }) async {
-    if (!forceRefresh && _lastFetch != null && 
+    if (!forceRefresh &&
+        _lastFetch != null &&
         DateTime.now().difference(_lastFetch!) < _cacheValidity) {
       final cached = await _getCachedWeather();
       if (cached != null) {
@@ -209,11 +212,11 @@ class WeatherService {
 
     await _cacheLocation(latitude, longitude);
     await _cacheWeather(weatherData);
-    
+
     _weatherController.add(weatherData);
     _lastFetch = DateTime.now();
     _setupUpdateTimer();
-    
+
     return weatherData;
   }
 
@@ -221,14 +224,15 @@ class WeatherService {
     final weatherData = await _fetchFromApi(
       queryParams: {'q': city},
     );
-    
+
     _weatherController.add(weatherData);
     _lastFetch = DateTime.now();
     _setupUpdateTimer();
-    
+
     await _cacheWeather(weatherData);
     return weatherData;
   }
+
   Future<Map<String, dynamic>> _fetchFromApi({
     required Map<String, String> queryParams,
   }) async {
@@ -272,8 +276,8 @@ class WeatherService {
 
   Future<void> _cacheLocation(double latitude, double longitude) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_lastLocationKey, 
-      json.encode({'latitude': latitude, 'longitude': longitude}));
+    await prefs.setString(_lastLocationKey,
+        json.encode({'latitude': latitude, 'longitude': longitude}));
   }
 
   Future<Map<String, dynamic>?> _getCachedWeather() async {
