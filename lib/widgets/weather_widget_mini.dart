@@ -1,12 +1,15 @@
-// weather_widget_mini.dart
-
 import 'package:flutter/material.dart';
 import './services/weather_service.dart';
-import 'weather_widget.dart'; 
+import 'weather_widget.dart';
 import 'shared_styles.dart';
 
 class MiniWeatherWidget extends StatefulWidget {
-  const MiniWeatherWidget({Key? key}) : super(key: key);
+  final TextStyle? textStyle;
+
+  const MiniWeatherWidget({
+    Key? key,
+    this.textStyle,
+  }) : super(key: key);
 
   @override
   _MiniWeatherWidgetState createState() => _MiniWeatherWidgetState();
@@ -65,16 +68,20 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: _showWeatherDialog,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final iconSize = SharedStyles.getResponsiveIconSize(constraints);
-          
-          return Container(
-            decoration: SharedStyles.containerDecoration,
-            child: Padding(
+      child: RepaintBoundary(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final textStyle = widget.textStyle?.copyWith(
+              fontSize: SharedStyles.getResponsiveSize(constraints).clamp(20.0, 28.0),
+              color: SharedStyles.textColor,
+            ) ?? SharedStyles.getBaseTextStyle(constraints);
+
+            return Container(
+              decoration: SharedStyles.containerDecoration,
               padding: EdgeInsets.all(SharedStyles.containerPadding),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   if (_loading)
                     SharedStyles.loadingIndicator
@@ -82,31 +89,33 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
                     Icon(
                       Icons.error_outline,
                       color: SharedStyles.errorColor,
-                      size: iconSize.clamp(24.0, 32.0),
+                      size: textStyle.fontSize,
                     )
                   else if (_weatherData != null)
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Icon(
-                            WeatherService.weatherIcons[_weatherData!['weather'][0]['description']] ??
-                                Icons.wb_sunny_rounded,
-                            color: SharedStyles.textColor,
-                            size: iconSize.clamp(24.0, 32.0),
-                          ),
-                          SizedBox(width: SharedStyles.iconSpacing),
-                          Text(
-                            '${_weatherData!['main']['temp'].round()}°C',
-                            style: SharedStyles.getBaseTextStyle(constraints),
-                          ),
-                        ],
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          WeatherService.weatherIcons[_weatherData!['weather'][0]['description']] ??
+                              Icons.wb_sunny_rounded,
+                          color: SharedStyles.textColor,
+                          size: textStyle.fontSize,
+                        ),
+                        SizedBox(width: SharedStyles.iconSpacing),
+                        Text(
+                          '${_weatherData!['main']['temp'].round()}°C',
+                          style: textStyle,
+                          textScaler: const TextScaler.linear(1.0),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ],
                     ),
                 ],
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
