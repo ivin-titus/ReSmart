@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import './services/weather_service.dart';
-import 'weather_widget.dart'; // Add this import
+import 'weather_widget.dart'; 
+import 'shared_styles.dart';
 
 class MiniWeatherWidget extends StatefulWidget {
   const MiniWeatherWidget({Key? key}) : super(key: key);
@@ -66,25 +67,21 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
       onTap: _showWeatherDialog,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final iconSize = constraints.maxWidth * 0.15;
-          final tempSize = constraints.maxWidth * 0.12;
-
+          final iconSize = SharedStyles.getResponsiveIconSize(constraints);
+          
           return Container(
-            decoration: BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.circular(15),
-            ),
+            decoration: SharedStyles.containerDecoration,
             child: Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: EdgeInsets.all(SharedStyles.containerPadding),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   if (_loading)
-                    const CircularProgressIndicator(color: Colors.white)
+                    SharedStyles.loadingIndicator
                   else if (_error != null)
                     Icon(
                       Icons.error_outline,
-                      color: Colors.redAccent,
+                      color: SharedStyles.errorColor,
                       size: iconSize.clamp(24.0, 32.0),
                     )
                   else if (_weatherData != null)
@@ -92,20 +89,15 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
                       child: Row(
                         children: [
                           Icon(
-                            WeatherService.weatherIcons[_weatherData!['weather']
-                                    [0]['description']] ??
+                            WeatherService.weatherIcons[_weatherData!['weather'][0]['description']] ??
                                 Icons.wb_sunny_rounded,
-                            color: Colors.white,
+                            color: SharedStyles.textColor,
                             size: iconSize.clamp(24.0, 32.0),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: SharedStyles.iconSpacing),
                           Text(
                             '${_weatherData!['main']['temp'].round()}°C',
-                            style: TextStyle(
-                              fontSize: tempSize.clamp(20.0, 28.0),
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: SharedStyles.getBaseTextStyle(constraints),
                           ),
                         ],
                       ),
