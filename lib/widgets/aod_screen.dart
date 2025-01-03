@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'time_widget.dart';
 import 'date_widget.dart';
-//import 'weather_widget.dart';
 import 'weather_widget_mini.dart';
 
-// Convert to StatefulWidget
 class AODScreen extends StatefulWidget {
   const AODScreen({Key? key}) : super(key: key);
 
@@ -12,17 +10,13 @@ class AODScreen extends StatefulWidget {
   State<AODScreen> createState() => _AODScreenState();
 }
 
-// Separate state class with AutomaticKeepAliveClientMixin
-class _AODScreenState extends State<AODScreen>
-    with AutomaticKeepAliveClientMixin {
+class _AODScreenState extends State<AODScreen> with AutomaticKeepAliveClientMixin {
   @override
-  bool get wantKeepAlive => false; // Don't keep in memory when not visible
+  bool get wantKeepAlive => false;
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required by AutomaticKeepAliveClientMixin
-
-    // Get screen size once instead of multiple calculations
+    super.build(context);
     final Size screenSize = MediaQuery.of(context).size;
 
     return RepaintBoundary(
@@ -36,27 +30,28 @@ class _AODScreenState extends State<AODScreen>
             child: Center(
               child: LayoutBuilder(
                 builder: (context, constraints) {
+                  final containerWidth = constraints.maxWidth * 0.8;
+                  
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       RepaintBoundary(
                         child: SizedBox(
-                          width: constraints.maxWidth * 0.8,
+                          width: containerWidth,
                           child: const TimeWidget(),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      //const SizedBox(height: 8),
                       RepaintBoundary(
                         child: SizedBox(
-                          width: constraints.maxWidth * 0.8,
-                          child: const DateWidget(),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      RepaintBoundary(
-                        child: SizedBox(
-                          width: constraints.maxWidth * 0.8,
-                          child: const MiniWeatherWidget(),
+                          width: containerWidth - 30,
+                          child: Row(
+                            children: [
+                              Expanded(child: DateWidget()),
+                              //const SizedBox(width: 2),
+                              Expanded(child: MiniWeatherWidget()),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -72,7 +67,6 @@ class _AODScreenState extends State<AODScreen>
 
   @override
   void dispose() {
-    // Clean up any resources
     super.dispose();
   }
 }
