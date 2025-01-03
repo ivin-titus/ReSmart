@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:resmart/widgets/weather_widget_mini.dart';
 import 'time_widget.dart';
 import 'date_widget.dart';
-import 'weather_widget.dart';
 
 class AODScreen extends StatefulWidget {
   const AODScreen({Key? key}) : super(key: key);
