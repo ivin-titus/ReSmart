@@ -21,7 +21,7 @@ class WeatherService {
   static const Duration _cacheValidity = Duration(minutes: 15);
   static const String _lastLocationKey = 'last_location';
   static const String _lastWeatherKey = 'last_weather';
-  
+  static const String _locationPermissionKey = 'location_permission_status';
   
   WeatherService._internal();
 
@@ -47,6 +47,21 @@ class WeatherService {
 
   Future<LocationData?> initializeLocation() async {
     try {
+      // Check if we already have permission
+      final prefs = await SharedPreferences.getInstance();
+      final hasStoredPermission = prefs.getBool(_locationPermissionKey) ?? false;
+      
+      if (hasStoredPermission) {
+        // Try to get last known location first
+        final lastLocation = await getLastLocation();
+        if (lastLocation != null) {
+          await fetchWeatherByCoordinates(
+            latitude: lastLocation['latitude'],
+            longitude: lastLocation['longitude'],
+          );
+        }
+      }
+
       await _location.changeSettings(
         accuracy: LocationAccuracy.balanced,
         interval: 30000,
@@ -56,13 +71,22 @@ class WeatherService {
       bool serviceEnabled = await _location.serviceEnabled();
       if (!serviceEnabled) {
         serviceEnabled = await _location.requestService();
-        if (!serviceEnabled) return null;
+        if (!serviceEnabled) {
+          return _fallbackToLastLocation();
+        }
       }
 
       PermissionStatus permission = await _location.hasPermission();
       if (permission == PermissionStatus.denied) {
         permission = await _location.requestPermission();
-        if (permission != PermissionStatus.granted) return null;
+        if (permission != PermissionStatus.granted) {
+          return _fallbackToLastLocation();
+        }
+      }
+
+      // Store permission status
+      if (permission == PermissionStatus.granted) {
+        await prefs.setBool(_locationPermissionKey, true);
       }
 
       return await _location.getLocation().timeout(
@@ -70,11 +94,31 @@ class WeatherService {
         onTimeout: () => throw TimeoutException('Location timeout'),
       );
     } catch (e) {
-      return null;
+      return _fallbackToLastLocation();
     }
   }
 
+  Future<LocationData?> _fallbackToLastLocation() async {
+    final lastLocation = await getLastLocation();
+    if (lastLocation != null) {
+      return LocationData.fromMap({
+        'latitude': lastLocation['latitude'],
+        'longitude': lastLocation['longitude'],
+      });
+    }
+    return null;
+  }
+
   void showFallbackCityInput(BuildContext context) {
+    // Only show if we don't have any cached location
+    getLastLocation().then((lastLocation) {
+      if (lastLocation == null) {
+        _showCityInputDialog(context);
+      }
+    });
+  }
+
+  void _showCityInputDialog(BuildContext context) {
     final TextEditingController cityController = TextEditingController();
 
     showDialog(
@@ -120,7 +164,7 @@ class WeatherService {
                   longitude: locationData.longitude!,
                 );
               } else {
-                if (!_isDisposed) showFallbackCityInput(context);
+                if (!_isDisposed) _showCityInputDialog(context);
               }
             },
             child: const Text('Try Location'),
@@ -150,7 +194,10 @@ class WeatherService {
     if (!forceRefresh && _lastFetch != null && 
         DateTime.now().difference(_lastFetch!) < _cacheValidity) {
       final cached = await _getCachedWeather();
-      if (cached != null) return cached;
+      if (cached != null) {
+        _weatherController.add(cached);
+        return cached;
+      }
     }
 
     final weatherData = await _fetchFromApi(
@@ -182,7 +229,6 @@ class WeatherService {
     await _cacheWeather(weatherData);
     return weatherData;
   }
-
   Future<Map<String, dynamic>> _fetchFromApi({
     required Map<String, String> queryParams,
   }) async {
