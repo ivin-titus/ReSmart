@@ -44,7 +44,7 @@ class _AODScreenState extends State<AODScreen> with AutomaticKeepAliveClientMixi
                       //const SizedBox(height: 8),
                       RepaintBoundary(
                         child: SizedBox(
-                          width: containerWidth - 30,
+                          width: containerWidth,
                           child: Row(
                             children: [
                               Expanded(child: DateWidget()),
