@@ -1,4 +1,3 @@
-// shared_styles.dart
 import 'package:flutter/material.dart';
 
 class SharedStyles {
@@ -14,11 +13,7 @@ class SharedStyles {
 
   // Responsive sizing
   static double getResponsiveSize(BoxConstraints constraints) {
-    return constraints.maxWidth * 0.12; // Base text size ratio
-  }
-
-  static double getResponsiveIconSize(BoxConstraints constraints) {
-    return constraints.maxWidth * 0.15; // Base icon size ratio
+    return constraints.maxWidth * 0.12; // Unified size ratio for both widgets
   }
 
   // Text Styles
@@ -37,7 +32,8 @@ class SharedStyles {
       );
 
   // Loading Indicator Style
-  static const CircularProgressIndicator loadingIndicator = CircularProgressIndicator(
-    color: textColor,
-  );
+  static CircularProgressIndicator get loadingIndicator => const CircularProgressIndicator(
+        color: textColor,
+        strokeWidth: 3.0,
+      );
 }
