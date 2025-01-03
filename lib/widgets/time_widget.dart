@@ -62,7 +62,7 @@ class _TimeWidgetState extends State<TimeWidget> with AutomaticKeepAliveClientMi
       child: LayoutBuilder(
         builder: (context, constraints) {
           // Adjust font size based on available width
-          final fontSize = constraints.maxWidth * 0.25;
+          final fontSize = constraints.maxWidth * 0.19; //previous was * 0.15
           
           return Text(
             _time,
