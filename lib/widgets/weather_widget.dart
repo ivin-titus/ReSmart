@@ -1,6 +1,7 @@
 // weather_widget.dart
 import 'package:flutter/material.dart';
 import 'services/weather_service.dart';
+import 'dart:async';
 
 class WeatherWidget extends StatefulWidget {
   final VoidCallback? onClose;
@@ -15,6 +16,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   Map<String, dynamic>? _weatherData;
   String? _error;
   bool _loading = false;
+  StreamSubscription? _weatherSubscription;
 
   @override
   void initState() {
@@ -24,17 +26,24 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   }
 
   void _subscribeToWeatherUpdates() {
-    _weatherService.weatherStream.listen(
-      (data) => setState(() => _weatherData = data),
-      onError: (error) => setState(() => _error = error.toString()),
+    _weatherSubscription = _weatherService.weatherStream.listen(
+      (data) {
+        if (mounted) setState(() => _weatherData = data);
+      },
+      onError: (error) {
+        if (mounted) setState(() => _error = error.toString());
+      },
     );
   }
 
   Future<void> _initialize() async {
+    if (!mounted) return;
     setState(() => _loading = true);
     
     try {
       final locationData = await _weatherService.initializeLocation();
+      if (!mounted) return;
+      
       if (locationData != null) {
         await _weatherService.fetchWeatherByCoordinates(
           latitude: locationData.latitude!,
@@ -44,11 +53,18 @@ class _WeatherWidgetState extends State<WeatherWidget> {
         _weatherService.showFallbackCityInput(context);
       }
     } catch (e) {
-      setState(() => _error = 'Weather update failed');
+      if (mounted) setState(() => _error = 'Weather update failed');
     } finally {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
+
+  @override
+  void dispose() {
+    _weatherSubscription?.cancel();
+    super.dispose();
+  }
+  
 
  @override
   Widget build(BuildContext context) {
