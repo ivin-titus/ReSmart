@@ -1,216 +1,267 @@
+// weather_widget.dart
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:location/location.dart';
-import 'dart:convert';
-import 'dart:async';
-import './weather_widget.dart';
-import './config/env.dart';
-import './services/location_service.dart'; // Assuming LocationService is defined here
+import './services/weather_services.dart';
 
-class MiniWeatherWidget extends StatefulWidget {
-  const MiniWeatherWidget({Key? key}) : super(key: key);
+class WeatherWidget extends StatefulWidget {
+  final VoidCallback? onClose;
+  const WeatherWidget({Key? key, this.onClose}) : super(key: key);
 
   @override
-  _MiniWeatherWidgetState createState() => _MiniWeatherWidgetState();
+  _WeatherWidgetState createState() => _WeatherWidgetState();
 }
 
-class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
-  final LocationService _locationService = LocationService();
-  final Location _location = Location();
+class _WeatherWidgetState extends State<WeatherWidget> {
+  final WeatherService _weatherService = WeatherService();
   Map<String, dynamic>? _weatherData;
   String? _error;
   bool _loading = false;
-  bool _isExpanded = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeLocation();
+    _initialize();
+    _subscribeToWeatherUpdates();
   }
 
-  Future<void> _initializeLocation() async {
-    setState(() => _loading = true);
-
-    try {
-      bool serviceEnabled = await _location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await _location.requestService();
-        if (!serviceEnabled) {
-          final lastLocation = await _locationService.getLastLocation();
-          if (lastLocation != null) {
-            await _fetchWeather(
-              lat: lastLocation['latitude'],
-              lon: lastLocation['longitude'],
-            );
-            return;
-          }
-          throw Exception('Location disabled');
-        }
-      }
-
-      PermissionStatus permission = await _location.hasPermission();
-      if (permission == PermissionStatus.denied) {
-        permission = await _location.requestPermission();
-        if (permission != PermissionStatus.granted) {
-          final lastLocation = await _locationService.getLastLocation();
-          if (lastLocation != null) {
-            await _fetchWeather(
-              lat: lastLocation['latitude'],
-              lon: lastLocation['longitude'],
-            );
-            return;
-          }
-          throw Exception('Permission denied');
-        }
-      }
-
-      final locationData = await _location.getLocation();
-      await _locationService.saveLocation(
-        locationData.latitude!,
-        locationData.longitude!,
-      );
-      await _fetchWeather(
-        lat: locationData.latitude,
-        lon: locationData.longitude,
-      );
-    } catch (e) {
-      setState(() {
-        _error = 'Location error';
-        _loading = false;
-      });
-    }
-  }
-
-  Future<void> _fetchWeather({double? lat, double? lon}) async {
-    try {
-      final response = await http
-          .get(
-            Uri.parse(
-              'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=${Environment.weatherApiKey}&units=metric',
-            ),
-          )
-          .timeout(const Duration(seconds: 5));
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _weatherData = json.decode(response.body);
-          _loading = false;
-        });
-      } else {
-        throw Exception('API Error');
-      }
-    } catch (e) {
-      setState(() {
-        _error = 'Weather update failed';
-        _loading = false;
-      });
-    }
-  }
-
-  IconData _getDetailedWeatherIcon(String condition) {
-    switch (condition.toLowerCase()) {
-      case 'clear sky':
-        return Icons.wb_sunny_rounded;
-      case 'few clouds':
-        return Icons.cloud_outlined;
-      case 'scattered clouds':
-        return Icons.cloud_rounded;
-      case 'broken clouds':
-        return Icons.cloud;
-      case 'shower rain':
-        return Icons.grain_rounded;
-      case 'rain':
-        return Icons.water_drop_rounded;
-      case 'thunderstorm':
-        return Icons.flash_on_rounded;
-      case 'snow':
-        return Icons.ac_unit_rounded;
-      case 'mist':
-      case 'fog':
-        return Icons.cloud_rounded;
-      case 'dust':
-        return Icons.blur_on;
-      case 'haze':
-      case 'smoke':
-        return Icons.cloud;
-      case 'sand':
-        return Icons.grain;
-      case 'ash':
-        return Icons.blur_circular;
-      case 'squall':
-      case 'tornado':
-        return Icons.air;
-      default:
-        return Icons.wb_sunny_rounded;
-    }
-  }
-
-  void _showWeatherDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => WeatherWidget(
-       // onClose: () => Navigator.of(context).pop(),
-      ),
+  void _subscribeToWeatherUpdates() {
+    _weatherService.weatherStream.listen(
+      (data) => setState(() => _weatherData = data),
+      onError: (error) => setState(() => _error = error.toString()),
     );
+  }
+
+  Future<void> _initialize() async {
+    setState(() => _loading = true);
+    
+    try {
+      final locationData = await _weatherService.initializeLocation();
+      if (locationData != null) {
+        await _weatherService.fetchWeatherByCoordinates(
+          latitude: locationData.latitude!,
+          longitude: locationData.longitude!,
+        );
+      } else {
+        _weatherService.showFallbackCityInput(context);
+      }
+    } catch (e) {
+      setState(() => _error = 'Weather update failed');
+    } finally {
+      setState(() => _loading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
-    return GestureDetector(
-      onTap: _showWeatherDialog,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final iconSize = constraints.maxWidth * 0.15;
-          final tempSize = constraints.maxWidth * 0.12;
-
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.circular(15),
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 400),
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.white24, width: 1),
+        ),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: _buildContent(),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
+            if (widget.onClose != null)
+              Positioned(
+                right: 8,
+                top: 8,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white70),
+                  onPressed: widget.onClose,
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    if (_loading) {
+      return const SizedBox(
+        height: 120,
+        child: Center(child: CircularProgressIndicator(color: Colors.white)),
+      );
+    }
+
+    if (_error != null) {
+      return _buildErrorWidget();
+    }
+
+    if (_weatherData != null) {
+      return _buildWeatherInfo();
+    }
+
+    return const SizedBox(
+      height: 120,
+      child: Center(
+        child: Text(
+          'No weather data available',
+          style: TextStyle(color: Colors.white70),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWeatherInfo() {
+    final weatherDescription = _weatherData!['weather'][0]['description'];
+    final IconData weatherIcon = WeatherService.weatherIcons[weatherDescription] ?? 
+        Icons.question_mark_rounded;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (_loading)
-                    const CircularProgressIndicator(color: Colors.white)
-                  else if (_error != null)
-                    Icon(
-                      Icons.error_outline,
-                      color: Colors.redAccent,
-                      size: iconSize.clamp(24.0, 32.0),
-                    )
-                  else if (_weatherData != null)
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Icon(
-                            _getDetailedWeatherIcon(
-                              _weatherData!['weather'][0]['description'],
-                            ),
-                            color: Colors.white,
-                            size: iconSize.clamp(24.0, 32.0),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            '${_weatherData!['main']['temp'].round()}°C',
-                            style: TextStyle(
-                              fontSize: tempSize.clamp(20.0, 28.0),
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                  const Icon(Icons.location_on_rounded, 
+                    color: Colors.white70, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _weatherData!['name'],
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
+                  ),
                 ],
               ),
             ),
-          );
-        },
+            IconButton(
+              icon: const Icon(Icons.refresh_rounded, color: Colors.white70),
+              onPressed: _initialize,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(weatherIcon, color: Colors.white, size: 40),
+            const SizedBox(width: 16),
+            Text(
+              '${_weatherData!['main']['temp'].round()}°C',
+              style: const TextStyle(
+                fontSize: 36,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          weatherDescription.toString().toUpperCase(),
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 14,
+            letterSpacing: 1.2,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        _buildWeatherDetails(),
+      ],
+    );
+  }
+
+  Widget _buildWeatherDetails() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
       ),
+      child: IntrinsicHeight(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: _buildDetailColumn(
+                Icons.water_drop_outlined,
+                'Humidity',
+                '${_weatherData!['main']['humidity']}%',
+              ),
+            ),
+            VerticalDivider(color: Colors.white.withOpacity(0.2), thickness: 1),
+            Expanded(
+              child: _buildDetailColumn(
+                Icons.air_rounded,
+                'Wind',
+                '${_weatherData!['wind']['speed']} m/s',
+              ),
+            ),
+            VerticalDivider(color: Colors.white.withOpacity(0.2), thickness: 1),
+            Expanded(
+              child: _buildDetailColumn(
+                Icons.thermostat_rounded,
+                'Feels Like',
+                '${_weatherData!['main']['feels_like'].round()}°C',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailColumn(IconData icon, String label, String value) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.white70, size: 20),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white70, fontSize: 12),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorWidget() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(Icons.error_outline, color: Colors.redAccent, size: 32),
+        const SizedBox(height: 8),
+        Text(
+          _error ?? 'Error loading weather data',
+          style: const TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+        const SizedBox(height: 12),
+        TextButton.icon(
+          onPressed: _initialize,
+          icon: const Icon(Icons.refresh, color: Colors.white),
+          label: const Text('Try Again', style: TextStyle(color: Colors.white)),
+        ),
+      ],
     );
   }
 }
