@@ -211,7 +211,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withAlpha(25),
         borderRadius: BorderRadius.circular(12),
       ),
       child: IntrinsicHeight(
@@ -225,7 +225,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                 '${_weatherData!['main']['humidity']}%',
               ),
             ),
-            VerticalDivider(color: Colors.white.withOpacity(0.2), thickness: 1),
+            VerticalDivider(color: Colors.white.withAlpha(50), thickness: 1),
             Expanded(
               child: _buildDetailColumn(
                 Icons.air_rounded,
@@ -233,7 +233,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                 '${_weatherData!['wind']['speed']} m/s',
               ),
             ),
-            VerticalDivider(color: Colors.white.withOpacity(0.2), thickness: 1),
+            VerticalDivider(color: Colors.white.withAlpha(51), thickness: 1),
             Expanded(
               child: _buildDetailColumn(
                 Icons.thermostat_rounded,
