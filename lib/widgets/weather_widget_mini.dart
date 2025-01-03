@@ -1,11 +1,8 @@
+// weather_widget_mini.dart
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:location/location.dart';
-import 'dart:convert';
-import 'dart:async';
-import './weather_widget.dart';
-import './config/env.dart';
-import './services/location_service.dart'; // Assuming LocationService is defined here
+import './services/weather_service.dart';
+import 'weather_widget.dart'; // Add this import
 
 class MiniWeatherWidget extends StatefulWidget {
   const MiniWeatherWidget({Key? key}) : super(key: key);
@@ -15,133 +12,42 @@ class MiniWeatherWidget extends StatefulWidget {
 }
 
 class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
-  final LocationService _locationService = LocationService();
-  final Location _location = Location();
+  final WeatherService _weatherService = WeatherService();
   Map<String, dynamic>? _weatherData;
   String? _error;
   bool _loading = false;
-  bool _isExpanded = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeLocation();
+    _initialize();
+    _subscribeToWeatherUpdates();
   }
 
-  Future<void> _initializeLocation() async {
+  void _subscribeToWeatherUpdates() {
+    _weatherService.weatherStream.listen(
+      (data) => setState(() => _weatherData = data),
+      onError: (error) => setState(() => _error = error.toString()),
+    );
+  }
+
+  Future<void> _initialize() async {
     setState(() => _loading = true);
 
     try {
-      bool serviceEnabled = await _location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await _location.requestService();
-        if (!serviceEnabled) {
-          final lastLocation = await _locationService.getLastLocation();
-          if (lastLocation != null) {
-            await _fetchWeather(
-              lat: lastLocation['latitude'],
-              lon: lastLocation['longitude'],
-            );
-            return;
-          }
-          throw Exception('Location disabled');
-        }
-      }
-
-      PermissionStatus permission = await _location.hasPermission();
-      if (permission == PermissionStatus.denied) {
-        permission = await _location.requestPermission();
-        if (permission != PermissionStatus.granted) {
-          final lastLocation = await _locationService.getLastLocation();
-          if (lastLocation != null) {
-            await _fetchWeather(
-              lat: lastLocation['latitude'],
-              lon: lastLocation['longitude'],
-            );
-            return;
-          }
-          throw Exception('Permission denied');
-        }
-      }
-
-      final locationData = await _location.getLocation();
-      await _locationService.saveLocation(
-        locationData.latitude!,
-        locationData.longitude!,
-      );
-      await _fetchWeather(
-        lat: locationData.latitude,
-        lon: locationData.longitude,
-      );
-    } catch (e) {
-      setState(() {
-        _error = 'Location error';
-        _loading = false;
-      });
-    }
-  }
-
-  Future<void> _fetchWeather({double? lat, double? lon}) async {
-    try {
-      final response = await http
-          .get(
-            Uri.parse(
-              'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=${Environment.weatherApiKey}&units=metric',
-            ),
-          )
-          .timeout(const Duration(seconds: 5));
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _weatherData = json.decode(response.body);
-          _loading = false;
-        });
+      final locationData = await _weatherService.initializeLocation();
+      if (locationData != null) {
+        await _weatherService.fetchWeatherByCoordinates(
+          latitude: locationData.latitude!,
+          longitude: locationData.longitude!,
+        );
       } else {
-        throw Exception('API Error');
+        _weatherService.showFallbackCityInput(context);
       }
     } catch (e) {
-      setState(() {
-        _error = 'Weather update failed';
-        _loading = false;
-      });
-    }
-  }
-
-  IconData _getDetailedWeatherIcon(String condition) {
-    switch (condition.toLowerCase()) {
-      case 'clear sky':
-        return Icons.wb_sunny_rounded;
-      case 'few clouds':
-        return Icons.cloud_outlined;
-      case 'scattered clouds':
-        return Icons.cloud_rounded;
-      case 'broken clouds':
-        return Icons.cloud;
-      case 'shower rain':
-        return Icons.grain_rounded;
-      case 'rain':
-        return Icons.water_drop_rounded;
-      case 'thunderstorm':
-        return Icons.flash_on_rounded;
-      case 'snow':
-        return Icons.ac_unit_rounded;
-      case 'mist':
-      case 'fog':
-        return Icons.cloud_rounded;
-      case 'dust':
-        return Icons.blur_on;
-      case 'haze':
-      case 'smoke':
-        return Icons.cloud;
-      case 'sand':
-        return Icons.grain;
-      case 'ash':
-        return Icons.blur_circular;
-      case 'squall':
-      case 'tornado':
-        return Icons.air;
-      default:
-        return Icons.wb_sunny_rounded;
+      setState(() => _error = 'Weather update failed');
+    } finally {
+      setState(() => _loading = false);
     }
   }
 
@@ -149,14 +55,13 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
     showDialog(
       context: context,
       builder: (context) => WeatherWidget(
-       // onClose: () => Navigator.of(context).pop(),
+        onClose: () => Navigator.of(context).pop(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
       onTap: _showWeatherDialog,
       child: LayoutBuilder(
@@ -187,9 +92,9 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
                       child: Row(
                         children: [
                           Icon(
-                            _getDetailedWeatherIcon(
-                              _weatherData!['weather'][0]['description'],
-                            ),
+                            WeatherService.weatherIcons[_weatherData!['weather']
+                                    [0]['description']] ??
+                                Icons.wb_sunny_rounded,
                             color: Colors.white,
                             size: iconSize.clamp(24.0, 32.0),
                           ),
