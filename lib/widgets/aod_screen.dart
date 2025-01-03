@@ -18,39 +18,64 @@ class _AODScreenState extends State<AODScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   }
 
-  double _getResponsivePadding(double dimension, {bool isWidth = true}) {
-    if (dimension < 600) {
-      return isWidth ? 0.15 : 0.08;
-    } else if (dimension < 1200) {
-      return isWidth ? 0.18 : 0.10;
-    } else if (dimension < 2000) {
-      return isWidth ? 0.20 : 0.12;
+  double _getTimeTextSize(double screenWidth, double screenHeight) {
+    final smallerDimension = screenWidth < screenHeight ? screenWidth : screenHeight;
+    
+    // More granular time text sizing
+    if (smallerDimension < 300) {
+      return 48;  // For very small devices
+    } else if (smallerDimension < 600) {
+      return 72;
+    } else if (smallerDimension < 1200) {
+      return 96;
+    } else if (smallerDimension < 2000) {
+      return 120;
     } else {
-      return isWidth ? 0.22 : 0.15;
+      return smallerDimension * 0.06;  // Dynamic scaling for 4K
+    }
+  }
+
+  double _getResponsivePadding(double dimension, {bool isWidth = true}) {
+    if (dimension < 300) {
+      return isWidth ? 0.08 : 0.05;
+    } else if (dimension < 600) {
+      return isWidth ? 0.12 : 0.07;
+    } else if (dimension < 1200) {
+      return isWidth ? 0.15 : 0.09;
+    } else if (dimension < 2000) {
+      return isWidth ? 0.18 : 0.11;
+    } else {
+      return isWidth ? 0.20 : 0.13;
     }
   }
 
   double _getResponsiveWidth(double screenWidth, bool isLandscape) {
-    if (screenWidth < 600) {
+    if (screenWidth < 300) {
+      return isLandscape ? 0.50 : 0.90;
+    } else if (screenWidth < 600) {
       return isLandscape ? 0.45 : 0.85;
     } else if (screenWidth < 1200) {
       return isLandscape ? 0.42 : 0.80;
     } else if (screenWidth < 2000) {
       return isLandscape ? 0.40 : 0.75;
     } else {
-      return isLandscape ? 0.38 : 0.70;
+      return isLandscape ? 0.35 : 0.65;
     }
   }
 
-  double _getResponsiveFontSize(double screenWidth) {
-    if (screenWidth < 600) {
+  double _getSecondaryTextSize(double screenWidth, double screenHeight) {
+    final smallerDimension = screenWidth < screenHeight ? screenWidth : screenHeight;
+    
+    if (smallerDimension < 300) {
+      return 14;
+    } else if (smallerDimension < 600) {
       return 18;
-    } else if (screenWidth < 1200) {
+    } else if (smallerDimension < 1200) {
       return 22;
-    } else if (screenWidth < 2000) {
-      return 24;
+    } else if (smallerDimension < 2000) {
+      return 26;
     } else {
-      return 28;
+      return smallerDimension * 0.015;
     }
   }
 
@@ -58,14 +83,15 @@ class _AODScreenState extends State<AODScreen> {
     final screenWidth = constraints.maxWidth;
     final screenHeight = constraints.maxHeight;
     final isLandscape = screenWidth > screenHeight;
+    final smallerDimension = screenWidth < screenHeight ? screenWidth : screenHeight;
 
-    // Get responsive measurements
     final timeWidth = screenWidth * _getResponsiveWidth(screenWidth, isLandscape);
     final dateWeatherWidth = screenWidth * (_getResponsiveWidth(screenWidth, isLandscape) * 0.9);
-    final fontSize = _getResponsiveFontSize(screenWidth);
+    final timeTextSize = _getTimeTextSize(screenWidth, screenHeight);
+    final secondaryTextSize = _getSecondaryTextSize(screenWidth, screenHeight);
     
-    // Calculate responsive spacing
-    final verticalSpacing = screenHeight * (isLandscape ? 0.02 : 0.015);
+    final verticalSpacing = smallerDimension * (isLandscape ? 0.02 : 0.015);
+    final horizontalSpacing = smallerDimension * 0.02;
 
     Widget contentStack = Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -74,7 +100,19 @@ class _AODScreenState extends State<AODScreen> {
         SizedBox(height: verticalSpacing),
         SizedBox(
           width: timeWidth,
-          child: const TimeWidget(),
+          child: TimeWidget(
+            style: TextStyle(
+              fontSize: timeTextSize,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              letterSpacing: timeTextSize * 0.02, // Dynamic letter spacing
+            ),
+            amPmStyle: TextStyle(
+              fontSize: timeTextSize * 0.3, // AM/PM text proportional to time
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
         SizedBox(height: verticalSpacing * 0.5),
         SizedBox(
@@ -83,24 +121,28 @@ class _AODScreenState extends State<AODScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(
-                width: (dateWeatherWidth - 16) / 2, // Subtract padding and divide remaining space
-                child: DateWidget(
-                  textStyle: TextStyle(
-                    fontSize: fontSize,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: DateWidget(
+                    textStyle: TextStyle(
+                      fontSize: secondaryTextSize,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-              //const SizedBox(width: 16), // Fixed spacing between widgets
-              SizedBox(
-                width: (dateWeatherWidth - 16) / 2,
-                child: MiniWeatherWidget(
-                  textStyle: TextStyle(
-                    fontSize: fontSize,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+              SizedBox(width: horizontalSpacing),
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: MiniWeatherWidget(
+                    textStyle: TextStyle(
+                      fontSize: secondaryTextSize,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -110,46 +152,40 @@ class _AODScreenState extends State<AODScreen> {
       ],
     );
 
-    if (isLandscape) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 3,
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * _getResponsivePadding(screenWidth),
-                top: screenHeight * _getResponsivePadding(screenHeight, isWidth: false),
+    Widget layoutWrapper = isLandscape
+        ? Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 3,
+                child: contentStack,
               ),
-              child: contentStack,
-            ),
-          ),
-          const Expanded(
-            flex: 2,
-            child: SizedBox(),
-          ),
-        ],
-      );
-    } else {
-      return Column(
-        children: [
-          Expanded(
-            flex: 3,
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * _getResponsivePadding(screenWidth),
-                top: screenHeight * _getResponsivePadding(screenHeight, isWidth: false),
+              const Expanded(
+                flex: 2,
+                child: SizedBox(),
               ),
-              child: contentStack,
-            ),
-          ),
-          const Expanded(
-            flex: 2,
-            child: SizedBox(),
-          ),
-        ],
-      );
-    }
+            ],
+          )
+        : Column(
+            children: [
+              Expanded(
+                flex: 3,
+                child: contentStack,
+              ),
+              const Expanded(
+                flex: 2,
+                child: SizedBox(),
+              ),
+            ],
+          );
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: screenWidth * _getResponsivePadding(screenWidth),
+        top: screenHeight * _getResponsivePadding(screenHeight, isWidth: false),
+      ),
+      child: layoutWrapper,
+    );
   }
 
   @override
