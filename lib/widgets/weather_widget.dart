@@ -50,7 +50,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     }
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Center(
       child: Container(
@@ -60,24 +60,9 @@ class _WeatherWidgetState extends State<WeatherWidget> {
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Colors.white24, width: 1),
         ),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: _buildContent(),
-            ),
-            if (widget.onClose != null)
-              Positioned(
-                right: 8,
-                top: 8,
-                child: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white70),
-                  onPressed: widget.onClose,
-                  constraints: const BoxConstraints(),
-                  padding: EdgeInsets.zero,
-                ),
-              ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: _buildContent(),
         ),
       ),
     );
@@ -119,37 +104,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  const Icon(Icons.location_on_rounded, 
-                    color: Colors.white70, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      _weatherData!['name'],
-                      style: const TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.refresh_rounded, color: Colors.white70),
-              onPressed: _initialize,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-          ],
-        ),
+        _buildHeader(),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -182,6 +137,76 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     );
   }
 
+  Widget _buildHeader() {
+    return Container(
+      height: 40,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Location name with icon
+          Expanded(
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.location_on_rounded,
+                  color: Colors.white70,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _weatherData!['name'],
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Action buttons
+          Row(
+            children: [
+              // Refresh button
+              Material(
+                color: Colors.transparent,
+                child: IconButton(
+                  icon: const Icon(Icons.refresh_rounded),
+                  onPressed: _initialize,
+                  tooltip: 'Refresh',
+                  iconSize: 20,
+                  color: Colors.white70,
+                  padding: const EdgeInsets.all(8),
+                  constraints: const BoxConstraints(),
+                  splashRadius: 20,
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Close button
+              if (widget.onClose != null)
+                Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(50),
+                  child: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: widget.onClose,
+                    tooltip: 'Close',
+                    iconSize: 20,
+                    color: Colors.white70,
+                    padding: const EdgeInsets.all(8),
+                    constraints: const BoxConstraints(),
+                    splashRadius: 20,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
   Widget _buildWeatherDetails() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
