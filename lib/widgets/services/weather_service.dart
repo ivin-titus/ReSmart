@@ -30,13 +30,10 @@ class WeatherService {
   Stream<Map<String, dynamic>> get weatherStream => _weatherController.stream;
 
   // Get weather icon based on condition and time
-  IconData getWeatherIcon(String condition, {DateTime? time, DateTime? sunrise, DateTime? sunset}) {
-    return _iconProvider.getWeatherIcon(
-      condition,
-      time: time,
-      sunrise: sunrise,
-      sunset: sunset
-    );
+  IconData getWeatherIcon(String condition,
+      {DateTime? time, DateTime? sunrise, DateTime? sunset}) {
+    return _iconProvider.getWeatherIcon(condition,
+        time: time, sunrise: sunrise, sunset: sunset);
   }
 
   Future<LocationData?> initializeLocation() async {
