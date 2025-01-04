@@ -161,7 +161,7 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> with SingleTicker
               size: textStyle.fontSize! - 5,
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 16),
           Baseline(
             baseline: textStyle.fontSize! * 0.8,
             baselineType: TextBaseline.alphabetic,

@@ -133,7 +133,7 @@ Widget _buildWeatherInfo() {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(weatherIcon, color: Colors.white, size: 26),
-          const SizedBox(width: 10),
+          const SizedBox(width: 16),
           Text(
             '${_weatherData!['main']['temp'].round()}°C',
             style: const TextStyle(
