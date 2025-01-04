@@ -1,3 +1,4 @@
+// weather_widget_mini.dart
 import 'package:flutter/material.dart';
 import './services/weather_service.dart';
 import 'weather_widget.dart';
@@ -63,7 +64,6 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -75,7 +75,7 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
               fontSize: SharedStyles.getResponsiveSize(constraints).clamp(20.0, 28.0),
               color: SharedStyles.textColor,
             ) ?? SharedStyles.getBaseTextStyle(constraints);
-
+            
             return Container(
               decoration: SharedStyles.containerDecoration,
               padding: EdgeInsets.all(SharedStyles.containerPadding),
@@ -96,8 +96,16 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          WeatherService.weatherIcons[_weatherData!['weather'][0]['description']] ??
-                              Icons.wb_sunny_rounded,
+                          _weatherService.getWeatherIcon(
+                            _weatherData!['weather'][0]['description'],
+                            time: DateTime.now(),
+                            sunrise: DateTime.fromMillisecondsSinceEpoch(
+                              _weatherData!['sys']['sunrise'] * 1000
+                            ),
+                            sunset: DateTime.fromMillisecondsSinceEpoch(
+                              _weatherData!['sys']['sunset'] * 1000
+                            ),
+                          ),
                           color: SharedStyles.textColor,
                           size: textStyle.fontSize,
                         ),
