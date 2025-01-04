@@ -115,7 +115,7 @@ class _AODScreenState extends State<AODScreen> {
               letterSpacing: timeTextSize * 0.02, // Dynamic letter spacing
             ),
             amPmStyle: TextStyle(
-              fontSize: timeTextSize * 0.3, // AM/PM text proportional to time
+              fontSize: timeTextSize * ((smallerDimension > 300 && isLandscape) ? 0.30 : 0.20), // AM/PM text proportional to time according to those conditions
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
