@@ -111,48 +111,54 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     );
   }
 
-  Widget _buildWeatherInfo() {
-    final weatherDescription = _weatherData!['weather'][0]['description'];
-    final IconData weatherIcon = WeatherService.weatherIcons[weatherDescription] ?? 
-        Icons.question_mark_rounded;
+Widget _buildWeatherInfo() {
+  final weatherDescription = _weatherData!['weather'][0]['description'];
+  final sunriseTimestamp = _weatherData!['sys']['sunrise'] * 1000;
+  final sunsetTimestamp = _weatherData!['sys']['sunset'] * 1000;
+  
+  final IconData weatherIcon = _weatherService.getWeatherIcon(
+    weatherDescription,
+    time: DateTime.now(),
+    sunrise: DateTime.fromMillisecondsSinceEpoch(sunriseTimestamp),
+    sunset: DateTime.fromMillisecondsSinceEpoch(sunsetTimestamp),
+  );
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildHeader(),
-        const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(weatherIcon, color: Colors.white, size: 40),
-            const SizedBox(width: 16),
-            Text(
-              '${_weatherData!['main']['temp'].round()}°C',
-              style: const TextStyle(
-                fontSize: 36,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      _buildHeader(),
+      const SizedBox(height: 16),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(weatherIcon, color: Colors.white, size: 40),
+          const SizedBox(width: 16),
+          Text(
+            '${_weatherData!['main']['temp'].round()}°C',
+            style: const TextStyle(
+              fontSize: 36,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          weatherDescription.toString().toUpperCase(),
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-            letterSpacing: 1.2,
           ),
-          textAlign: TextAlign.center,
+        ],
+      ),
+      const SizedBox(height: 8),
+      Text(
+        weatherDescription.toString().toUpperCase(),
+        style: const TextStyle(
+          color: Colors.white70,
+          fontSize: 14,
+          letterSpacing: 1.2,
         ),
-        const SizedBox(height: 16),
-        _buildWeatherDetails(),
-      ],
-    );
-  }
-
+        textAlign: TextAlign.center,
+      ),
+      const SizedBox(height: 16),
+      _buildWeatherDetails(),
+    ],
+  );
+}
   Widget _buildHeader() {
     return Container(
       height: 40,

@@ -1,4 +1,3 @@
-// services/weather_service.dart
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:location/location.dart';
 import '../config/env.dart';
+import './weather_icon_provider.dart';
 
 class WeatherService {
   static final WeatherService _instance = WeatherService._internal();
@@ -13,6 +13,7 @@ class WeatherService {
 
   final _weatherController = StreamController<Map<String, dynamic>>.broadcast();
   final Location _location = Location();
+  final WeatherIconProvider _iconProvider = WeatherIconProvider();
   Timer? _updateTimer;
   DateTime? _lastFetch;
   bool _isDisposed = false;
@@ -28,23 +29,15 @@ class WeatherService {
 
   Stream<Map<String, dynamic>> get weatherStream => _weatherController.stream;
 
-  static final Map<String, IconData> weatherIcons = {
-    'clear sky': Icons.wb_sunny_rounded,
-    'few clouds': Icons.cloud_outlined,
-    'scattered clouds': Icons.cloud_rounded,
-    'broken clouds': Icons.cloud,
-    'shower rain': Icons.grain_rounded,
-    'rain': Icons.water_drop_rounded,
-    'thunderstorm': Icons.flash_on_rounded,
-    'snow': Icons.ac_unit_rounded,
-    'mist': Icons.cloud_rounded,
-    'fog': Icons.cloud_rounded,
-    'dust': Icons.blur_on,
-    'smoke': Icons.cloud,
-    'clear': Icons.wb_sunny_rounded,
-    'clouds': Icons.cloud_rounded,
-    'drizzle': Icons.grain_rounded,
-  };
+  // Get weather icon based on condition and time
+  IconData getWeatherIcon(String condition, {DateTime? time, DateTime? sunrise, DateTime? sunset}) {
+    return _iconProvider.getWeatherIcon(
+      condition,
+      time: time,
+      sunrise: sunrise,
+      sunset: sunset
+    );
+  }
 
   Future<LocationData?> initializeLocation() async {
     try {
