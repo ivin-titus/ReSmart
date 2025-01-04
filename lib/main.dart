@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'widgets/aod_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'navbar.dart';
 
 // Custom error widget for lower memory usage
 class CustomErrorWidget extends StatelessWidget {
@@ -81,15 +81,11 @@ class MyApp extends StatelessWidget {
         ),
       ),
       builder: (context, child) {
-        // Add responsive layout support
         return OrientationBuilder(
           builder: (context, orientation) {
-            // Apply orientation-specific layout adjustments
             return LayoutBuilder(
               builder: (context, constraints) {
-                // Handle different screen sizes and orientations
                 return MediaQuery(
-                  // Update media query data to account for system UI visibility
                   data: MediaQuery.of(context).copyWith(
                     padding: EdgeInsets.zero,
                     viewPadding: EdgeInsets.zero,
@@ -108,7 +104,7 @@ class MyApp extends StatelessWidget {
           },
         );
       },
-      home: const AODScreen(),
+      home: const NavBar(),
     );
   }
 }
