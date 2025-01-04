@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'shared_styles.dart';
 
 class DateWidget extends StatefulWidget {
-  const DateWidget({Key? key}) : super(key: key);
+  final String? dateFormat;
+  final TextStyle? textStyle;
+ 
+  const DateWidget({
+    Key? key,
+    this.dateFormat,
+    this.textStyle,
+  }) : super(key: key);
 
   @override
   State<DateWidget> createState() => _DateWidgetState();
@@ -12,7 +20,8 @@ class DateWidget extends StatefulWidget {
 class _DateWidgetState extends State<DateWidget> with AutomaticKeepAliveClientMixin {
   late String _date;
   Timer? _timer;
-  final DateFormat _dateFormat = DateFormat.yMMMMd();
+  late DateFormat _dateFormat;
+  bool _isProcessingTap = false;
 
   @override
   bool get wantKeepAlive => false;
@@ -20,8 +29,9 @@ class _DateWidgetState extends State<DateWidget> with AutomaticKeepAliveClientMi
   @override
   void initState() {
     super.initState();
-    _updateDate(); // Initial update
-    _startDailyTimer(); // Start timer for daily updates
+    _dateFormat = DateFormat(widget.dateFormat ?? 'E, d MMM');
+    _updateDate();
+    _startDailyTimer();
   }
 
   void _updateDate() {
@@ -33,59 +43,102 @@ class _DateWidgetState extends State<DateWidget> with AutomaticKeepAliveClientMi
   }
 
   void _startDailyTimer() {
-    // Cancel any existing timer
     _timer?.cancel();
-    
-    // Calculate time until next midnight
+   
     final now = DateTime.now();
     final nextMidnight = DateTime(now.year, now.month, now.day + 1);
     final timeUntilMidnight = nextMidnight.difference(now);
-
-    // Set timer to update at midnight
+    
     _timer = Timer(timeUntilMidnight, () {
       _updateDate();
-      // Restart timer for next day
       _startDailyTimer();
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
+  Future<void> _showDateDialog() async {
+    if (_isProcessingTap) return;
     
-    return RepaintBoundary(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // Responsive font size calculation
-          final fontSize = constraints.maxWidth * 0.06;
-          
-          return Text(
-            _date,
-            style: TextStyle(
-              fontSize: fontSize.clamp(16.0, 24.0),
-              // Use system default font
-              fontFamily: null,
+    setState(() {
+      _isProcessingTap = true;
+    });
+
+    try {
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Date Information'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Current Date: ${DateFormat('EEEE, MMMM d, y').format(DateTime.now())}'),
+                const SizedBox(height: 8),
+                Text('Day of Year: ${DateTime.now().difference(DateTime(DateTime.now().year, 1, 1)).inDays + 1}'),
+                const SizedBox(height: 8),
+                Text('Week of Year: ${(DateTime.now().difference(DateTime(DateTime.now().year, 1, 1)).inDays / 7).ceil()}'),
+              ],
             ),
-            textScaler: const TextScaler.linear(1.0),
-            // Add text overflow handling
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
           );
         },
-      ),
-    );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _updateDate();
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isProcessingTap = false;
+        });
+      }
+    }
   }
 
   @override
   void dispose() {
     _timer?.cancel();
-    _timer = null;
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Material(
+      color: Colors.transparent,
+      child: AbsorbPointer(
+        absorbing: _isProcessingTap,
+        child: InkWell(
+          onTap: _showDateDialog,
+          borderRadius: BorderRadius.circular(100),
+          splashColor: const Color.fromARGB(255, 210, 210, 210),
+          highlightColor: const Color.fromARGB(255, 219, 219, 219),
+          child: RepaintBoundary(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final textStyle = widget.textStyle?.copyWith(
+                  fontSize: SharedStyles.getResponsiveSize(constraints).clamp(20.0, 28.0),
+                  color: SharedStyles.textColor,
+                ) ?? SharedStyles.getBaseTextStyle(constraints);
+                
+                return Container(
+                  decoration: SharedStyles.containerDecoration,
+                  padding: EdgeInsets.all(SharedStyles.containerPadding),
+                  child: Text(
+                    _date,
+                    style: textStyle,
+                    textScaler: const TextScaler.linear(1.0),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
