@@ -92,33 +92,38 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
                       size: textStyle.fontSize,
                     )
                   else if (_weatherData != null)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _weatherService.getWeatherIcon(
-                            _weatherData!['weather'][0]['description'],
-                            time: DateTime.now(),
-                            sunrise: DateTime.fromMillisecondsSinceEpoch(
-                              _weatherData!['sys']['sunrise'] * 1000
-                            ),
-                            sunset: DateTime.fromMillisecondsSinceEpoch(
-                              _weatherData!['sys']['sunset'] * 1000
-                            ),
+                    Baseline(
+                      baseline: textStyle.fontSize! * 0.8,
+                      baselineType: TextBaseline.alphabetic,
+                      child: Icon(
+                        _weatherService.getWeatherIcon(
+                          _weatherData!['weather'][0]['description'],
+                          time: DateTime.now(),
+                          sunrise: DateTime.fromMillisecondsSinceEpoch(
+                            _weatherData!['sys']['sunrise'] * 1000
                           ),
-                          color: SharedStyles.textColor,
-                          size: textStyle.fontSize,
+                          sunset: DateTime.fromMillisecondsSinceEpoch(
+                            _weatherData!['sys']['sunset'] * 1000
+                          ),
                         ),
-                        SizedBox(width: SharedStyles.iconSpacing),
-                        Text(
-                          '${_weatherData!['main']['temp'].round()}°C',
-                          style: textStyle,
-                          textScaler: const TextScaler.linear(1.0),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ],
+                        color: SharedStyles.textColor,
+                        size: textStyle.fontSize,
+                      ),
                     ),
+                  if (_weatherData != null) ...[
+                    const SizedBox(width: 4), // Reduced spacing
+                    Baseline(
+                      baseline: textStyle.fontSize! * 0.8,
+                      baselineType: TextBaseline.alphabetic,
+                      child: Text(
+                        '${_weatherData!['main']['temp'].round()}°C',
+                        style: textStyle,
+                        textScaler: const TextScaler.linear(1.0),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             );
