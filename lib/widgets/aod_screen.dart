@@ -1,8 +1,10 @@
+// aod_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:resmart/widgets/weather_widget_mini.dart';
 import 'time_widget.dart';
 import 'date_widget.dart';
+import 'shared_styles.dart';
 
 class AODScreen extends StatefulWidget {
   const AODScreen({Key? key}) : super(key: key);
@@ -19,11 +21,12 @@ class _AODScreenState extends State<AODScreen> {
   }
 
   double _getTimeTextSize(double screenWidth, double screenHeight) {
-    final smallerDimension = screenWidth < screenHeight ? screenWidth : screenHeight;
-    
+    final smallerDimension =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
+
     // More granular time text sizing
     if (smallerDimension < 300) {
-      return 48;  // For very small devices
+      return 48; // For very small devices
     } else if (smallerDimension < 600) {
       return 72;
     } else if (smallerDimension < 1200) {
@@ -31,7 +34,7 @@ class _AODScreenState extends State<AODScreen> {
     } else if (smallerDimension < 2000) {
       return 120;
     } else {
-      return smallerDimension * 0.06;  // Dynamic scaling for 4K
+      return smallerDimension * 0.06; // Dynamic scaling for 4K
     }
   }
 
@@ -64,8 +67,9 @@ class _AODScreenState extends State<AODScreen> {
   }
 
   double _getSecondaryTextSize(double screenWidth, double screenHeight) {
-    final smallerDimension = screenWidth < screenHeight ? screenWidth : screenHeight;
-    
+    final smallerDimension =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
+
     if (smallerDimension < 300) {
       return 14;
     } else if (smallerDimension < 600) {
@@ -83,13 +87,16 @@ class _AODScreenState extends State<AODScreen> {
     final screenWidth = constraints.maxWidth;
     final screenHeight = constraints.maxHeight;
     final isLandscape = screenWidth > screenHeight;
-    final smallerDimension = screenWidth < screenHeight ? screenWidth : screenHeight;
+    final smallerDimension =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
 
-    final timeWidth = screenWidth * _getResponsiveWidth(screenWidth, isLandscape);
-    final dateWeatherWidth = screenWidth * (_getResponsiveWidth(screenWidth, isLandscape) * 0.9);
+    final timeWidth =
+        screenWidth * _getResponsiveWidth(screenWidth, isLandscape);
+    final dateWeatherWidth =
+        screenWidth * (_getResponsiveWidth(screenWidth, isLandscape) * 0.9);
     final timeTextSize = _getTimeTextSize(screenWidth, screenHeight);
     final secondaryTextSize = _getSecondaryTextSize(screenWidth, screenHeight);
-    
+
     final verticalSpacing = smallerDimension * (isLandscape ? 0.02 : 0.015);
     final horizontalSpacing = smallerDimension * 0.02;
 
@@ -114,41 +121,36 @@ class _AODScreenState extends State<AODScreen> {
             ),
           ),
         ),
-        SizedBox(height: verticalSpacing * 0.5),
+       // SizedBox(height: verticalSpacing * 0.6),
         SizedBox(
           width: dateWeatherWidth,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: DateWidget(
-                    textStyle: TextStyle(
-                      fontSize: secondaryTextSize,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+              Container(
+                decoration: SharedStyles.containerDecoration,
+                // padding: EdgeInsets.all(SharedStyles.containerPadding),
+                child: DateWidget(
+                  textStyle: TextStyle(
+                    fontSize: secondaryTextSize,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    height: 0.1, // changed
                   ),
                 ),
               ),
-              SizedBox(width: horizontalSpacing),
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: MiniWeatherWidget(
-                    textStyle: TextStyle(
-                      fontSize: secondaryTextSize,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+              // SizedBox(width: horizontalSpacing),
+              MiniWeatherWidget(
+                textStyle: TextStyle(
+                  fontSize: secondaryTextSize,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  height: 1.0,
                 ),
               ),
             ],
           ),
-        ),
+        )
       ],
     );
 

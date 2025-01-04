@@ -1,8 +1,8 @@
-// weather_widget_mini.dart
 import 'package:flutter/material.dart';
 import './services/weather_service.dart';
 import 'weather_widget.dart';
 import 'shared_styles.dart';
+import 'dart:async';
 
 class MiniWeatherWidget extends StatefulWidget {
   final TextStyle? textStyle;
@@ -21,6 +21,7 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
   Map<String, dynamic>? _weatherData;
   String? _error;
   bool _loading = false;
+  StreamSubscription? _weatherSubscription;
 
   @override
   void initState() {
@@ -30,17 +31,29 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
   }
 
   void _subscribeToWeatherUpdates() {
-    _weatherService.weatherStream.listen(
-      (data) => setState(() => _weatherData = data),
-      onError: (error) => setState(() => _error = error.toString()),
+    _weatherSubscription = _weatherService.weatherStream.listen(
+      (data) {
+        if (mounted) {
+          setState(() => _weatherData = data);
+        }
+      },
+      onError: (error) {
+        if (mounted) {
+          setState(() => _error = error.toString());
+        }
+      },
     );
   }
 
   Future<void> _initialize() async {
+    if (!mounted) return;
+    
     setState(() => _loading = true);
 
     try {
       final locationData = await _weatherService.initializeLocation();
+      if (!mounted) return;
+
       if (locationData != null) {
         await _weatherService.fetchWeatherByCoordinates(
           latitude: locationData.latitude!,
@@ -50,13 +63,18 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
         _weatherService.showFallbackCityInput(context);
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = 'Weather update failed');
     } finally {
-      setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
   void _showWeatherDialog() {
+    if (!mounted) return;
+    
     showDialog(
       context: context,
       builder: (context) => WeatherWidget(
@@ -64,6 +82,13 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _weatherSubscription?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -107,11 +132,11 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> {
                           ),
                         ),
                         color: SharedStyles.textColor,
-                        size: textStyle.fontSize,
+                        size: textStyle.fontSize! - 5,
                       ),
                     ),
                   if (_weatherData != null) ...[
-                    const SizedBox(width: 4), // Reduced spacing
+                    const SizedBox(width: 10),
                     Baseline(
                       baseline: textStyle.fontSize! * 0.8,
                       baselineType: TextBaseline.alphabetic,

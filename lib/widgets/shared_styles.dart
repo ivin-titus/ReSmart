@@ -37,4 +37,3 @@ class SharedStyles {
         strokeWidth: 3.0,
       );
 }
-
