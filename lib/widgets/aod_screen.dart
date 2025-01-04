@@ -1,10 +1,11 @@
+// aod_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:resmart/widgets/weather_widget_mini.dart';
 import 'time_widget.dart';
 import 'date_widget.dart';
-//import 'weather_widget.dart';
-import 'weather_widget_mini.dart';
+import 'shared_styles.dart';
 
-// Convert to StatefulWidget
 class AODScreen extends StatefulWidget {
   const AODScreen({Key? key}) : super(key: key);
 
@@ -12,58 +13,191 @@ class AODScreen extends StatefulWidget {
   State<AODScreen> createState() => _AODScreenState();
 }
 
-// Separate state class with AutomaticKeepAliveClientMixin
-class _AODScreenState extends State<AODScreen>
-    with AutomaticKeepAliveClientMixin {
+class _AODScreenState extends State<AODScreen> {
   @override
-  bool get wantKeepAlive => false; // Don't keep in memory when not visible
+  void initState() {
+    super.initState();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  }
+
+  double _getTimeTextSize(double screenWidth, double screenHeight) {
+    final smallerDimension =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
+
+    // More granular time text sizing
+    if (smallerDimension < 300) {
+      return 48; // For very small devices
+    } else if (smallerDimension < 600) {
+      return 90; //73
+    } else if (smallerDimension < 1200) {
+      return 96;
+    } else if (smallerDimension < 2000) {
+      return 120;
+    } else {
+      return smallerDimension * 0.06; // Dynamic scaling for 4K
+    }
+  }
+
+  double _getResponsivePadding(double dimension, {bool isWidth = true}) {
+    if (dimension < 300) {
+      return isWidth ? 0.08 : 0.05;
+    } else if (dimension < 600) {
+      return isWidth ? 0.12 : 0.07;
+    } else if (dimension < 1200) {
+      return isWidth ? 0.15 : 0.09;
+    } else if (dimension < 2000) {
+      return isWidth ? 0.18 : 0.11;
+    } else {
+      return isWidth ? 0.20 : 0.13;
+    }
+  }
+
+  double _getResponsiveWidth(double screenWidth, bool isLandscape) {
+    if (screenWidth < 300) {
+      return isLandscape ? 0.50 : 0.90;
+    } else if (screenWidth < 600) {
+      return isLandscape ? 0.45 : 0.85;
+    } else if (screenWidth < 1200) {
+      return isLandscape ? 0.42 : 0.80;
+    } else if (screenWidth < 2000) {
+      return isLandscape ? 0.40 : 0.75;
+    } else {
+      return isLandscape ? 0.35 : 0.65;
+    }
+  }
+
+  double _getSecondaryTextSize(double screenWidth, double screenHeight) {
+    final smallerDimension =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
+
+    if (smallerDimension < 300) {
+      return 14;
+    } else if (smallerDimension < 600) {
+      return 18;
+    } else if (smallerDimension < 1200) {
+      return 22;
+    } else if (smallerDimension < 2000) {
+      return 26;
+    } else {
+      return smallerDimension * 0.015;
+    }
+  }
+
+  Widget _buildMainContent(BuildContext context, BoxConstraints constraints) {
+    final screenWidth = constraints.maxWidth;
+    final screenHeight = constraints.maxHeight;
+    final isLandscape = screenWidth > screenHeight;
+    final smallerDimension =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
+
+    final timeWidth =
+        screenWidth * _getResponsiveWidth(screenWidth, isLandscape);
+    final dateWeatherWidth =
+        screenWidth * (_getResponsiveWidth(screenWidth, isLandscape) * 0.9);
+    final timeTextSize = _getTimeTextSize(screenWidth, screenHeight);
+    final secondaryTextSize = _getSecondaryTextSize(screenWidth, screenHeight);
+
+    final verticalSpacing = smallerDimension * (isLandscape ? 0.02 : 0.015);
+    //final horizontalSpacing = smallerDimension * 0.02;
+
+    Widget contentStack = Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: verticalSpacing),
+        SizedBox(
+          width: timeWidth,
+          child: TimeWidget(
+            style: TextStyle(
+              fontSize: timeTextSize,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              letterSpacing: timeTextSize * 0.02, // Dynamic letter spacing
+            ),
+            amPmStyle: TextStyle(
+              fontSize: timeTextSize * ((smallerDimension > 300 && isLandscape) ? 0.30 : 0.20), // AM/PM text proportional to time according to those conditions
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        // SizedBox(height: verticalSpacing * 0.6),
+        SizedBox(
+          width: dateWeatherWidth,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                decoration: SharedStyles.containerDecoration,
+                // padding: EdgeInsets.all(SharedStyles.containerPadding),
+                child: DateWidget(
+                  textStyle: TextStyle(
+                    fontSize: secondaryTextSize,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    height: 0.1, // changed
+                  ),
+                ),
+              ),
+              // SizedBox(width: horizontalSpacing),
+              MiniWeatherWidget(
+                textStyle: TextStyle(
+                  fontSize: secondaryTextSize,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  height: 1.0,
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+
+    Widget layoutWrapper = isLandscape
+        ? Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 3,
+                child: contentStack,
+              ),
+              const Expanded(
+                flex: 2,
+                child: SizedBox(),
+              ),
+            ],
+          )
+        : Column(
+            children: [
+              Expanded(
+                flex: 3,
+                child: contentStack,
+              ),
+              const Expanded(
+                flex: 2,
+                child: SizedBox(),
+              ),
+            ],
+          );
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: screenWidth * _getResponsivePadding(screenWidth),
+        top: screenHeight * _getResponsivePadding(screenHeight, isWidth: false),
+      ),
+      child: layoutWrapper,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required by AutomaticKeepAliveClientMixin
-
-    // Get screen size once instead of multiple calculations
-    final Size screenSize = MediaQuery.of(context).size;
-
     return RepaintBoundary(
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
-          child: SizedBox(
-            height: screenSize.height,
-            width: screenSize.width,
-            child: Center(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RepaintBoundary(
-                        child: SizedBox(
-                          width: constraints.maxWidth * 0.8,
-                          child: const TimeWidget(),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      RepaintBoundary(
-                        child: SizedBox(
-                          width: constraints.maxWidth * 0.8,
-                          child: const DateWidget(),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      RepaintBoundary(
-                        child: SizedBox(
-                          width: constraints.maxWidth * 0.8,
-                          child: const MiniWeatherWidget(),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
+        body: LayoutBuilder(
+          builder: (context, constraints) => SafeArea(
+            child: _buildMainContent(context, constraints),
           ),
         ),
       ),
@@ -72,7 +206,10 @@ class _AODScreenState extends State<AODScreen>
 
   @override
   void dispose() {
-    // Clean up any resources
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
     super.dispose();
   }
 }

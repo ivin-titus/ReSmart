@@ -1,95 +1,53 @@
+// time_widget.txt
+
 import 'package:flutter/material.dart';
-import 'dart:async';
 
-class TimeWidget extends StatefulWidget {
-  const TimeWidget({Key? key}) : super(key: key);
+class TimeWidget extends StatelessWidget {
+  final TextStyle? style;
+  final TextStyle? amPmStyle;
 
-  @override
-  _TimeWidgetState createState() => _TimeWidgetState();
-}
-
-class _TimeWidgetState extends State<TimeWidget> with AutomaticKeepAliveClientMixin {
-  String _time = '';
-  Timer? _timer;
-
-  @override
-  bool get wantKeepAlive => false;
-
-  @override
-  void initState() {
-    super.initState();
-    _updateTimeNow(); // Update immediately
-    _startTimer(); // Start periodic updates
-  }
-
-  // Separate method for immediate time update
-  void _updateTimeNow() {
-    if (mounted) {
-      setState(() {
-        _time = _formatTime(TimeOfDay.now());
-      });
-    }
-  }
-
-  // Start timer with error handling
-  void _startTimer() {
-    _timer?.cancel(); // Cancel any existing timer
-    _timer = Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) {
-        if (!mounted) {
-          timer.cancel();
-          return;
-        }
-        _updateTimeNow();
-      },
-    );
-  }
-
-  // Format time without context dependency
-  String _formatTime(TimeOfDay time) {
-    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
-    final minute = time.minute.toString().padLeft(2, '0');
-    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
-    return '$hour:$minute $period';
-  }
+  const TimeWidget({
+    Key? key,
+    this.style,
+    this.amPmStyle,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    
-    return RepaintBoundary(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // Adjust font size based on available width
-          final fontSize = constraints.maxWidth * 0.15;
-          
-          return Text(
-            _time,
-            style: TextStyle(
-              fontSize: fontSize.clamp(20.0, 60.0),
-              fontWeight: FontWeight.bold,
-              // Use system default font for better performance
-              fontFamily: null,
+    return StreamBuilder(
+      stream: Stream.periodic(const Duration(seconds: 1)),
+      builder: (context, snapshot) {
+        final now = DateTime.now();
+        final hour = now.hour;
+        final minute = now.minute;
+        
+        // Format hour for 12-hour clock
+        final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+        final amPm = hour >= 12 ? 'PM' : 'AM';
+        
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Hours and minutes
+            Text(
+              '${displayHour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}',
+              style: style,
             ),
-            // Add text scaling factor limit for consistency
-            textScaler: const TextScaler.linear(1.0),
-          );
-        },
-      ),
+            // AM/PM indicator
+            Padding(
+              padding: EdgeInsets.only(
+                left: (style?.fontSize ?? 24) * 0.1,
+                top: (style?.fontSize ?? 24) * 0.1,
+              ),
+              child: Text(
+                amPm,
+                style: amPmStyle,
+              ),
+            ),
+          ],
+        );
+      },
     );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _updateTimeNow(); // Update time when dependencies change
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _timer = null;
-    super.dispose();
   }
 }
