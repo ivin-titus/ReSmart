@@ -20,7 +20,7 @@ class _NavBarState extends State<NavBar> {
     const DevicesTab(),
     const AITab(),
     const AODScreen(),
-    const SettingsTab(),
+    const SettingsScreen(),
   ];
 
   void _onItemTapped(int index) {

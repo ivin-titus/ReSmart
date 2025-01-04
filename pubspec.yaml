@@ -39,6 +39,8 @@ dependencies:
   shared_preferences: ^2.2.0
   weather_icons: ^3.0.0
   wakelock_plus: ^1.2.10
+  google_fonts: ^6.1.0
+
 
 
   # The following adds the Cupertino Icons font to your application.

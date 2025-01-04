@@ -1,4 +1,4 @@
-// time_widget.txt
+// time_widget.dart
 
 import 'package:flutter/material.dart';
 
