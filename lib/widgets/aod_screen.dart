@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:resmart/widgets/weather_widget_mini.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'time_widget.dart';
 import 'date_widget.dart';
 import 'shared_styles.dart';
@@ -17,6 +18,9 @@ class _AODScreenState extends State<AODScreen> {
   @override
   void initState() {
     super.initState();
+
+    WakelockPlus.enable();
+    
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   }
 
@@ -206,6 +210,7 @@ class _AODScreenState extends State<AODScreen> {
 
   @override
   void dispose() {
+    WakelockPlus.disable();
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
