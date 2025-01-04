@@ -98,7 +98,7 @@ class _AODScreenState extends State<AODScreen> {
     final secondaryTextSize = _getSecondaryTextSize(screenWidth, screenHeight);
 
     final verticalSpacing = smallerDimension * (isLandscape ? 0.02 : 0.015);
-    final horizontalSpacing = smallerDimension * 0.02;
+    //final horizontalSpacing = smallerDimension * 0.02;
 
     Widget contentStack = Column(
       mainAxisAlignment: MainAxisAlignment.start,
