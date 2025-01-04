@@ -28,7 +28,7 @@ class _AODScreenState extends State<AODScreen> {
     if (smallerDimension < 300) {
       return 48; // For very small devices
     } else if (smallerDimension < 600) {
-      return 72;
+      return 90; //73
     } else if (smallerDimension < 1200) {
       return 96;
     } else if (smallerDimension < 2000) {
@@ -121,11 +121,11 @@ class _AODScreenState extends State<AODScreen> {
             ),
           ),
         ),
-       // SizedBox(height: verticalSpacing * 0.6),
+        // SizedBox(height: verticalSpacing * 0.6),
         SizedBox(
           width: dateWeatherWidth,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
                 decoration: SharedStyles.containerDecoration,
