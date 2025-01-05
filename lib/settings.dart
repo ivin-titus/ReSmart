@@ -1,3 +1,4 @@
+// settings
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Added import
 import 'widgets/shared_styles.dart';
@@ -99,6 +100,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _timeFormat =
           _settingsService.getSetting(SettingsService.timeFormatKey, '12') ??
               '12';
+      ref.read(timeFormatProvider.notifier).state = _timeFormat;
       _dateFormat = _settingsService.getSetting(
               SettingsService.dateFormatKey, 'mon, 1 jan') ??
           'mon, 1 jan';
@@ -120,6 +122,48 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _saveSetting(String key, dynamic value) async {
     await _settingsService.setSetting(key, value);
+  }
+
+  Future<void> _resetSettings() async {
+    bool confirm = await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Reset Settings'),
+            content: const Text(
+                'This will reset all settings to their default values. Continue?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Reset'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (confirm) {
+      await _settingsService.resetAllSettings();
+      _loadSettings();
+      ref.read(themeProvider.notifier).updateTheme('system');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Settings reset successfully')),
+        );
+      }
+    }
+  }
+
+  void _updateTimeFormat(String? newValue) async {
+    if (newValue != null) {
+      await _saveSetting(SettingsService.timeFormatKey, newValue);
+      setState(() => _timeFormat = newValue);
+      ref.read(timeFormatProvider.notifier).state = newValue;
+    }
   }
 
   Widget _buildSectionHeader(String title) {
@@ -211,9 +255,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             },
           ),
         ),
-        if (_isAODEnabled) ...[
-          _buildAODSettings(),
-        ],
+        _buildAODSettings(),
       ],
     );
   }
@@ -351,12 +393,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           icon: Icons.access_time,
           trailing: DropdownButton<String>(
             value: _timeFormat,
-            onChanged: (String? newValue) async {
-              if (newValue != null) {
-                await _saveSetting(SettingsService.timeFormatKey, newValue);
-                setState(() => _timeFormat = newValue);
-              }
-            },
+            onChanged: _updateTimeFormat,
             items: ['12', '24'].map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -485,6 +522,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
+  Widget _buildTroubleshootSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('Troubleshoot'),
+        ListTile(
+          leading: const Icon(Icons.restart_alt, color: Colors.blue),
+          title: const Text('Reset Settings'),
+          subtitle: const Text('Restore all settings to default values'),
+          onTap: _resetSettings,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -522,6 +574,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 _buildGeneralSettings(),
                 _buildDisplaySettings(),
+                _buildTroubleshootSection(),
+                //const SizedBox(height: 32),
                 _buildAboutSection(),
                 const SizedBox(height: 32), // Bottom padding
               ],

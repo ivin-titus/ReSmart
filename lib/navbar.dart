@@ -56,7 +56,7 @@ class _NavBarState extends State<NavBar> {
                     }
                     return const TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                     );
                   },
                 ),
