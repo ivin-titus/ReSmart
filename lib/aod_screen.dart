@@ -1,4 +1,3 @@
-// AOD SCreen
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
@@ -8,15 +7,19 @@ import '../widgets/time_widget.dart';
 import '../widgets/date_widget.dart';
 import '../widgets/shared_styles.dart';
 import 'navbar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'widgets/services/settings_service.dart';
 
-class AODScreen extends StatefulWidget {
+
+class AODScreen extends ConsumerStatefulWidget {
   const AODScreen({Key? key}) : super(key: key);
 
   @override
-  State<AODScreen> createState() => _AODScreenState();
+  ConsumerState<AODScreen> createState() => _AODScreenState();
 }
 
-class _AODScreenState extends State<AODScreen> with SingleTickerProviderStateMixin {
+class _AODScreenState extends ConsumerState<AODScreen>
+    with SingleTickerProviderStateMixin {
   bool _showCloseButton = false;
   bool _isHovered = false;
   DateTime? _lastTapTime;
@@ -26,9 +29,21 @@ class _AODScreenState extends State<AODScreen> with SingleTickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    WakelockPlus.enable();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    
+    _checkAODStatus();
+    _initializeAnimations();
+  }
+
+void _checkAODStatus() async {
+  final isAODEnabled = ref.read(aodEnabledProvider);
+  if (isAODEnabled) {
+    await WakelockPlus.enable();
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  } else {
+    _exitAODScreen();
+  }
+}
+
+  void _initializeAnimations() {
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: this,
@@ -51,8 +66,7 @@ class _AODScreenState extends State<AODScreen> with SingleTickerProviderStateMix
         _showCloseButton = true;
       });
       _animationController.forward(from: 0.0);
-      
-      // Auto-hide close button after 3 seconds
+
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) {
           setState(() {
@@ -83,33 +97,28 @@ class _AODScreenState extends State<AODScreen> with SingleTickerProviderStateMix
                     onTapUp: (_) => setState(() => _isHovered = false),
                     onTapCancel: () => setState(() => _isHovered = false),
                     onTap: () {
-                      _animationController.reverse().then((_) {
-                        Navigator.of(context).pushReplacement(
-                          PageRouteBuilder(
-                            pageBuilder: (context, animation, secondaryAnimation) => const NavBar(),
-                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                              return FadeTransition(opacity: animation, child: child);
-                            },
-                            transitionDuration: const Duration(milliseconds: 200),
-                          ),
-                        );
-                      });
+                      _animationController
+                          .reverse()
+                          .then((_) => _exitAODScreen());
                     },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      transform: Matrix4.identity()..scale(_isHovered ? 1.1 : 1.0),
+                      transform: Matrix4.identity()
+                        ..scale(_isHovered ? 1.1 : 1.0),
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(200),
                           border: Border.all(
-                            color: Colors.white.withOpacity(_isHovered ? 0.3 : 0.2),
+                            color: Colors.white
+                                .withOpacity(_isHovered ? 0.3 : 0.2),
                             width: 1,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color.fromARGB(255, 27, 27, 27).withOpacity(_isHovered ? 0.4 : 0.3),
+                              color: const Color.fromARGB(255, 27, 27, 27)
+                                  .withOpacity(_isHovered ? 0.4 : 0.3),
                               blurRadius: _isHovered ? 16 : 12,
                               spreadRadius: _isHovered ? 3 : 2,
                             ),
@@ -118,10 +127,12 @@ class _AODScreenState extends State<AODScreen> with SingleTickerProviderStateMix
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                            filter:
+                                ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                             child: Icon(
                               Icons.close_rounded,
-                              color: Colors.white.withOpacity(_isHovered ? 0.9 : 0.8),
+                              color: Colors.white
+                                  .withOpacity(_isHovered ? 0.9 : 0.8),
                               size: _isHovered ? 30 : 28,
                             ),
                           ),
@@ -136,9 +147,30 @@ class _AODScreenState extends State<AODScreen> with SingleTickerProviderStateMix
     );
   }
 
-  // Your existing helper methods remain unchanged
+  void _exitAODScreen() {
+    _disableAODFeatures();
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => const NavBar(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 200),
+      ),
+    );
+  }
+
+  Future<void> _disableAODFeatures() async {
+    await WakelockPlus.disable();
+    await SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
+  }
+
   double _getTimeTextSize(double screenWidth, double screenHeight) {
-    final smallerDimension = screenWidth < screenHeight ? screenWidth : screenHeight;
+    final smallerDimension =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
     if (smallerDimension < 300) return 48;
     if (smallerDimension < 600) return 90;
     if (smallerDimension < 1200) return 96;
@@ -163,7 +195,8 @@ class _AODScreenState extends State<AODScreen> with SingleTickerProviderStateMix
   }
 
   double _getSecondaryTextSize(double screenWidth, double screenHeight) {
-    final smallerDimension = screenWidth < screenHeight ? screenWidth : screenHeight;
+    final smallerDimension =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
     if (smallerDimension < 300) return 14;
     if (smallerDimension < 600) return 18;
     if (smallerDimension < 1200) return 22;
@@ -175,10 +208,13 @@ class _AODScreenState extends State<AODScreen> with SingleTickerProviderStateMix
     final screenWidth = constraints.maxWidth;
     final screenHeight = constraints.maxHeight;
     final isLandscape = screenWidth > screenHeight;
-    final smallerDimension = screenWidth < screenHeight ? screenWidth : screenHeight;
+    final smallerDimension =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
 
-    final timeWidth = screenWidth * _getResponsiveWidth(screenWidth, isLandscape);
-    final dateWeatherWidth = screenWidth * (_getResponsiveWidth(screenWidth, isLandscape) * 0.9);
+    final timeWidth =
+        screenWidth * _getResponsiveWidth(screenWidth, isLandscape);
+    final dateWeatherWidth =
+        screenWidth * (_getResponsiveWidth(screenWidth, isLandscape) * 0.9);
     final timeTextSize = _getTimeTextSize(screenWidth, screenHeight);
     final secondaryTextSize = _getSecondaryTextSize(screenWidth, screenHeight);
 
@@ -199,7 +235,8 @@ class _AODScreenState extends State<AODScreen> with SingleTickerProviderStateMix
               letterSpacing: timeTextSize * 0.02,
             ),
             amPmStyle: TextStyle(
-              fontSize: timeTextSize * ((smallerDimension > 300 && isLandscape) ? 0.30 : 0.20),
+              fontSize: timeTextSize *
+                  ((smallerDimension > 300 && isLandscape) ? 0.30 : 0.20),
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -296,11 +333,7 @@ class _AODScreenState extends State<AODScreen> with SingleTickerProviderStateMix
   @override
   void dispose() {
     _animationController.dispose();
-    WakelockPlus.disable();
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: SystemUiOverlay.values,
-    );
+    _disableAODFeatures();
     super.dispose();
   }
 }

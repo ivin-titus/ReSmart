@@ -1,5 +1,13 @@
-// settings_service.dart
+// settings_service
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final settingsProvider = Provider((ref) => SettingsService());
+
+final aodEnabledProvider = StateProvider<bool>((ref) {
+  final settings = ref.watch(settingsProvider);
+  return settings.getSetting(SettingsService.aodEnabledKey, true) ?? true;
+});
 
 class SettingsService {
   static const String themeKey = 'theme';
@@ -55,4 +63,17 @@ class SettingsService {
   bool isWeatherLocationAutomatic() {
     return _prefs.getBool('weather_location_automatic') ?? true;
   }
+
+
+  Future<void> resetAllSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    await initialize(); // Reinitialize with default values
+  }
 }
+
+
+  final timeFormatProvider = StateProvider<String>((ref) {
+    final settings = ref.watch(settingsProvider);
+    return settings.getSetting(SettingsService.timeFormatKey, '12') ?? '12';
+  });
