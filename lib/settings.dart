@@ -1,7 +1,7 @@
-// settings
-
 import 'package:flutter/material.dart';
-import '../widgets/shared_styles.dart';
+import 'widgets/shared_styles.dart';
+import 'widgets/services/settings_service.dart';
+import 'widgets/services/weather_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -11,6 +11,12 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  // Services
+  final SettingsService _settingsService = SettingsService();
+  
+  // Controllers
+  final TextEditingController _customFontSizeController = TextEditingController();
+
   // Theme settings
   String _selectedTheme = 'system';
   String _selectedLanguage = 'english';
@@ -24,12 +30,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _timeFormat = '12';
   String _dateFormat = 'mon, 1 jan';
   String _temperatureUnit = 'celsius';
-  String _weatherLocation = '';
+  String _weatherLocation = 'Not set';
   String _weatherUpdateFrequency = '30 minutes';
   
-  // Custom font size
-  TextEditingController _customFontSizeController = TextEditingController();
-
+  // Available options
   final List<String> _availableStyles = ['Default', 'Custom'];
   final List<String> _availableFontFamilies = [
     'Roboto',
@@ -56,7 +60,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize settings from shared preferences here
+    _initializeSettings();
+  }
+
+  Future<void> _initializeSettings() async {
+    await _settingsService.initialize();
+    _loadSettings();
+  }
+
+  void _loadSettings() {
+    setState(() {
+      _selectedTheme = _settingsService.getSetting(SettingsService.themeKey, 'system') ?? 'system';
+      _selectedLanguage = _settingsService.getSetting(SettingsService.languageKey, 'english') ?? 'english';
+      _isAODEnabled = _settingsService.getSetting(SettingsService.aodEnabledKey, true) ?? true;
+      _selectedStyle = _settingsService.getSetting(SettingsService.selectedStyleKey, 'Default') ?? 'Default';
+      _selectedFontFamily = _settingsService.getSetting(SettingsService.fontFamilyKey, 'Roboto') ?? 'Roboto';
+      _selectedFontSize = _settingsService.getSetting(SettingsService.fontSizeKey, 'Medium') ?? 'Medium';
+      _avoidScreenBurnIn = _settingsService.getSetting(SettingsService.avoidBurnInKey, true) ?? true;
+      _timeFormat = _settingsService.getSetting(SettingsService.timeFormatKey, '12') ?? '12';
+      _dateFormat = _settingsService.getSetting(SettingsService.dateFormatKey, 'mon, 1 jan') ?? 'mon, 1 jan';
+      _temperatureUnit = _settingsService.getSetting(SettingsService.temperatureUnitKey, 'celsius') ?? 'celsius';
+      _weatherUpdateFrequency = _settingsService.getSetting(
+        SettingsService.weatherUpdateFrequencyKey,
+        '30 minutes'
+      ) ?? '30 minutes';
+      
+      String? customFontSize = _settingsService.getSetting(SettingsService.customFontSizeKey, '');
+      _customFontSizeController.text = customFontSize ?? '';
+      
+      String? location = _settingsService.getWeatherLocation();
+      _weatherLocation = location ?? 'Not set';
+    });
+  }
+
+  Future<void> _saveSetting(String key, dynamic value) async {
+    await _settingsService.setSetting(key, value);
   }
 
   Widget _buildSectionHeader(String title) {
@@ -97,8 +135,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.palette_outlined,
           trailing: DropdownButton<String>(
             value: _selectedTheme,
-            onChanged: (String? newValue) {
+            onChanged: (String? newValue) async {
               if (newValue != null) {
+                await _saveSetting(SettingsService.themeKey, newValue);
                 setState(() => _selectedTheme = newValue);
               }
             },
@@ -139,7 +178,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.screen_lock_portrait_outlined,
           trailing: Switch(
             value: _isAODEnabled,
-            onChanged: (bool value) {
+            onChanged: (bool value) async {
+              await _saveSetting(SettingsService.aodEnabledKey, value);
               setState(() => _isAODEnabled = value);
             },
           ),
@@ -159,8 +199,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.style,
           trailing: DropdownButton<String>(
             value: _selectedStyle,
-            onChanged: (String? newValue) {
+            onChanged: (String? newValue) async {
               if (newValue != null) {
+                await _saveSetting(SettingsService.selectedStyleKey, newValue);
                 setState(() => _selectedStyle = newValue);
               }
             },
@@ -180,7 +221,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.screen_rotation,
           trailing: Switch(
             value: _avoidScreenBurnIn,
-            onChanged: (bool value) {
+            onChanged: (bool value) async {
+              await _saveSetting(SettingsService.avoidBurnInKey, value);
               setState(() => _avoidScreenBurnIn = value);
             },
           ),
@@ -210,8 +252,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.font_download_outlined,
           trailing: DropdownButton<String>(
             value: _selectedFontFamily,
-            onChanged: (String? newValue) {
+            onChanged: (String? newValue) async {
               if (newValue != null) {
+                await _saveSetting(SettingsService.fontFamilyKey, newValue);
                 setState(() => _selectedFontFamily = newValue);
               }
             },
@@ -232,8 +275,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               DropdownButton<String>(
                 value: _selectedFontSize,
-                onChanged: (String? newValue) {
+                onChanged: (String? newValue) async {
                   if (newValue != null) {
+                    await _saveSetting(SettingsService.fontSizeKey, newValue);
                     setState(() => _selectedFontSize = newValue);
                   }
                 },
@@ -256,6 +300,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       isDense: true,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8),
                     ),
+                    onChanged: (value) async {
+                      await _saveSetting(SettingsService.customFontSizeKey, value);
+                    },
                   ),
                 ),
               ],
@@ -275,8 +322,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.access_time,
           trailing: DropdownButton<String>(
             value: _timeFormat,
-            onChanged: (String? newValue) {
+            onChanged: (String? newValue) async {
               if (newValue != null) {
+                await _saveSetting(SettingsService.timeFormatKey, newValue);
                 setState(() => _timeFormat = newValue);
               }
             },
@@ -293,8 +341,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.calendar_today,
           trailing: DropdownButton<String>(
             value: _dateFormat,
-            onChanged: (String? newValue) {
+            onChanged: (String? newValue) async {
               if (newValue != null) {
+                await _saveSetting(SettingsService.dateFormatKey, newValue);
                 setState(() => _dateFormat = newValue);
               }
             },
@@ -319,8 +368,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.thermostat_outlined,
           trailing: DropdownButton<String>(
             value: _temperatureUnit,
-            onChanged: (String? newValue) {
+            onChanged: (String? newValue) async {
               if (newValue != null) {
+                await _saveSetting(SettingsService.temperatureUnitKey, newValue);
                 setState(() => _temperatureUnit = newValue);
               }
             },
@@ -333,30 +383,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             }).toList(),
           ),
         ),
-        _buildSettingTile(
-          title: 'Location',
-          icon: Icons.location_on_outlined,
-          trailing: SizedBox(
-            width: 150,
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: 'Enter location',
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(horizontal: 8),
-              ),
-              onChanged: (value) {
-                setState(() => _weatherLocation = value);
-              },
-            ),
-          ),
-        ),
+        _buildWeatherLocationField(),
         _buildSettingTile(
           title: 'Update Frequency',
           icon: Icons.update,
           trailing: DropdownButton<String>(
             value: _weatherUpdateFrequency,
-            onChanged: (String? newValue) {
+            onChanged: (String? newValue) async {
               if (newValue != null) {
+                await _saveSetting(SettingsService.weatherUpdateFrequencyKey, newValue);
                 setState(() => _weatherUpdateFrequency = newValue);
               }
             },
@@ -373,6 +408,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Widget _buildWeatherLocationField() {
+    final isAutomatic = _settingsService.isWeatherLocationAutomatic();
+    final location = _settingsService.getWeatherLocation() ?? 'Not set';
+    
+    return _buildSettingTile(
+      title: 'Location',
+      icon: Icons.location_on_outlined,
+      subtitle: isAutomatic ? 'Using automatic location' : location,
+      trailing: IconButton(
+        icon: const Icon(Icons.edit),
+        onPressed: () async {
+          await WeatherService().handleLocationSelection(context);
+          _loadSettings();
+        },
+      ),
+    );
+  }
   Widget _buildAboutSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,7 +452,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ],
     );
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -449,9 +501,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
+
+
 // Extension to capitalize strings
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1)}";
   }
 }
+
