@@ -5,6 +5,7 @@ import 'weather_widget.dart';
 import 'shared_styles.dart';
 import 'dart:async';
 
+
 class MiniWeatherWidget extends StatefulWidget {
   final TextStyle? textStyle;
 

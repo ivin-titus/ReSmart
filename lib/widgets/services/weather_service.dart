@@ -4,10 +4,13 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:resmart/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:location/location.dart';
 import '../config/env.dart';
 import './weather_icon_provider.dart';
+import 'package:resmart/widgets/services/settings_service.dart';
+import 'package:resmart/widgets/location_dialog.dart';
 
 class WeatherService {
   static final WeatherService _instance = WeatherService._internal();
@@ -101,6 +104,59 @@ class WeatherService {
       });
     }
     return null;
+  }
+
+  // In weather_service.dart
+  Future<void> handleLocationSelection(BuildContext context) async {
+    final settingsService = SettingsService();
+    final currentLocation = settingsService.getWeatherLocation();
+
+    showDialog(
+      context: context,
+      builder: (context) => LocationDialog(
+        initialLocation: currentLocation,
+        onLocationSubmitted: (location) async {
+          await settingsService.setWeatherLocation(location, false);
+          await fetchWeatherByCity(location);
+        },
+        onAutoLocationRequested: () async {
+          final locationData = await initializeLocation();
+          if (locationData != null) {
+            await fetchWeatherByCoordinates(
+              latitude: locationData.latitude!,
+              longitude: locationData.longitude!,
+            );
+            await settingsService.setWeatherLocation('Automatic', true);
+          } else {
+            _showLocationPermissionDialog(context);
+          }
+        },
+      ),
+    );
+  }
+
+  void _showLocationPermissionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Location Access Required'),
+        content: const Text(
+            'Please enable location services and grant location permissions to use automatic location.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              SettingsScreen();
+            },
+            child: const Text('Open Settings'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
   }
 
   void showFallbackCityInput(BuildContext context) {
