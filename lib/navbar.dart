@@ -32,6 +32,7 @@ class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     final bool isAODScreen = _selectedIndex == 3;
+    final brightness = Theme.of(context).brightness;
 
     return Scaffold(
       body: _screens[_selectedIndex],
@@ -39,10 +40,25 @@ class _NavBarState extends State<NavBar> {
           ? null
           : NavigationBarTheme(
               data: NavigationBarThemeData(
-                backgroundColor: const Color(0xFF1E1E1E),
-                indicatorColor: Colors.deepPurpleAccent.withOpacity(0.3),
-                labelTextStyle: MaterialStateProperty.all(
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                backgroundColor: brightness == Brightness.light
+                    ? Colors.white
+                    : const Color(0xFF1E1E1E),
+                indicatorColor: brightness == Brightness.light
+                    ? Colors.deepPurpleAccent.withOpacity(0.15)
+                    : Colors.deepPurpleAccent.withOpacity(0.3),
+                labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
+                  (Set<WidgetState> states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      );
+                    }
+                    return const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    );
+                  },
                 ),
               ),
               child: NavigationBar(
