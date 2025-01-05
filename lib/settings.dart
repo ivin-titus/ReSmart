@@ -56,11 +56,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   final List<String> _availableDateFormats = [
     'mon, 1 jan',
-    'monday, 1 january',
     '1/1/2025',
     'jan 1, 2025',
-    'january 1, 2025',
-    '1 january 2025',
+    '1 jan 2025',
   ];
 
   @override
@@ -411,6 +409,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               if (newValue != null) {
                 await _saveSetting(SettingsService.dateFormatKey, newValue);
                 setState(() => _dateFormat = newValue);
+                // Update the provider state
+                ref.read(dateFormatProvider.notifier).state = newValue;
               }
             },
             items: _availableDateFormats

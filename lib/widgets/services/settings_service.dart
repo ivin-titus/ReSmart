@@ -77,3 +77,9 @@ class SettingsService {
     final settings = ref.watch(settingsProvider);
     return settings.getSetting(SettingsService.timeFormatKey, '12') ?? '12';
   });
+
+// Create a provider for date format
+final dateFormatProvider = StateProvider<String>((ref) {
+  final settingsService = SettingsService();
+  return settingsService.getSetting(SettingsService.dateFormatKey, 'mon, 1 jan') ?? 'mon, 1 jan';
+});

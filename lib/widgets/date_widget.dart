@@ -1,27 +1,42 @@
-// Date widget 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'shared_styles.dart';
+import 'services/settings_service.dart';
 
-class DateWidget extends StatefulWidget {
-  final String? dateFormat;
+
+// Convert settings format to DateFormat pattern
+String getDateFormatPattern(String settingsFormat) {
+  switch (settingsFormat) {
+    case 'mon, 1 jan':
+      return 'E, d MMM';
+    case '1/1/2025':
+      return 'd/M/y';
+    case 'jan 1, 2025':
+      return 'MMM d, y';
+    case '1 jan 2025':
+      return 'd MMM y';
+    default:
+      return 'E, d MMM';
+  }
+}
+
+class DateWidget extends ConsumerStatefulWidget {
   final TextStyle? textStyle;
  
   const DateWidget({
     Key? key,
-    this.dateFormat,
     this.textStyle,
   }) : super(key: key);
 
   @override
-  State<DateWidget> createState() => _DateWidgetState();
+  ConsumerState<DateWidget> createState() => _DateWidgetState();
 }
 
-class _DateWidgetState extends State<DateWidget> with AutomaticKeepAliveClientMixin {
-  late String _date;
+class _DateWidgetState extends ConsumerState<DateWidget> with AutomaticKeepAliveClientMixin {
+  String _date = '';  // Initialize empty
   Timer? _timer;
-  late DateFormat _dateFormat;
   bool _isProcessingTap = false;
 
   @override
@@ -30,15 +45,18 @@ class _DateWidgetState extends State<DateWidget> with AutomaticKeepAliveClientMi
   @override
   void initState() {
     super.initState();
-    _dateFormat = DateFormat(widget.dateFormat ?? 'E, d MMM');
-    _updateDate();
     _startDailyTimer();
+        // Initial update
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateDate(ref.read(dateFormatProvider));
+    });
   }
 
-  void _updateDate() {
+  void _updateDate(String format) {
     if (mounted) {
+      final dateFormat = DateFormat(getDateFormatPattern(format));
       setState(() {
-        _date = _dateFormat.format(DateTime.now());
+        _date = dateFormat.format(DateTime.now());
       });
     }
   }
@@ -51,7 +69,8 @@ class _DateWidgetState extends State<DateWidget> with AutomaticKeepAliveClientMi
     final timeUntilMidnight = nextMidnight.difference(now);
     
     _timer = Timer(timeUntilMidnight, () {
-      _updateDate();
+      final currentFormat = ref.read(dateFormatProvider);
+      _updateDate(currentFormat);
       _startDailyTimer();
     });
   }
@@ -107,6 +126,19 @@ class _DateWidgetState extends State<DateWidget> with AutomaticKeepAliveClientMi
   @override
   Widget build(BuildContext context) {
     super.build(context);
+        // Listen to date format changes and update immediately
+    final settingsFormat = ref.watch(dateFormatProvider);
+    
+    // Update date whenever format changes
+    if (_date.isEmpty || ref.read(dateFormatProvider) != settingsFormat) {
+      _updateDate(settingsFormat);
+    }
+    
+    // Update date whenever format changes
+    if (_date.isEmpty || ref.read(dateFormatProvider) != settingsFormat) {
+      _updateDate(settingsFormat);
+    }
+
     return Material(
       color: Colors.transparent,
       child: AbsorbPointer(
