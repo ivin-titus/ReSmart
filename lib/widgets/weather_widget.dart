@@ -137,7 +137,7 @@ Widget _buildWeatherInfo() {
           Icon(weatherIcon, color: Colors.white, size: 26),
           const SizedBox(width: 16),
           Text(
-              '${_weatherData!['main']['temp'].round()}°${_weatherService.temperatureUnit == 'celsius' ? 'C' : 'F'}',
+              '${(_weatherService.temperatureUnit == 'celsius' ? _weatherData!['main']['temp'].round() : (_weatherData!['main']['temp'] * 9/5 + 32).round())}°${_weatherService.temperatureUnit == 'celsius' ? 'C' : 'F'}',
             style: const TextStyle(
               fontSize: 42,
               color: Colors.white,
@@ -262,7 +262,7 @@ Widget _buildWeatherInfo() {
               child: _buildDetailColumn(
                 Icons.thermostat_rounded,
                 'Feels Like',
-                '${_weatherData!['main']['feels_like'].round()}°${_weatherService.temperatureUnit == 'celsius' ? 'C' : 'F'}'
+                '${(_weatherService.temperatureUnit == 'celsius' ? _weatherData!['main']['feels_like'].round() : (_weatherData!['main']['feels_like'] * 9/5 + 32).round())}°${_weatherService.temperatureUnit == 'celsius' ? 'C' : 'F'}',
               ),
             ),
           ],
