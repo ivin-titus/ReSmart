@@ -114,8 +114,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _customFontSizeController.text = customFontSize ?? '';
 
       String? location = _settingsService.getWeatherLocation();
-      _weatherLocation = location;
-    });
+        _weatherLocation = location ?? "London";
+      });
   }
 
   Future<void> _saveSetting(String key, dynamic value) async {
@@ -219,6 +219,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             }).toList(),
           ),
         ),
+        
         _buildSettingTile(
           title: 'Language',
           icon: Icons.language,
@@ -582,7 +583,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 _buildGeneralSettings(),
                 _buildDisplaySettings(),
                 _buildTroubleshootSection(),
-                //const SizedBox(height: 32),
                 _buildAboutSection(),
                 const SizedBox(height: 32), // Bottom padding
               ],
