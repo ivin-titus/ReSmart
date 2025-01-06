@@ -169,7 +169,7 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> with SingleTicker
             baseline: textStyle.fontSize! * 0.8,
             baselineType: TextBaseline.alphabetic,
             child: Text(
-                '${_weatherData!['main']['temp'].round()}°${_weatherService.temperatureUnit == 'celsius' ? 'C' : 'F'}',
+                '${(_weatherService.temperatureUnit == 'celsius' ? _weatherData!['main']['temp'].round() : (_weatherData!['main']['temp'] * 9/5 + 32).round())}°${_weatherService.temperatureUnit == 'celsius' ? 'C' : 'F'}',
               style: textStyle,
               textScaler: const TextScaler.linear(1.0),
               overflow: TextOverflow.ellipsis,
