@@ -32,7 +32,6 @@ final weatherUpdateFrequencyProvider = StateProvider<String>((ref) {
 
 class SettingsService {
   static const String themeKey = 'theme';
-  static const String amoledModeKey = 'amoled_mode';
   static const String languageKey = 'language';
   static const String aodEnabledKey = 'aod_enabled';
   static const String selectedStyleKey = 'selected_style';
