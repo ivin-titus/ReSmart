@@ -68,3 +68,4 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
     state = state.copyWith(isAmoled: value);
   }
 }
+

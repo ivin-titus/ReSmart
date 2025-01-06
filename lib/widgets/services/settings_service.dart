@@ -56,6 +56,7 @@ class SettingsService {
 
   SettingsService._internal();
 
+
   Future<void> initialize() async {
     _prefs = await SharedPreferences.getInstance();
     await _initializeDefaultSettings();
@@ -147,3 +148,4 @@ class SettingsService {
     _settingsController.close();
   }
 }
+
