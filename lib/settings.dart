@@ -148,6 +148,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (confirm) {
       await _settingsService.resetAllSettings();
       ref.read(themeProvider.notifier).toggleAmoled(false);
+      ref.read(dateFormatProvider.notifier).state = 'mon, 1 jan'; // Add this line
       _loadSettings();
       ref.read(themeProvider.notifier).updateTheme('system');
 
