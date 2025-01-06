@@ -1,6 +1,8 @@
 // weather_widget.dart
+
 import 'package:flutter/material.dart';
 import 'services/weather_service.dart';
+//import 'services/settings_service.dart';
 import 'dart:async';
 
 class WeatherWidget extends StatefulWidget {
@@ -135,7 +137,7 @@ Widget _buildWeatherInfo() {
           Icon(weatherIcon, color: Colors.white, size: 26),
           const SizedBox(width: 16),
           Text(
-            '${_weatherData!['main']['temp'].round()}°C',
+              '${_weatherData!['main']['temp'].round()}°${_weatherService.temperatureUnit == 'celsius' ? 'C' : 'F'}',
             style: const TextStyle(
               fontSize: 42,
               color: Colors.white,
@@ -260,7 +262,7 @@ Widget _buildWeatherInfo() {
               child: _buildDetailColumn(
                 Icons.thermostat_rounded,
                 'Feels Like',
-                '${_weatherData!['main']['feels_like'].round()}°C',
+                '${_weatherData!['main']['feels_like'].round()}°${_weatherService.temperatureUnit == 'celsius' ? 'C' : 'F'}'
               ),
             ),
           ],

@@ -1,16 +1,20 @@
+// weatherservice
+
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:resmart/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:location/location.dart';
 import '../config/env.dart';
 import './weather_icon_provider.dart';
+import 'package:resmart/widgets/services/settings_service.dart';
+import 'package:resmart/widgets/location_dialog.dart';
 
 class WeatherService {
   static final WeatherService _instance = WeatherService._internal();
   factory WeatherService() => _instance;
-
   final _weatherController = StreamController<Map<String, dynamic>>.broadcast();
   final Location _location = Location();
   final WeatherIconProvider _iconProvider = WeatherIconProvider();
@@ -25,8 +29,21 @@ class WeatherService {
   static const String _lastWeatherKey = 'last_weather';
   static const String _locationPermissionKey = 'location_permission_status';
 
-  WeatherService._internal();
+  final SettingsService _settingsService = SettingsService();
+  String _temperatureUnit = 'celsius';
+  
+  WeatherService._internal() {
+    _initializeService();
+  }
 
+    void _initializeService() {
+    _settingsService.settingsStream.listen((settings) {
+      _temperatureUnit = settings['temperature_unit'] ?? 'celsius';
+      _updateTimer?.cancel();
+      _setupUpdateTimer();
+    });
+  }
+  
   Stream<Map<String, dynamic>> get weatherStream => _weatherController.stream;
 
   // Get weather icon based on condition and time
@@ -99,6 +116,59 @@ class WeatherService {
       });
     }
     return null;
+  }
+
+  // In weather_service.dart
+  Future<void> handleLocationSelection(BuildContext context) async {
+    final settingsService = SettingsService();
+    final currentLocation = settingsService.getWeatherLocation();
+
+    showDialog(
+      context: context,
+      builder: (context) => LocationDialog(
+        initialLocation: currentLocation,
+        onLocationSubmitted: (location) async {
+          await settingsService.setWeatherLocation(location, false);
+          await fetchWeatherByCity(location);
+        },
+        onAutoLocationRequested: () async {
+          final locationData = await initializeLocation();
+          if (locationData != null) {
+            await fetchWeatherByCoordinates(
+              latitude: locationData.latitude!,
+              longitude: locationData.longitude!,
+            );
+            await settingsService.setWeatherLocation('Automatic', true);
+          } else {
+            _showLocationPermissionDialog(context);
+          }
+        },
+      ),
+    );
+  }
+
+  void _showLocationPermissionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Location Access Required'),
+        content: const Text(
+            'Please enable location services and grant location permissions to use automatic location.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              SettingsScreen();
+            },
+            child: const Text('Open Settings'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
   }
 
   void showFallbackCityInput(BuildContext context) {
@@ -223,6 +293,8 @@ class WeatherService {
     return weatherData;
   }
 
+  String get temperatureUnit => _temperatureUnit;
+
   Future<Map<String, dynamic>> _fetchFromApi({
     required Map<String, String> queryParams,
   }) async {
@@ -230,7 +302,7 @@ class WeatherService {
       queryParameters: {
         ...queryParams,
         'appid': Environment.weatherApiKey,
-        'units': 'metric',
+        'units': _temperatureUnit == 'celsius' ? 'metric' : 'imperial',
       },
     );
 
@@ -249,12 +321,10 @@ class WeatherService {
     }
   }
 
-  void _setupUpdateTimer() {
+  void _setupUpdateTimer() async {
     _updateTimer?.cancel();
-    _updateTimer = Timer.periodic(
-      const Duration(minutes: 30),
-      (_) => _lastFetch = null,
-    );
+    final updateDuration = await _settingsService.getWeatherUpdateDuration();
+    _updateTimer = Timer.periodic(updateDuration, (_) => _lastFetch = null);
   }
 
   Future<Map<String, dynamic>?> getLastLocation() async {

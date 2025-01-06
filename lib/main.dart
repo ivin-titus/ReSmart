@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'widgets/aod_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:location/location.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'navbar.dart';
+import './widgets/location_dialog.dart';
+import './widgets/services/settings_service.dart';
+import './widgets/services/theme_provider.dart';
 
 // Custom error widget for lower memory usage
 class CustomErrorWidget extends StatelessWidget {
@@ -12,19 +17,43 @@ class CustomErrorWidget extends StatelessWidget {
     return Container(
       color: Colors.black,
       child: const Center(
-        child: Text('An error occurred',
-            style: TextStyle(color: Colors.white)),
+        child: Text('An error occurred', style: TextStyle(color: Colors.white)),
       ),
     );
   }
 }
 
+Future<bool> checkAndRequestLocationPermission() async {
+  final Location location = Location();
+  bool serviceEnabled;
+  PermissionStatus permissionGranted;
+
+  serviceEnabled = await location.serviceEnabled();
+  if (!serviceEnabled) {
+    serviceEnabled = await location.requestService();
+    if (!serviceEnabled) {
+      return false;
+    }
+  }
+
+  permissionGranted = await location.hasPermission();
+  if (permissionGranted == PermissionStatus.denied) {
+    permissionGranted = await location.requestPermission();
+    if (permissionGranted != PermissionStatus.granted) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 Future<void> initializeApp() async {
   try {
-    // Ensure Flutter bindings are initialized
     WidgetsFlutterBinding.ensureInitialized();
 
-    // Enable all orientations
+    final settingsService = SettingsService();
+    await settingsService.initialize();
+
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -32,43 +61,54 @@ Future<void> initializeApp() async {
       DeviceOrientation.landscapeRight,
     ]);
 
-    // Set fullscreen mode - hide status bar and navigation buttons
     await SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.immersiveSticky,
-      overlays: [], // Empty array means hide all system UI overlays
+      overlays: [],
     );
 
-    // Load environment variables with error handling
     await dotenv.load(fileName: ".env").catchError((error) {
       debugPrint('Error loading .env file: $error');
-      // Provide fallback values if needed
     });
 
-    // Optimize memory usage
+    final hasLocationPermission = await checkAndRequestLocationPermission();
+    if (hasLocationPermission) {
+      final Location location = Location();
+      final currentLocation = await location.getLocation();
+      await settingsService.setWeatherLocation(
+          '${currentLocation.latitude},${currentLocation.longitude}', true);
+    }
+
     imageCache.maximumSize = 50;
-    imageCache.maximumSizeBytes = 50 * 1024 * 1024; // 50 MB limit
+    imageCache.maximumSizeBytes = 50 * 1024 * 1024;
   } catch (e) {
     debugPrint('Initialization error: $e');
   }
 }
 
-void main() async {
-  ErrorWidget.builder = (FlutterErrorDetails details) => const CustomErrorWidget();
-  
-  await initializeApp();
-  
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ReSmart AOD',
-      theme: ThemeData.dark().copyWith(
+      themeMode: themeMode,
+      theme: ThemeData.light(useMaterial3: true).copyWith(
+        platform: TargetPlatform.android,
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+          },
+        ),
+        visualDensity: VisualDensity.compact,
+        textTheme: ThemeData.light().textTheme.apply(
+              fontFamily: 'Roboto',
+            ),
+      ),
+      darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
         platform: TargetPlatform.android,
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
@@ -77,19 +117,15 @@ class MyApp extends StatelessWidget {
         ),
         visualDensity: VisualDensity.compact,
         textTheme: ThemeData.dark().textTheme.apply(
-          fontFamily: 'Roboto',
-        ),
+              fontFamily: 'Roboto',
+            ),
       ),
       builder: (context, child) {
-        // Add responsive layout support
         return OrientationBuilder(
           builder: (context, orientation) {
-            // Apply orientation-specific layout adjustments
             return LayoutBuilder(
               builder: (context, constraints) {
-                // Handle different screen sizes and orientations
                 return MediaQuery(
-                  // Update media query data to account for system UI visibility
                   data: MediaQuery.of(context).copyWith(
                     padding: EdgeInsets.zero,
                     viewPadding: EdgeInsets.zero,
@@ -100,7 +136,8 @@ class MyApp extends StatelessWidget {
                       physics: const ClampingScrollPhysics(),
                       platform: TargetPlatform.android,
                     ),
-                    child: child ?? const SizedBox.shrink(),
+                    child: LocationPermissionWrapper(
+                        child: child ?? const SizedBox.shrink()),
                   ),
                 );
               },
@@ -108,7 +145,76 @@ class MyApp extends StatelessWidget {
           },
         );
       },
-      home: const AODScreen(),
+      home: const NavBar(),
     );
   }
+}
+
+class LocationPermissionWrapper extends StatefulWidget {
+  final Widget child;
+
+  const LocationPermissionWrapper({Key? key, required this.child})
+      : super(key: key);
+
+  @override
+  _LocationPermissionWrapperState createState() =>
+      _LocationPermissionWrapperState();
+}
+
+class _LocationPermissionWrapperState extends State<LocationPermissionWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLocationAndShowDialog();
+    });
+  }
+
+  Future<void> _checkLocationAndShowDialog() async {
+    final settingsService = SettingsService();
+    final hasLocation = settingsService.getWeatherLocation() != null;
+
+    if (!hasLocation) {
+      final hasPermission = await checkAndRequestLocationPermission();
+      if (!hasPermission && mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => LocationDialog(
+            onLocationSubmitted: (location) async {
+              await settingsService.setWeatherLocation(location, false);
+            },
+            onAutoLocationRequested: () async {
+              final hasPermission = await checkAndRequestLocationPermission();
+              if (hasPermission) {
+                final location = Location();
+                final currentLocation = await location.getLocation();
+                await settingsService.setWeatherLocation(
+                    '${currentLocation.latitude},${currentLocation.longitude}',
+                    true);
+              }
+            },
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  ErrorWidget.builder = (FlutterErrorDetails details) => const CustomErrorWidget();
+  await initializeApp();
+  await SettingsService().initialize();
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
