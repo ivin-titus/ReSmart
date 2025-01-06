@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'services/weather_service.dart';
-import 'services/settings_service.dart';
+//import 'services/settings_service.dart';
 import 'dart:async';
 
 class WeatherWidget extends StatefulWidget {

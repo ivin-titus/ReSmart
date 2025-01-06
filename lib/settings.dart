@@ -1,9 +1,9 @@
 // settings
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Added import
-import 'widgets/shared_styles.dart';
+//import 'widgets/shared_styles.dart';
 import 'widgets/services/settings_service.dart';
-import 'widgets/services/weather_service.dart';
+//import 'widgets/services/weather_service.dart';
 import 'widgets/services/theme_provider.dart';
 
 // Make SettingsScreen a ConsumerStatefulWidget instead of StatefulWidget
