@@ -77,9 +77,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _selectedTheme =
           _settingsService.getSetting(SettingsService.themeKey, 'system') ??
               'system';
+      
       _selectedLanguage =
           _settingsService.getSetting(SettingsService.languageKey, 'english') ??
               'english';
+      
       _isAODEnabled =
           _settingsService.getSetting(SettingsService.aodEnabledKey, true) ??
               true;
@@ -145,13 +147,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (confirm) {
       await _settingsService.resetAllSettings();
+      ref.read(themeProvider.notifier).toggleAmoled(false);
       _loadSettings();
       ref.read(themeProvider.notifier).updateTheme('system');
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Settings reset successfully')),
-        );
+      showThemedSnackBar(context, ref, 'Settings reset successfully');
       }
     }
   }
@@ -163,6 +164,42 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ref.read(timeFormatProvider.notifier).state = newValue;
     }
   }
+
+  // Method to show the themed snackbar
+void showThemedSnackBar(BuildContext context, WidgetRef ref, String message) {
+  final themeState = ref.watch(themeProvider);
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  
+  // Get background color based on theme state
+  final backgroundColor = isDark
+      ? (themeState.isAmoled ? Colors.grey[900] : null)  // Slightly off-black for AMOLED
+      : null;  // Default light theme color
+      
+  // Get text color based on theme state
+  final textColor = isDark && themeState.isAmoled ? Colors.white : null;
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        message,
+        style: TextStyle(color: textColor),
+      ),
+      backgroundColor: backgroundColor,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      // Optional: Customize the close icon if showing
+      action: SnackBarAction(
+        label: 'Dismiss',
+        textColor: textColor,
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
+    ),
+  );
+}
 
   Widget _buildSectionHeader(String title) {
     return Padding(
