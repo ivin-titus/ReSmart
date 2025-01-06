@@ -114,7 +114,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _customFontSizeController.text = customFontSize ?? '';
 
       String? location = _settingsService.getWeatherLocation();
-      _weatherLocation = location ?? 'Not set';
+      _weatherLocation = location;
     });
   }
 
@@ -266,12 +266,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           icon: Icons.style,
           trailing: DropdownButton<String>(
             value: _selectedStyle,
-            onChanged: (String? newValue) async {
+
+            // introduced later
+            onChanged: null,
+            /* (String? newValue) async {
               if (newValue != null) {
                 await _saveSetting(SettingsService.selectedStyleKey, newValue);
                 setState(() => _selectedStyle = newValue);
               }
-            },
+            },*/
             items:
                 _availableStyles.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
@@ -289,10 +292,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           icon: Icons.screen_rotation,
           trailing: Switch(
             value: _avoidScreenBurnIn,
-            onChanged: (bool value) async {
+            // introduced later
+            onChanged:
+                null, /*(bool value) async {
               await _saveSetting(SettingsService.avoidBurnInKey, value);
               setState(() => _avoidScreenBurnIn = value);
-            },
+            },*/
           ),
         ),
         _buildTimeAndDateSettings(),
@@ -478,7 +483,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _buildWeatherLocationField() {
     final isAutomatic = _settingsService.isWeatherLocationAutomatic();
-    final location = _settingsService.getWeatherLocation() ?? 'Not set';
+    final location = _settingsService.getWeatherLocation();
 
     return _buildSettingTile(
       title: 'Location',
@@ -486,10 +491,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       subtitle: isAutomatic ? 'Using automatic location' : location,
       trailing: IconButton(
         icon: const Icon(Icons.edit),
-        onPressed: () async {
+        // introduced late
+        onPressed:
+            null, /*() async {
           await WeatherService().handleLocationSelection(context);
           _loadSettings();
-        },
+        },*/
       ),
     );
   }

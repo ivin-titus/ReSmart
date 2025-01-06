@@ -78,12 +78,12 @@ class _NavBarState extends State<NavBar> {
                   NavigationDestination(
                     icon: Icon(Icons.smart_toy_outlined),
                     selectedIcon: Icon(Icons.smart_toy),
-                    label: 'AI Assistant',
+                    label: 'AI',
                   ),
                   NavigationDestination(
                     icon: Icon(Icons.screen_lock_portrait_outlined),
                     selectedIcon: Icon(Icons.screen_lock_portrait),
-                    label: 'AOD Screen',
+                    label: 'AOD',
                   ),
                   NavigationDestination(
                     icon: Icon(Icons.settings_outlined),

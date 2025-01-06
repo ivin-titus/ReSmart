@@ -1,6 +1,7 @@
 //weatherwidgetmini
 import 'package:flutter/material.dart';
 import './services/weather_service.dart';
+import './services/settings_service.dart';
 import 'weather_widget.dart';
 import 'shared_styles.dart';
 import 'dart:async';
@@ -168,7 +169,7 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> with SingleTicker
             baseline: textStyle.fontSize! * 0.8,
             baselineType: TextBaseline.alphabetic,
             child: Text(
-              '${_weatherData!['main']['temp'].round()}°C',
+                '${_weatherData!['main']['temp'].round()}°${_weatherService.temperatureUnit == 'celsius' ? 'C' : 'F'}',
               style: textStyle,
               textScaler: const TextScaler.linear(1.0),
               overflow: TextOverflow.ellipsis,
