@@ -8,6 +8,7 @@ import './widgets/location_dialog.dart';
 import './widgets/services/settings_service.dart';
 import './widgets/services/theme_provider.dart';
 
+
 // Custom error widget for lower memory usage
 class CustomErrorWidget extends StatelessWidget {
   const CustomErrorWidget({Key? key}) : super(key: key);
@@ -87,41 +88,59 @@ Future<void> initializeApp() async {
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
-    
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'ReSmart AOD',
-      themeMode: themeMode,
-      theme: ThemeData.light(useMaterial3: true).copyWith(
-        platform: TargetPlatform.android,
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-          },
-        ),
-        visualDensity: VisualDensity.compact,
-        textTheme: ThemeData.light().textTheme.apply(
-              fontFamily: 'Roboto',
-            ),
+@override
+Widget build(BuildContext context, WidgetRef ref) {
+  final themeState = ref.watch(themeProvider);
+  
+  return MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'ReSmart AOD',
+    themeMode: themeState.themeMode,
+    locale: const Locale('en'),
+    localizationsDelegates: const [
+      DefaultMaterialLocalizations.delegate,
+      DefaultWidgetsLocalizations.delegate,
+    ],
+    supportedLocales: const [
+      Locale('en', ''),
+    ],
+    theme: ThemeData.light(useMaterial3: true).copyWith(
+      platform: TargetPlatform.android,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        },
       ),
-      darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
-        platform: TargetPlatform.android,
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-          },
-        ),
-        visualDensity: VisualDensity.compact,
-        textTheme: ThemeData.dark().textTheme.apply(
-              fontFamily: 'Roboto',
-            ),
+      visualDensity: VisualDensity.compact,
+      textTheme: ThemeData.light().textTheme.apply(
+        fontFamily: 'Roboto',
       ),
-      builder: (context, child) {
-        return OrientationBuilder(
+    ),
+    darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
+      platform: TargetPlatform.android,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        },
+      ),
+      visualDensity: VisualDensity.compact,
+      scaffoldBackgroundColor: themeState.isAmoled ? Colors.black : null,
+      textTheme: ThemeData.dark().textTheme.apply(
+        fontFamily: 'Roboto',
+      ),
+      colorScheme: themeState.isAmoled 
+          ? ColorScheme.dark(
+              background: Colors.black,
+              surface: Colors.black,
+              primary: Colors.white,
+              secondary: Colors.white70,
+            )
+          : null,
+    ),
+    builder: (context, child) {
+      return Directionality(
+        textDirection: TextDirection.ltr,
+        child: OrientationBuilder(
           builder: (context, orientation) {
             return LayoutBuilder(
               builder: (context, constraints) {
@@ -137,17 +156,19 @@ class MyApp extends ConsumerWidget {
                       platform: TargetPlatform.android,
                     ),
                     child: LocationPermissionWrapper(
-                        child: child ?? const SizedBox.shrink()),
+                      child: child ?? const SizedBox.shrink(),
+                    ),
                   ),
                 );
               },
             );
           },
-        );
-      },
-      home: const NavBar(),
-    );
-  }
+        ),
+      );
+    },
+    home: const NavBar(),
+  );
+}
 }
 
 class LocationPermissionWrapper extends StatefulWidget {

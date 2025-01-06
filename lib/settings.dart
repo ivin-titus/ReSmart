@@ -192,21 +192,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _buildGeneralSettings() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader('General Settings'),
-        _buildSettingTile(
-          title: 'Theme',
-          icon: Icons.palette_outlined,
-          trailing: DropdownButton<String>(
+Widget _buildGeneralSettings() {
+  final themeState = ref.watch(themeProvider);
+  final isDarkMode = themeState.themeMode == ThemeMode.dark ||
+      (themeState.themeMode == ThemeMode.system &&
+          MediaQuery.of(context).platformBrightness == Brightness.dark);
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _buildSectionHeader('General Settings'),
+      _buildSettingTile(
+        title: 'Theme',
+        icon: Icons.palette_outlined,
+        trailing: Directionality(  // Add this wrapper
+          textDirection: TextDirection.ltr,
+          child: DropdownButton<String>(
             value: _selectedTheme,
             onChanged: (String? newValue) async {
               if (newValue != null) {
                 await _saveSetting(SettingsService.themeKey, newValue);
                 setState(() => _selectedTheme = newValue);
-                // Update the theme using the provider
                 ref.read(themeProvider.notifier).updateTheme(newValue);
               }
             },
@@ -219,13 +225,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             }).toList(),
           ),
         ),
-        
+      ),
+      if (isDarkMode)
         _buildSettingTile(
-          title: 'Language',
-          icon: Icons.language,
-          trailing: DropdownButton<String>(
+          title: 'AMOLED Screen',
+          icon: Icons.brightness_medium,
+          trailing: Switch(
+            value: themeState.isAmoled,
+            onChanged: (bool value) {
+              ref.read(themeProvider.notifier).toggleAmoled(value);
+            },
+          ),
+        ),
+      _buildSettingTile(
+        title: 'Language',
+        icon: Icons.language,
+        trailing: Directionality(  // Add this wrapper
+          textDirection: TextDirection.ltr,
+          child: DropdownButton<String>(
             value: _selectedLanguage,
-            onChanged: null, // Disabled as only English is available
+            onChanged: null,
             items: ['english'].map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -234,9 +253,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             }).toList(),
           ),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
 
   Widget _buildDisplaySettings() {
     return Column(
@@ -510,7 +530,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ListTile(
           leading: const Icon(Icons.info_outline, color: Colors.blue),
           title: const Text('Version'),
-          subtitle: const Text('1.0.0'),
+          subtitle: const Text('0.1.0 beta'),
         ),
         ListTile(
           leading: const Icon(Icons.privacy_tip_outlined, color: Colors.blue),
