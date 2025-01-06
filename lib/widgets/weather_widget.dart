@@ -74,7 +74,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400),
         decoration: BoxDecoration(
-          color: Colors.black87,
+          color: Colors.black54,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Colors.white24, width: 1),
         ),

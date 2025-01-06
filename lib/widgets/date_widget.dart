@@ -133,11 +133,6 @@ class _DateWidgetState extends ConsumerState<DateWidget> with AutomaticKeepAlive
     if (_date.isEmpty || ref.read(dateFormatProvider) != settingsFormat) {
       _updateDate(settingsFormat);
     }
-    
-    // Update date whenever format changes
-    if (_date.isEmpty || ref.read(dateFormatProvider) != settingsFormat) {
-      _updateDate(settingsFormat);
-    }
 
     return Material(
       color: Colors.transparent,
