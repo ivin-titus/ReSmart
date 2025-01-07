@@ -33,6 +33,31 @@ class _AODScreenState extends ConsumerState<AODScreen> {
     }
   }
 
+  Future<bool> _onWillPop() async {
+    final shouldPop = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit AOD Mode'),
+        content: const Text('Do you want to exit AOD mode?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldPop ?? false) {
+      _exitAODScreen();
+    }
+    return false; // Always return false as we handle the navigation ourselves
+  }
+
   void _handleTap() {
     final now = DateTime.now();
     if (_lastTapTime != null &&
@@ -48,8 +73,8 @@ class _AODScreenState extends ConsumerState<AODScreen> {
     return Visibility(
       visible: _showCloseButton,
       child: Positioned(
-        top: 20,
-        right: 20,
+        top: 15,
+        right: 15,
         child: IconButton(
           icon: const Icon(Icons.close, color: Colors.white, size: 28),
           onPressed: _exitAODScreen,
@@ -173,19 +198,22 @@ class _AODScreenState extends ConsumerState<AODScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: GestureDetector(
-        onTapDown: (_) => _handleTap(),
-        child: Scaffold(
-          backgroundColor: Colors.black,
-          body: Stack(
-            children: [
-              LayoutBuilder(
-                builder: (context, constraints) => 
-                  SafeArea(child: _buildMainContent(context, constraints)),
-              ),
-              _buildCloseButton(),
-            ],
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: RepaintBoundary(
+        child: GestureDetector(
+          onTapDown: (_) => _handleTap(),
+          child: Scaffold(
+            backgroundColor: Colors.black,
+            body: Stack(
+              children: [
+                LayoutBuilder(
+                  builder: (context, constraints) => 
+                    SafeArea(child: _buildMainContent(context, constraints)),
+                ),
+                _buildCloseButton(),
+              ],
+            ),
           ),
         ),
       ),
