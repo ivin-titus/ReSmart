@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'; // Added import
 import 'widgets/services/settings_service.dart';
 //import 'widgets/services/weather_service.dart';
 import 'widgets/services/theme_provider.dart';
+import 'widgets/services/launch-urls.dart';
 
 // Make SettingsScreen a ConsumerStatefulWidget instead of StatefulWidget
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -77,11 +78,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _selectedTheme =
           _settingsService.getSetting(SettingsService.themeKey, 'system') ??
               'system';
-      
+
       _selectedLanguage =
           _settingsService.getSetting(SettingsService.languageKey, 'english') ??
               'english';
-      
+
       _isAODEnabled =
           _settingsService.getSetting(SettingsService.aodEnabledKey, true) ??
               true;
@@ -116,8 +117,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _customFontSizeController.text = customFontSize ?? '';
 
       String? location = _settingsService.getWeatherLocation();
-        _weatherLocation = location ?? "London";
-      });
+      _weatherLocation = location ?? "London";
+    });
   }
 
   Future<void> _saveSetting(String key, dynamic value) async {
@@ -148,12 +149,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (confirm) {
       await _settingsService.resetAllSettings();
       ref.read(themeProvider.notifier).toggleAmoled(false);
-      ref.read(dateFormatProvider.notifier).state = 'mon, 1 jan'; // Add this line
+      ref.read(dateFormatProvider.notifier).state =
+          'mon, 1 jan'; // Add this line
       _loadSettings();
       ref.read(themeProvider.notifier).updateTheme('system');
 
       if (mounted) {
-      showThemedSnackBar(context, ref, 'Settings reset successfully');
+        showThemedSnackBar(context, ref, 'Settings reset successfully');
       }
     }
   }
@@ -167,40 +169,42 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   // Method to show the themed snackbar
-void showThemedSnackBar(BuildContext context, WidgetRef ref, String message) {
-  final themeState = ref.watch(themeProvider);
-  final isDark = Theme.of(context).brightness == Brightness.dark;
-  
-  // Get background color based on theme state
-  final backgroundColor = isDark
-      ? (themeState.isAmoled ? Colors.grey[900] : null)  // Slightly off-black for AMOLED
-      : null;  // Default light theme color
-      
-  // Get text color based on theme state
-  final textColor = isDark && themeState.isAmoled ? Colors.white : null;
+  void showThemedSnackBar(BuildContext context, WidgetRef ref, String message) {
+    final themeState = ref.watch(themeProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        message,
-        style: TextStyle(color: textColor),
+    // Get background color based on theme state
+    final backgroundColor = isDark
+        ? (themeState.isAmoled
+            ? Colors.grey[900]
+            : null) // Slightly off-black for AMOLED
+        : null; // Default light theme color
+
+    // Get text color based on theme state
+    final textColor = isDark && themeState.isAmoled ? Colors.white : null;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: textColor),
+        ),
+        backgroundColor: backgroundColor,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        // Optional: Customize the close icon if showing
+        action: SnackBarAction(
+          label: 'Dismiss',
+          textColor: textColor,
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
       ),
-      backgroundColor: backgroundColor,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      // Optional: Customize the close icon if showing
-      action: SnackBarAction(
-        label: 'Dismiss',
-        textColor: textColor,
-        onPressed: () {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        },
-      ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildSectionHeader(String title) {
     return Padding(
@@ -230,71 +234,73 @@ void showThemedSnackBar(BuildContext context, WidgetRef ref, String message) {
     );
   }
 
-Widget _buildGeneralSettings() {
-  final themeState = ref.watch(themeProvider);
-  final isDarkMode = themeState.themeMode == ThemeMode.dark ||
-      (themeState.themeMode == ThemeMode.system &&
-          MediaQuery.of(context).platformBrightness == Brightness.dark);
+  Widget _buildGeneralSettings() {
+    final themeState = ref.watch(themeProvider);
+    final isDarkMode = themeState.themeMode == ThemeMode.dark ||
+        (themeState.themeMode == ThemeMode.system &&
+            MediaQuery.of(context).platformBrightness == Brightness.dark);
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      _buildSectionHeader('General Settings'),
-      _buildSettingTile(
-        title: 'Theme',
-        icon: Icons.palette_outlined,
-        trailing: Directionality(  // Add this wrapper
-          textDirection: TextDirection.ltr,
-          child: DropdownButton<String>(
-            value: _selectedTheme,
-            onChanged: (String? newValue) async {
-              if (newValue != null) {
-                await _saveSetting(SettingsService.themeKey, newValue);
-                setState(() => _selectedTheme = newValue);
-                ref.read(themeProvider.notifier).updateTheme(newValue);
-              }
-            },
-            items: ['system', 'dark', 'light']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value.capitalize()),
-              );
-            }).toList(),
-          ),
-        ),
-      ),
-      if (isDarkMode)
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('General Settings'),
         _buildSettingTile(
-          title: 'AMOLED Screen',
-          icon: Icons.brightness_medium,
-          trailing: Switch(
-            value: themeState.isAmoled,
-            onChanged: (bool value) {
-              ref.read(themeProvider.notifier).toggleAmoled(value);
-            },
+          title: 'Theme',
+          icon: Icons.palette_outlined,
+          trailing: Directionality(
+            // Add this wrapper
+            textDirection: TextDirection.ltr,
+            child: DropdownButton<String>(
+              value: _selectedTheme,
+              onChanged: (String? newValue) async {
+                if (newValue != null) {
+                  await _saveSetting(SettingsService.themeKey, newValue);
+                  setState(() => _selectedTheme = newValue);
+                  ref.read(themeProvider.notifier).updateTheme(newValue);
+                }
+              },
+              items: ['system', 'dark', 'light']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value.capitalize()),
+                );
+              }).toList(),
+            ),
           ),
         ),
-      _buildSettingTile(
-        title: 'Language',
-        icon: Icons.language,
-        trailing: Directionality(  // Add this wrapper
-          textDirection: TextDirection.ltr,
-          child: DropdownButton<String>(
-            value: _selectedLanguage,
-            onChanged: null,
-            items: ['english'].map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value.capitalize()),
-              );
-            }).toList(),
+        if (isDarkMode)
+          _buildSettingTile(
+            title: 'AMOLED Screen',
+            icon: Icons.brightness_medium,
+            trailing: Switch(
+              value: themeState.isAmoled,
+              onChanged: (bool value) {
+                ref.read(themeProvider.notifier).toggleAmoled(value);
+              },
+            ),
+          ),
+        _buildSettingTile(
+          title: 'Language',
+          icon: Icons.language,
+          trailing: Directionality(
+            // Add this wrapper
+            textDirection: TextDirection.ltr,
+            child: DropdownButton<String>(
+              value: _selectedLanguage,
+              onChanged: null,
+              items: ['english'].map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value.capitalize()),
+                );
+              }).toList(),
+            ),
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
   Widget _buildDisplaySettings() {
     return Column(
@@ -573,16 +579,13 @@ Widget _buildGeneralSettings() {
         ListTile(
           leading: const Icon(Icons.privacy_tip_outlined, color: Colors.blue),
           title: const Text('Privacy Policy & Terms'),
-          onTap: () {
-            // Navigate to privacy policy
-          },
+          onTap: () => UrlLauncherUtil.launchURL('https://github.com/ivin-titus/ReSmart/blob/master/privacy_policy_and_terms_and_conditions.md'),
         ),
         ListTile(
           leading: const Icon(Icons.person_outline, color: Colors.blue),
           title: const Text('Developer Info'),
-          onTap: () {
-            // Show developer info
-          },
+          onTap: () => UrlLauncherUtil.launchURL('https://github.com/ivin-titus'),
+
         ),
       ],
     );

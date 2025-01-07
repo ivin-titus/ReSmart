@@ -42,6 +42,8 @@ dependencies:
   google_fonts: ^6.1.0
   provider: ^6.0.5
   flutter_riverpod: ^2.6.1
+  url_launcher: ^6.1.14
+
 
 
 
