@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class SharedStyles {
   // Colors
-  static const Color backgroundColor = Colors.black87;
+  static const Color backgroundColor = Color.fromARGB(0, 0, 0, 0);
   static const Color textColor = Colors.white;
   static const Color errorColor = Colors.redAccent;
 
