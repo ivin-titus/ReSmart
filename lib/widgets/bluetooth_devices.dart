@@ -53,6 +53,7 @@ class _BluetoothDevicesSectionState extends State<BluetoothDevicesSection> {
     ].request();
   }
 
+
   void _startScan() {
     setState(() {
       discoveredDevices = [];
