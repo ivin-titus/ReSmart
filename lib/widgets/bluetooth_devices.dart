@@ -9,7 +9,6 @@ class BluetoothDevicesSection extends StatefulWidget {
       _BluetoothDevicesSectionState();
 }
 
-
 class _BluetoothDevicesSectionState extends State<BluetoothDevicesSection> {
   final _ble = FlutterReactiveBle();
   List<DiscoveredDevice> discoveredDevices = [];
