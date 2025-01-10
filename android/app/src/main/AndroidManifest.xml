@@ -8,12 +8,16 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
 
     <!-- Hardware Features -->
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />  <!-- Optional for older devices -->
 
     <!-- SDK Versions -->
-    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="33" />
+    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="34" />
 
     <application
         android:label="resmart"
