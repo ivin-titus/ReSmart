@@ -74,7 +74,7 @@ packages:
     source: hosted
     version: "1.1.1"
   collection:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: collection
       sha256: a1ace0a119f20aabc852d165077c036cd864315bd99b7eaa10a60100341941bf
@@ -129,14 +129,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
-  fixnum:
-    dependency: transitive
-    description:
-      name: fixnum
-      sha256: b6dc7065e46c974bc7c5f143080a6764ec7a4be6da1285ececdc37be96de53be
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -190,14 +182,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.4"
-  flutter_reactive_ble:
-    dependency: "direct main"
-    description:
-      name: flutter_reactive_ble
-      sha256: "3ca8430bc7a6cabe5529aab4afaa2e3cb285941f7f7ab7472604074e347c1302"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.4.0"
   flutter_riverpod:
     dependency: "direct main"
     description:
@@ -216,14 +200,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  functional_data:
-    dependency: transitive
-    description:
-      name: functional_data
-      sha256: "76d17dc707c40e552014f5a49c0afcc3f1e3f05e800cd6b7872940bfe41a5039"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.0"
   google_fonts:
     dependency: "direct main"
     description:
@@ -528,14 +504,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.1"
-  protobuf:
-    dependency: transitive
-    description:
-      name: protobuf
-      sha256: "01dd9bd0fa02548bf2ceee13545d4a0ec6046459d847b6b061d8a27237108a08"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   provider:
     dependency: "direct main"
     description:
@@ -544,22 +512,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.2"
-  reactive_ble_mobile:
-    dependency: transitive
-    description:
-      name: reactive_ble_mobile
-      sha256: "78af92cfb184770a277a8bdaa76b396a28dbada8931f3d8d0ff552414681f5db"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.4.0"
-  reactive_ble_platform_interface:
-    dependency: transitive
-    description:
-      name: reactive_ble_platform_interface
-      sha256: d0e6f86c7ee3865b74d8a7b6deb1fb8320b24176dfd9a3e475f84b7117eb42c7
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.4.0"
   riverpod:
     dependency: transitive
     description:
