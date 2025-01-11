@@ -15,7 +15,7 @@ class DevicesTab extends StatelessWidget {
         ),
         body: Column(
           children: [
-            Text("Hello"),
+            BluetoothDeviceInfo(),
           ],
         ),
       ),
