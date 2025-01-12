@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
@@ -23,9 +24,10 @@ class BluetoothDevice {
   final DeviceType type;
   final int? batteryLevel;
   final String? codec;
-  final bool isStereio;
+  final bool isStereo;
   final String? useCase;
   final ScanResult? scanResult;
+  final bool isConnected;
 
   const BluetoothDevice({
     required this.name,
@@ -33,40 +35,74 @@ class BluetoothDevice {
     required this.type,
     this.batteryLevel,
     this.codec,
-    this.isStereio = true,
+    this.isStereo = true,
     this.useCase,
     this.scanResult,
+    required this.isConnected,
   });
 
   factory BluetoothDevice.fromScanResult(ScanResult result) {
     final deviceName = result.device.platformName.isNotEmpty
         ? result.device.platformName
-        : 'Unknown Device';
-    
+        : _getDeviceNameFromManufacturerData(
+            result.advertisementData.manufacturerData);
+
     return BluetoothDevice(
       name: deviceName,
       id: result.device.remoteId.str,
-      type: _determineDeviceType(result),
+      type: _determineDeviceType(result, deviceName),
       batteryLevel: _getBatteryLevel(result),
+      useCase: _determineUseCase(result),
+      isConnected: result.device.isConnected,
       scanResult: result,
     );
   }
 
-  static DeviceType _determineDeviceType(ScanResult result) {
-    final uuids = result.advertisementData.serviceUuids;
-    if (uuids.contains('1108')) return DeviceType.headset;
-    if (uuids.contains('110A')) return DeviceType.speaker;
-    if (uuids.contains('1124')) return DeviceType.keyboard;
+  static String _getDeviceNameFromManufacturerData(
+      Map<int, List<int>> manufacturerData) {
+    if (manufacturerData.containsKey(0x004C)) return 'Apple Device';
+    if (manufacturerData.containsKey(0x0075)) return 'Samsung Device';
+    return 'Unknown Device';
+  }
+
+  static DeviceType _determineDeviceType(ScanResult result, String name) {
+    final lowerName = name.toLowerCase();
+    if (lowerName.contains('headphone') || lowerName.contains('buds'))
+      return DeviceType.headset;
+    if (lowerName.contains('speaker')) return DeviceType.speaker;
+    if (lowerName.contains('keyboard')) return DeviceType.keyboard;
+    if (lowerName.contains('pc') || lowerName.contains('computer'))
+      return DeviceType.computer;
+    if (lowerName.contains('phone')) return DeviceType.mobile;
+
+    final serviceUuids = result.advertisementData.serviceUuids;
+    if (serviceUuids.contains('1108')) return DeviceType.headset;
+    if (serviceUuids.contains('110A')) return DeviceType.speaker;
+    if (serviceUuids.contains('1124')) return DeviceType.keyboard;
+
+    final manufacturerData = result.advertisementData.manufacturerData;
+    if (manufacturerData.containsKey(0x004C) ||
+        manufacturerData.containsKey(0x0075)) {
+      return DeviceType.mobile;
+    }
+
     return DeviceType.other;
   }
 
   static int? _getBatteryLevel(ScanResult result) {
     try {
-      return result.advertisementData.manufacturerData.values
-          .first.last;
-    } catch (_) {
-      return null;
-    }
+      final level = result.advertisementData.serviceData['180F']?.last;
+      if (level != null && level <= 100) return level;
+    } catch (_) {}
+    return null;
+  }
+
+  static String? _determineUseCase(ScanResult result) {
+    final services = result.advertisementData.serviceUuids;
+    if (services.contains('110B')) return 'Media Audio';
+    if (services.contains('110C')) return 'Call Audio';
+    if (services.contains('111E')) return 'Handsfree';
+    return null;
   }
 }
 
@@ -86,9 +122,7 @@ class BluetoothDeviceInfo extends StatefulWidget {
   State<BluetoothDeviceInfo> createState() => _BluetoothDeviceInfoState();
 }
 
-
 class _BluetoothDeviceInfoState extends State<BluetoothDeviceInfo> {
-
   bool _showAllDevices = false;
   List<BluetoothDevice> _devices = [];
   bool _isScanning = false;
@@ -100,26 +134,76 @@ class _BluetoothDeviceInfoState extends State<BluetoothDeviceInfo> {
     _initBluetooth();
   }
 
-  Future<void> _initBluetooth() async {
-    FlutterBluePlus.adapterState.listen((state) {
-      setState(() => _isBluetoothOn = state == BluetoothAdapterState.on);
-    });
+Future<void> _initBluetooth() async {
+  FlutterBluePlus.adapterState.listen((state) {
+    setState(() => _isBluetoothOn = state == BluetoothAdapterState.on);
+  });
 
-    FlutterBluePlus.scanResults.listen((results) {
-      setState(() {
-        _devices = results
-            .map((result) => BluetoothDevice.fromScanResult(result))
-            .toList();
-      });
-    });
+  await _updateConnectedDevices();
 
-    FlutterBluePlus.isScanning.listen((scanning) {
-      setState(() => _isScanning = scanning);
-    });
+  // Remove connection event listener as it's not available
+  // Instead, periodically check for connected devices
+  Timer.periodic(const Duration(seconds: 2), (_) {
+    _updateConnectedDevices();
+  });
 
-    if (await FlutterBluePlus.isSupported) {
-      _startScan();
-    }
+  FlutterBluePlus.scanResults.listen((results) {
+    _updateDevicesFromScan(results);
+  });
+
+  FlutterBluePlus.isScanning.listen((scanning) {
+    setState(() => _isScanning = scanning);
+  });
+
+  if (await FlutterBluePlus.isSupported) {
+    _startScan();
+  }
+}
+
+Future<void> _updateConnectedDevices() async {
+  try {
+    final connectedDevices = await FlutterBluePlus.connectedSystemDevices;
+    if (!mounted) return;
+    
+    setState(() {
+      _devices = [];
+      for (var device in connectedDevices) {
+        _devices.add(BluetoothDevice(
+          name: device.platformName.isNotEmpty ? device.platformName : 'Unknown Device',
+          id: device.remoteId.str,
+          type: _determineDeviceTypeFromName(device.platformName),
+          isConnected: true,
+        ));
+      }
+    });
+  } catch (e) {
+    debugPrint('Error getting connected devices: $e');
+  }
+}
+
+  void _updateDevicesFromScan(List<ScanResult> results) {
+    setState(() {
+      for (var result in results) {
+        final index =
+            _devices.indexWhere((d) => d.id == result.device.remoteId.str);
+        if (index != -1) {
+          _devices[index] = BluetoothDevice.fromScanResult(result);
+        }
+      }
+    });
+  }
+
+  DeviceType _determineDeviceTypeFromName(String name) {
+    final lowerName = name.toLowerCase();
+    if (lowerName.contains('headphone') || lowerName.contains('buds'))
+      return DeviceType.headset;
+    if (lowerName.contains('speaker')) return DeviceType.speaker;
+    if (lowerName.contains('keyboard')) return DeviceType.keyboard;
+    if (lowerName.contains('pc') || lowerName.contains('computer'))
+      return DeviceType.computer;
+    if (lowerName.contains('phone') || lowerName.contains('5G')) return DeviceType.mobile;
+    if (lowerName.contains('watch')) return DeviceType.watch;
+    return DeviceType.other;
   }
 
   Future<void> _startScan() async {
@@ -133,8 +217,7 @@ class _BluetoothDeviceInfoState extends State<BluetoothDeviceInfo> {
     }
   }
 
-
-@override
+  @override
   Widget build(BuildContext context) {
     final displayDevices =
         _showAllDevices ? _devices : _devices.take(3).toList();
@@ -151,11 +234,16 @@ class _BluetoothDeviceInfoState extends State<BluetoothDeviceInfo> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _Header(
-              title: widget.title,
-              titleStyle: widget.titleStyle,
-              isScanning: _isScanning,
-              onRefresh: _startScan,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                widget.title,
+                style:
+                    widget.titleStyle?.copyWith(fontWeight: FontWeight.bold) ??
+                        Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+              ),
             ),
             const SizedBox(height: 8),
             if (!_isBluetoothOn)
@@ -173,9 +261,21 @@ class _BluetoothDeviceInfoState extends State<BluetoothDeviceInfo> {
   Widget _buildDeviceList(List<BluetoothDevice> devices) {
     return Column(
       children: [
-        _DeviceList(
-          devices: devices,
-          onDeviceTap: _connectToDevice,
+        Container(
+          constraints: BoxConstraints(
+            maxHeight: _showAllDevices ? 300 : double.infinity,
+          ),
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: _showAllDevices
+                ? const AlwaysScrollableScrollPhysics()
+                : const NeverScrollableScrollPhysics(),
+            itemCount: devices.length,
+            itemBuilder: (context, index) => DeviceListItem(
+              device: devices[index],
+              onTap: () => _showDeviceInfo(devices[index]),
+            ),
+          ),
         ),
         if (_devices.length > 3)
           _ShowMoreButton(
@@ -186,65 +286,33 @@ class _BluetoothDeviceInfoState extends State<BluetoothDeviceInfo> {
     );
   }
 
-  Future<void> _connectToDevice(BluetoothDevice device) async {
-    try {
-      final bleDevice = device.scanResult?.device;
-      if (bleDevice != null) {
-        await bleDevice.connect();
-        _showDeviceInfo(device);
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to connect: $e')),
-      );
-    }
-  }
-
   void _showDeviceInfo(BluetoothDevice device) {
     showDialog(
       context: context,
-      builder: (context) => DeviceInfoDialog(device: device),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  final String title;
-  final TextStyle? titleStyle;
-  final bool isScanning;
-  final VoidCallback onRefresh;
-
-  const _Header({
-    required this.title,
-    this.titleStyle,
-    required this.isScanning,
-    required this.onRefresh,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Icon(Icons.bluetooth, size: 24),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            title,
-            style: titleStyle ?? Theme.of(context).textTheme.titleLarge,
-          ),
+      builder: (context) => AlertDialog(
+        title: Text(device.name),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Device ID: ${device.id}'),
+            Text('Type: ${device.type.toString().split('.').last}'),
+            if (device.batteryLevel != null)
+              Text('Battery: ${device.batteryLevel}%'),
+            if (device.useCase != null) Text('Use: ${device.useCase}'),
+            if (device.type == DeviceType.headset) ...[
+              if (device.codec != null) Text('Codec: ${device.codec}'),
+              Text('Audio: ${device.isStereo ? 'Stereo' : 'Mono'}'),
+            ],
+          ],
         ),
-        if (isScanning)
-          const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          )
-        else
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: onRefresh,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
           ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -305,28 +373,6 @@ class _BluetoothStatus extends StatelessWidget {
   }
 }
 
-class _DeviceList extends StatelessWidget {
-  final List<BluetoothDevice> devices;
-  final Function(BluetoothDevice) onDeviceTap;
-
-  const _DeviceList({required this.devices, required this.onDeviceTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: devices.length > 4
-          ? const AlwaysScrollableScrollPhysics()
-          : const NeverScrollableScrollPhysics(),
-      itemCount: devices.length,
-      itemBuilder: (context, index) => DeviceListItem(
-        device: devices[index],
-        onTap: () => onDeviceTap(devices[index]),
-      ),
-    );
-  }
-}
-
 class DeviceListItem extends StatelessWidget {
   final BluetoothDevice device;
   final VoidCallback onTap;
@@ -373,7 +419,7 @@ class DeviceListItem extends StatelessWidget {
     return ListTile(
       leading: Icon(_getDeviceIcon(device.type)),
       title: Text(device.name),
-      subtitle: Text(device.id),
+      subtitle: Text(device.useCase ?? device.id),
       trailing: BatteryIndicator(level: device.batteryLevel),
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 8),
@@ -426,38 +472,6 @@ class BatteryIndicator extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class DeviceInfoDialog extends StatelessWidget {
-  final BluetoothDevice device;
-
-  const DeviceInfoDialog({Key? key, required this.device}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(device.name),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Device ID: ${device.id}'),
-          Text('Type: ${device.type.toString().split('.').last}'),
-          if (device.type == DeviceType.headset) ...[
-            Text('Codec: ${device.codec}'),
-            Text('Audio: ${device.isStereio ? 'Stereo' : 'Mono'}'),
-            Text('Use: ${device.useCase}'),
-          ],
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
-        ),
-      ],
     );
   }
 }
