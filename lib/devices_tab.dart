@@ -9,13 +9,15 @@ class DevicesTab extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Devices'),
+          title: Text('Devices'),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
         body: Column(
           children: [
+            SizedBox(height: 20),
             BluetoothDeviceInfo(),
+            SizedBox(height: 15),
           ],
         ),
       ),

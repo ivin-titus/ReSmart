@@ -1,3 +1,4 @@
+// bluetooth device
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -134,52 +135,54 @@ class _BluetoothDeviceInfoState extends State<BluetoothDeviceInfo> {
     _initBluetooth();
   }
 
-Future<void> _initBluetooth() async {
-  FlutterBluePlus.adapterState.listen((state) {
-    setState(() => _isBluetoothOn = state == BluetoothAdapterState.on);
-  });
-
-  await _updateConnectedDevices();
-
-  // Remove connection event listener as it's not available
-  // Instead, periodically check for connected devices
-  Timer.periodic(const Duration(seconds: 2), (_) {
-    _updateConnectedDevices();
-  });
-
-  FlutterBluePlus.scanResults.listen((results) {
-    _updateDevicesFromScan(results);
-  });
-
-  FlutterBluePlus.isScanning.listen((scanning) {
-    setState(() => _isScanning = scanning);
-  });
-
-  if (await FlutterBluePlus.isSupported) {
-    _startScan();
-  }
-}
-
-Future<void> _updateConnectedDevices() async {
-  try {
-    final connectedDevices = await FlutterBluePlus.connectedSystemDevices;
-    if (!mounted) return;
-    
-    setState(() {
-      _devices = [];
-      for (var device in connectedDevices) {
-        _devices.add(BluetoothDevice(
-          name: device.platformName.isNotEmpty ? device.platformName : 'Unknown Device',
-          id: device.remoteId.str,
-          type: _determineDeviceTypeFromName(device.platformName),
-          isConnected: true,
-        ));
-      }
+  Future<void> _initBluetooth() async {
+    FlutterBluePlus.adapterState.listen((state) {
+      setState(() => _isBluetoothOn = state == BluetoothAdapterState.on);
     });
-  } catch (e) {
-    debugPrint('Error getting connected devices: $e');
+
+    await _updateConnectedDevices();
+
+    // Remove connection event listener as it's not available
+    // Instead, periodically check for connected devices
+    Timer.periodic(const Duration(seconds: 2), (_) {
+      _updateConnectedDevices();
+    });
+
+    FlutterBluePlus.scanResults.listen((results) {
+      _updateDevicesFromScan(results);
+    });
+
+    FlutterBluePlus.isScanning.listen((scanning) {
+      setState(() => _isScanning = scanning);
+    });
+
+    if (await FlutterBluePlus.isSupported) {
+      _startScan();
+    }
   }
-}
+
+  Future<void> _updateConnectedDevices() async {
+    try {
+      final connectedDevices = await FlutterBluePlus.connectedSystemDevices;
+      if (!mounted) return;
+
+      setState(() {
+        _devices = [];
+        for (var device in connectedDevices) {
+          _devices.add(BluetoothDevice(
+            name: device.platformName.isNotEmpty
+                ? device.platformName
+                : 'Unknown Device',
+            id: device.remoteId.str,
+            type: _determineDeviceTypeFromName(device.platformName),
+            isConnected: true,
+          ));
+        }
+      });
+    } catch (e) {
+      debugPrint('Error getting connected devices: $e');
+    }
+  }
 
   void _updateDevicesFromScan(List<ScanResult> results) {
     setState(() {
@@ -201,7 +204,8 @@ Future<void> _updateConnectedDevices() async {
     if (lowerName.contains('keyboard')) return DeviceType.keyboard;
     if (lowerName.contains('pc') || lowerName.contains('computer'))
       return DeviceType.computer;
-    if (lowerName.contains('phone') || lowerName.contains('5G')) return DeviceType.mobile;
+    if (lowerName.contains('phone') || lowerName.contains('5G'))
+      return DeviceType.mobile;
     if (lowerName.contains('watch')) return DeviceType.watch;
     return DeviceType.other;
   }
