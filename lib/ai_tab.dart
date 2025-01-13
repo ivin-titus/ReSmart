@@ -8,9 +8,15 @@ class AITab extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('AI Assistant'),
+          title: const Text(
+            'AI Assistant',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 24,
+            ),
+          ),
+          toolbarHeight: 100, // Increases AppBar height
           backgroundColor: Colors.transparent,
-          elevation: 0,
         ),
         body: const Center(
           child: Text('AI Assistant Screen '),

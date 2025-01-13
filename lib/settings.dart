@@ -271,7 +271,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         if (isDarkMode)
           _buildSettingTile(
-            title: 'AMOLED Screen',
+            title: 'AMOLED Mode',
             icon: Icons.brightness_medium,
             trailing: Switch(
               value: themeState.isAmoled,
@@ -630,7 +630,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(171, 40, 40, 40),
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: const Row(
