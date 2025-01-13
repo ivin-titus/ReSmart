@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'home_tab.dart';
+import 'tools_tab.dart';
 import 'devices_tab.dart';
 import 'ai_tab.dart';
 import 'aod_screen.dart';
@@ -18,8 +18,8 @@ class _NavBarState extends ConsumerState<NavBar> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    const HomeTab(),
     const DevicesTab(),
+    const ToolsTab(),
     const AITab(),
     const AODScreen(),
     const SettingsScreen(),
@@ -40,7 +40,9 @@ class _NavBarState extends ConsumerState<NavBar> {
 
     // Determine background color based on theme and AMOLED mode
     final backgroundColor = isDark
-        ? (themeState.isAmoled ? Colors.black : const Color.fromARGB(255, 27, 27, 27))
+        ? (themeState.isAmoled
+            ? Colors.black
+            : const Color.fromARGB(255, 27, 27, 27))
         : Colors.white;
 
     // Adjust indicator color for AMOLED mode
@@ -52,9 +54,8 @@ class _NavBarState extends ConsumerState<NavBar> {
 
     // Adjust text and icon colors for AMOLED mode
     final selectedColor = isDark && themeState.isAmoled ? Colors.white : null;
-    final unselectedColor = isDark && themeState.isAmoled 
-        ? Colors.white.withOpacity(0.7) 
-        : null;
+    final unselectedColor =
+        isDark && themeState.isAmoled ? Colors.white.withOpacity(0.7) : null;
 
     return Scaffold(
       body: _screens[_selectedIndex],
@@ -96,19 +97,19 @@ class _NavBarState extends ConsumerState<NavBar> {
                 onDestinationSelected: _onItemTapped,
                 destinations: const [
                   NavigationDestination(
-                    icon: Icon(Icons.home_outlined),
-                    selectedIcon: Icon(Icons.home),
-                    label: 'Home',
-                  ),
-                  NavigationDestination(
                     icon: Icon(Icons.devices_outlined),
                     selectedIcon: Icon(Icons.devices),
-                    label: 'Device',
+                    label: 'Devices',
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.smart_toy_outlined),
-                    selectedIcon: Icon(Icons.smart_toy),
-                    label: 'AI',
+                    icon: Icon(Icons.handyman_outlined),
+                    selectedIcon: Icon(Icons.handyman),
+                    label: 'Tools',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.assistant_outlined),
+                    selectedIcon: Icon(Icons.assistant),
+                    label: 'Assistant',
                   ),
                   NavigationDestination(
                     icon: Icon(Icons.screen_lock_portrait_outlined),
