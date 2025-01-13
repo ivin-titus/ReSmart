@@ -13,7 +13,7 @@ class HomeTab extends StatelessWidget {
           elevation: 0,
         ),
         body: const Center(
-          child: Text('Implement Home Screen content here'),
+          child: Text("Home Screen"),
         ),
       ),
     );

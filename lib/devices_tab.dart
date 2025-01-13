@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'widgets/bluetooth_devices.dart';
 
 class DevicesTab extends StatelessWidget {
   const DevicesTab({super.key});
@@ -8,12 +9,16 @@ class DevicesTab extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Devices'),
+          title: Text('Devices'),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: const Center(
-          child: Text('Implement Devices Screen content here'),
+        body: Column(
+          children: [
+            SizedBox(height: 20),
+            BluetoothDeviceInfo(),
+            SizedBox(height: 15),
+          ],
         ),
       ),
     );

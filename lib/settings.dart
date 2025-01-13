@@ -271,7 +271,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         if (isDarkMode)
           _buildSettingTile(
-            title: 'AMOLED Screen',
+            title: 'AMOLED Mode',
             icon: Icons.brightness_medium,
             trailing: Switch(
               value: themeState.isAmoled,

@@ -8,12 +8,18 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 
     <!-- Hardware Features -->
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />  <!-- Optional for older devices -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
 
     <!-- SDK Versions -->
-    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="33" />
+    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="34" />
 
     <application
         android:label="resmart"
@@ -55,6 +61,9 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
+        </intent>
+        <intent>
+            <action android:name="android.bluetooth.device.action.FOUND" />
         </intent>
     </queries>
 
