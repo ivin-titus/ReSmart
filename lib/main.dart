@@ -57,7 +57,7 @@ Future<void> initializeApp() async {
 
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
+      // DeviceOrientation.portraitDown,
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
@@ -94,7 +94,7 @@ Widget build(BuildContext context, WidgetRef ref) {
   
   return MaterialApp(
     debugShowCheckedModeBanner: false,
-    title: 'ReSmart AOD',
+    title: 'ReSmart',
     themeMode: themeState.themeMode,
     locale: const Locale('en'),
     localizationsDelegates: const [
