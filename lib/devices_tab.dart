@@ -8,15 +8,24 @@ class DevicesTab extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Devices'),
+          title: const Text(
+            'Devices',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 24,
+            ),
+          ),
+          toolbarHeight: 100, // Increases AppBar height
           backgroundColor: Colors.transparent,
-          elevation: 0,
         ),
         body: Column(
           children: [
-            SizedBox(height: 15),
+            Text('Linked Devices'),
+            SizedBox(height: 120),
             Text('BT Devices'),
-            SizedBox(height: 15),
+            SizedBox(height: 120),
+            Text('Devices on same wifi network'),
+            SizedBox(height: 120),
           ],
         ),
       ),
