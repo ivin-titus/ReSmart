@@ -13,7 +13,7 @@ class AITab extends StatelessWidget {
           elevation: 0,
         ),
         body: const Center(
-          child: Text('Implement AI Assistant Screen content here'),
+          child: Text('AI Assistant Screen'),
         ),
       ),
     );
