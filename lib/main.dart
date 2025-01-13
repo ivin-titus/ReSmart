@@ -62,10 +62,10 @@ Future<void> initializeApp() async {
       DeviceOrientation.landscapeRight,
     ]);
 
-    await SystemChrome.setEnabledSystemUIMode(
+    /* await SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.immersiveSticky,
       overlays: [],
-    );
+    ); */
 
     await dotenv.load(fileName: ".env").catchError((error) {
       debugPrint('Error loading .env file: $error');
