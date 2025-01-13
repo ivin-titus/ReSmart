@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class DevicesTab extends StatelessWidget {
-  const DevicesTab({super.key});
+class ToolsTab extends StatelessWidget {
+  const ToolsTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -9,7 +9,7 @@ class DevicesTab extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Devices',
+            'Tools',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 24,
@@ -18,15 +18,8 @@ class DevicesTab extends StatelessWidget {
           toolbarHeight: 100, // Increases AppBar height
           backgroundColor: Colors.transparent,
         ),
-        body: Column(
-          children: [
-            Text('Linked Devices'),
-            SizedBox(height: 120),
-            Text('BT Devices'),
-            SizedBox(height: 120),
-            Text('Devices on Same wifi network'),
-            SizedBox(height: 120),
-          ],
+        body: const Center(
+          child: Text('Sometools'),
         ),
       ),
     );
