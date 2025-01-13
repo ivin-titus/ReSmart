@@ -20,12 +20,7 @@ class DevicesTab extends StatelessWidget {
         ),
         body: Column(
           children: [
-            Text('Linked Devices'),
-            SizedBox(height: 120),
-            Text('BT Devices'),
-            SizedBox(height: 120),
-            Text('Devices on Same wifi network'),
-            SizedBox(height: 120),
+            Text(''),
           ],
         ),
       ),
