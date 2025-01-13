@@ -612,7 +612,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       body: CustomScrollView(
         slivers: [
           const SliverAppBar(
-            pinned: true,
+            pinned: false,
             expandedHeight: 120.0,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
@@ -630,7 +630,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.transparent,
+                    color: const Color.fromARGB(0, 10, 10, 10),
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: const Row(
