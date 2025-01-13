@@ -12,8 +12,12 @@ class DevicesTab extends StatelessWidget {
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: const Center(
-          child: Text('Implement Devices Screen content here'),
+        body: Column(
+          children: [
+            SizedBox(height: 15),
+            Text('BT Devices'),
+            SizedBox(height: 15),
+          ],
         ),
       ),
     );
