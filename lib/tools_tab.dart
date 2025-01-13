@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AITab extends StatelessWidget {
-  const AITab({super.key});
+class ToolsTab extends StatelessWidget {
+  const ToolsTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -9,7 +9,7 @@ class AITab extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'AI Assistant',
+            'Tools',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 24,
@@ -19,7 +19,7 @@ class AITab extends StatelessWidget {
           backgroundColor: Colors.transparent,
         ),
         body: const Center(
-          child: Text('AI Assistant Screen '),
+          child: Text('Sometools'),
         ),
       ),
     );
