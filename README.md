@@ -70,6 +70,7 @@ The project is currently in its early stages of development, with implementation
 - **Date**: Fully operational.
 - **Time**: Fully operational.
 - **Weather**: Fully operational.
+- **Quotes**: Partially functional, with some bugs.
 - **Settings**: Styled for existing features with a clean and intuitive layout; only a few options are currently functional.
 - **Theme Support**: Implemented dark and light modes with seamless integration of the system default theme.
 - **Future-Ready UI**: Designed an app-like interface to support future implementations seamlessly.
