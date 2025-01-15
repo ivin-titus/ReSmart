@@ -16,7 +16,7 @@
     <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="33" />
 
     <application
-        android:label="resmart"
+        android:label="ReSmart"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="true"
