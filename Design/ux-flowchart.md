@@ -30,7 +30,7 @@ flowchart TD
 
     %% Google Login
     Google --> CheckGoogle[Is User New?]
-    CheckGoogle -->|No| GoogleLogin[Welcome Back, {username or user_nickname}]
+    CheckGoogle -->|No| GoogleLogin[Welcome Back, (username or user_nickname)]
     CheckGoogle -->|Yes| GoogleRegister[Welcome Screen for New User]
     GoogleRegister --> PhoneVerification1[Enter Phone for OTP Verification]
     PhoneVerification1 --> AgreeTC2[Agree to Terms & Conditions]
@@ -39,7 +39,7 @@ flowchart TD
 
     %% GitHub Login
     GitHub --> CheckGitHub[Is User New?]
-    CheckGitHub -->|No| GitHubLogin[Welcome Back, {username or user_nickname}]
+    CheckGitHub -->|No| GitHubLogin[Welcome Back, (username or user_nickname)]
     CheckGitHub -->|Yes| GitHubRegister[Welcome Screen for New User]
     GitHubRegister --> PhoneVerification2[Enter Phone for OTP Verification]
     PhoneVerification2 --> AgreeTC3[Agree to Terms & Conditions]

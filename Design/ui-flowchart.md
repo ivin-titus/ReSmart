@@ -18,7 +18,7 @@ flowchart TD
     %% Email Flow
     EmailOption --> EmailCheckScreen[Screen: Enter Email Address]
     EmailCheckScreen -->|Existing User| OTPInputScreen[Screen: Enter OTP]
-    OTPInputScreen --> EmailLoginSuccess[Screen: Welcome Back, {username or user_nickname}]
+    OTPInputScreen --> EmailLoginSuccess[Screen: Welcome Back, (username or user_nickname)]
     EmailCheckScreen -->|New User| EmailRegistrationScreen[Screen: Registration Form]
     EmailRegistrationScreen --> EmailVerifyScreen[Screen: Enter OTP for Email Verification]
     EmailVerifyScreen --> TCAgreeScreen1[Screen: Agree to Terms & Conditions]
@@ -32,7 +32,7 @@ flowchart TD
     GooglePhoneScreen --> TCAgreeScreen2[Screen: Agree to Terms & Conditions]
     TCAgreeScreen2 --> OptionalNickScreen2[Screen: Enter Optional Nickname]
     OptionalNickScreen2 --> GoogleLoginSuccess[Screen: Login Successful]
-    GoogleAuthScreen -->|Existing User| GoogleLoginSuccess[Screen: Welcome Back, {username or user_nickname}]
+    GoogleAuthScreen -->|Existing User| GoogleLoginSuccess[Screen: Welcome Back, (username or user_nickname)]
 
     %% GitHub Flow
     GitHubOption --> GitHubAuthScreen[Screen: Authenticate with GitHub]
@@ -41,7 +41,7 @@ flowchart TD
     GitHubPhoneScreen --> TCAgreeScreen3[Screen: Agree to Terms & Conditions]
     TCAgreeScreen3 --> OptionalNickScreen3[Screen: Enter Optional Nickname]
     OptionalNickScreen3 --> GitHubLoginSuccess[Screen: Login Successful]
-    GitHubAuthScreen -->|Existing User| GitHubLoginSuccess[Screen: Welcome Back, {username or user_nickname}]
+    GitHubAuthScreen -->|Existing User| GitHubLoginSuccess[Screen: Welcome Back, (username or user_nickname)]
 
     %% Guest Flow
     GuestOption --> GuestWarningScreen[Screen: Warning - Limited Features Available]
