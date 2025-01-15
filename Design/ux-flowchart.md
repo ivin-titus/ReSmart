@@ -21,7 +21,7 @@ flowchart TD
     SendOTP --> EnterOTP[Enter OTP]
     EnterOTP --> Verified[Login Successful]
     CheckEmail -->|No| EmailRegister[Show Registration Form]
-    EmailRegister --> FillDetails[Fill Details: Name, Email, Password]
+    EmailRegister --> FillDetails[Fill Details: Name, Email]
     FillDetails --> VerifyEmail[Email Verification via OTP]
     VerifyEmail --> AgreeTC1[Agree to Terms & Conditions]
     AgreeTC1 --> OptionalNick1[Enter Optional Nickname]
