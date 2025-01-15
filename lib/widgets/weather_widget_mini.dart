@@ -6,7 +6,6 @@ import 'weather_widget.dart';
 import 'shared_styles.dart';
 import 'dart:async';
 
-
 class MiniWeatherWidget extends StatefulWidget {
   final TextStyle? textStyle;
 
@@ -19,7 +18,8 @@ class MiniWeatherWidget extends StatefulWidget {
   _MiniWeatherWidgetState createState() => _MiniWeatherWidgetState();
 }
 
-class _MiniWeatherWidgetState extends State<MiniWeatherWidget> with SingleTickerProviderStateMixin {
+class _MiniWeatherWidgetState extends State<MiniWeatherWidget>
+    with SingleTickerProviderStateMixin {
   final WeatherService _weatherService = WeatherService();
   Map<String, dynamic>? _weatherData;
   String? _error;
@@ -68,7 +68,7 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> with SingleTicker
 
   Future<void> _initialize() async {
     if (!mounted) return;
-    
+
     setState(() => _loading = true);
 
     try {
@@ -91,13 +91,13 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> with SingleTicker
 
   Future<void> _showWeatherDialog() async {
     if (!mounted || _isProcessingTap) return;
-    
+
     setState(() => _isProcessingTap = true);
-    
+
     try {
       // Simpler animation handling
       await Future.delayed(const Duration(milliseconds: 100));
-      
+
       if (!mounted) return;
 
       await showDialog(
@@ -154,11 +154,9 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> with SingleTicker
                 _weatherData!['weather'][0]['description'],
                 time: DateTime.now(),
                 sunrise: DateTime.fromMillisecondsSinceEpoch(
-                  _weatherData!['sys']['sunrise'] * 1000
-                ),
+                    _weatherData!['sys']['sunrise'] * 1000),
                 sunset: DateTime.fromMillisecondsSinceEpoch(
-                  _weatherData!['sys']['sunset'] * 1000
-                ),
+                    _weatherData!['sys']['sunset'] * 1000),
               ),
               color: SharedStyles.textColor,
               size: textStyle.fontSize! - 5,
@@ -169,7 +167,7 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> with SingleTicker
             baseline: textStyle.fontSize! * 0.8,
             baselineType: TextBaseline.alphabetic,
             child: Text(
-                '${(_weatherService.temperatureUnit == 'celsius' ? _weatherData!['main']['temp'].round() : (_weatherData!['main']['temp'] * 9/5 + 32).round())}°${_weatherService.temperatureUnit == 'celsius' ? 'C' : 'F'}',
+              '${(_weatherService.temperatureUnit == 'celsius' ? _weatherData!['main']['temp'].round() : (_weatherData!['main']['temp'] * 9 / 5 + 32).round())}°${_weatherService.temperatureUnit == 'celsius' ? 'C' : 'F'}',
               style: textStyle,
               textScaler: const TextScaler.linear(1.0),
               overflow: TextOverflow.ellipsis,
@@ -198,10 +196,12 @@ class _MiniWeatherWidgetState extends State<MiniWeatherWidget> with SingleTicker
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final textStyle = widget.textStyle?.copyWith(
-                  fontSize: SharedStyles.getResponsiveSize(constraints).clamp(20.0, 28.0),
-                  color: SharedStyles.textColor,
-                ) ?? SharedStyles.getBaseTextStyle(constraints);
-                
+                      fontSize: SharedStyles.getResponsiveSize(constraints)
+                          .clamp(20.0, 28.0),
+                      color: SharedStyles.textColor,
+                    ) ??
+                    SharedStyles.getBaseTextStyle(constraints);
+
                 return Container(
                   decoration: SharedStyles.containerDecoration,
                   padding: EdgeInsets.all(SharedStyles.containerPadding),
