@@ -5,6 +5,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../widgets/time_widget.dart';
 import '../widgets/date_widget.dart';
 import '../widgets/shared_styles.dart';
+import '../widgets/quotes_widget.dart';
 import 'navbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'widgets/services/settings_service.dart';
@@ -19,7 +20,7 @@ class AODScreen extends ConsumerStatefulWidget {
 class _AODScreenState extends ConsumerState<AODScreen> {
   bool _showCloseButton = false;
   DateTime? _lastTapTime;
-  
+
   @override
   void initState() {
     super.initState();
@@ -63,8 +64,8 @@ class _AODScreenState extends ConsumerState<AODScreen> {
     if (_lastTapTime != null &&
         now.difference(_lastTapTime!).inMilliseconds < 300) {
       setState(() => _showCloseButton = true);
-      Future.delayed(const Duration(seconds: 3), 
-        () => mounted ? setState(() => _showCloseButton = false) : null);
+      Future.delayed(const Duration(seconds: 3),
+          () => mounted ? setState(() => _showCloseButton = false) : null);
     }
     _lastTapTime = now;
   }
@@ -124,76 +125,107 @@ class _AODScreenState extends ConsumerState<AODScreen> {
     final screenWidth = constraints.maxWidth;
     final screenHeight = constraints.maxHeight;
     final isLandscape = screenWidth > screenHeight;
-    final smallerDimension = screenWidth < screenHeight ? screenWidth : screenHeight;
-
+    final smallerDimension =
+        screenWidth < screenHeight ? screenWidth : screenHeight;
     final timeTextSize = _getTimeTextSize(smallerDimension);
     final secondaryTextSize = timeTextSize * 0.23;
+    final horizontalPadding =
+        screenWidth * (isLandscape ? 0.08 : _getResponsivePadding(screenWidth));
+    final verticalPadding =
+        screenHeight * _getResponsivePadding(screenHeight, isWidth: false);
+    final contentSpacing = smallerDimension * 0.05;
 
-    final contentStack = Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: smallerDimension * (isLandscape ? 0.02 : 0.015)),
-        TimeWidget(
-          style: TextStyle(
-            fontSize: timeTextSize,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: timeTextSize * 0.02,
+    final leftContent = Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: isLandscape ? verticalPadding : verticalPadding / 2,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          TimeWidget(
+            style: TextStyle(
+              fontSize: timeTextSize,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              letterSpacing: timeTextSize * 0.02,
+            ),
+            amPmStyle: TextStyle(
+              fontSize: timeTextSize *
+                  ((smallerDimension > 300 && isLandscape) ? 0.30 : 0.20),
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          amPmStyle: TextStyle(
-            fontSize: timeTextSize * ((smallerDimension > 300 && isLandscape) ? 0.30 : 0.20),
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              decoration: SharedStyles.containerDecoration,
-              child: DateWidget(
+          SizedBox(height: contentSpacing * 0.5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                decoration: SharedStyles.containerDecoration,
+                child: DateWidget(
+                  textStyle: TextStyle(
+                    fontSize: secondaryTextSize,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    height: 1.0,
+                  ),
+                ),
+              ),
+              MiniWeatherWidget(
                 textStyle: TextStyle(
                   fontSize: secondaryTextSize,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  height: 0.1,
+                  height: 1.0,
                 ),
               ),
+            ],
+          ),
+          SizedBox(height: contentSpacing * 0.5),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 400,
+              minWidth: 200,
             ),
-            MiniWeatherWidget(
-              textStyle: TextStyle(
-                fontSize: secondaryTextSize,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                height: 1.0,
-              ),
-            ),
-          ],
-        )
-      ],
+            child: QuoteWidget(
+                textStyle: Theme.of(context).textTheme.bodyLarge,
+                ),
+          ),
+        ],
+      ),
     );
 
-    return Padding(
-      padding: EdgeInsets.only(
-        left: screenWidth * _getResponsivePadding(screenWidth),
-        top: screenHeight * _getResponsivePadding(screenHeight, isWidth: false),
+    final rightContent = Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: isLandscape ? verticalPadding : verticalPadding / 2,
       ),
-      child: isLandscape
-          ? Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(flex: 3, child: contentStack),
-                const Expanded(flex: 2, child: SizedBox()),
-              ],
-            )
-          : Column(
-              children: [
-                Expanded(flex: 3, child: contentStack),
-                const Expanded(flex: 2, child: SizedBox()),
-              ],
-            ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [],
+      ),
     );
+
+    // For landscape mode, use equal flex values
+    return isLandscape
+        ? Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: 1, child: leftContent),
+              SizedBox(width: contentSpacing),
+              Expanded(flex: 1, child: rightContent),
+            ],
+          )
+        : Column(
+            children: [
+              Expanded(flex: 1, child: leftContent),
+              SizedBox(height: contentSpacing),
+              Expanded(flex: 1, child: rightContent),
+            ],
+          );
   }
 
   @override
@@ -208,8 +240,8 @@ class _AODScreenState extends ConsumerState<AODScreen> {
             body: Stack(
               children: [
                 LayoutBuilder(
-                  builder: (context, constraints) => 
-                    SafeArea(child: _buildMainContent(context, constraints)),
+                  builder: (context, constraints) =>
+                      SafeArea(child: _buildMainContent(context, constraints)),
                 ),
                 _buildCloseButton(),
               ],
