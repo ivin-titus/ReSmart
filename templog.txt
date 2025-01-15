@@ -1,1 +1,2 @@
-- alot of errors after making changes on sharedstyles.txt, aod screen while trying to make spacing even on all screens
+// Stores info about havoc caused just before taking a break
+
