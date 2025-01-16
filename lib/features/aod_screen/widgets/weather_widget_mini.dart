@@ -1,9 +1,9 @@
 //weatherwidgetmini
 import 'package:flutter/material.dart';
-import './services/weather_service.dart';
+import '../../../services/weather_service.dart';
 //import './services/settings_service.dart';
 import 'weather_widget.dart';
-import 'shared_styles.dart';
+import '../../../config/shared_styles.dart';
 import 'dart:async';
 
 class MiniWeatherWidget extends StatefulWidget {
