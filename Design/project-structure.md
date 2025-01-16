@@ -1,8 +1,5 @@
-For a beginner-friendly structure that's still flexible enough to handle new features like `ai_tab`, `device_tab`, and `tools_tab`, you can follow this slightly adjusted structure. It keeps things simple but allows for easy scalability:
 
----
-
-### Updated Simple File Structure
+### Updated File Structure
 ```
 lib
 |- main.dart                     # Entry point of the app
@@ -81,5 +78,3 @@ lib
 - **Scalability**: Adding more tabs (e.g., `profile_tab`, `analytics_tab`) simply requires creating a new folder in `features/` and adding its screen to `screens/`.
 - **Reusability**: Common widgets (like buttons or spinners) are centralized, reducing duplication.
 - **Maintainability**: Feature-specific logic and UI are isolated, making the code easier to debug and extend.
-
-Let me know if you'd like a more detailed example for one of the tabs!
