@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../widgets/weather_widget_mini.dart';
+import '../features/aod_screen/widgets/weather_widget_mini.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-import '../widgets/time_widget.dart';
-import '../widgets/date_widget.dart';
-import '../widgets/shared_styles.dart';
-import '../widgets/quotes_widget.dart';
-import 'navbar.dart';
+import '../features/aod_screen/widgets/time_widget.dart';
+import '../features/aod_screen/widgets/date_widget.dart';
+import '../config/shared_styles.dart';
+import '../features/aod_screen/widgets/quotes_widget.dart';
+import '../widgets/navbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'widgets/services/settings_service.dart';
+import '../services/settings_service.dart';
 
 class AODScreen extends ConsumerStatefulWidget {
   const AODScreen({Key? key}) : super(key: key);

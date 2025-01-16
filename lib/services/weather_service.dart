@@ -4,12 +4,12 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:resmart/settings.dart';
+import 'package:resmart/screens/settings_tab.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:location/location.dart';
 import '../config/env.dart';
-import './weather_icon_provider.dart';
-import 'package:resmart/widgets/services/settings_service.dart';
+import '../config/weather_icon_provider.dart';
+import 'package:resmart/services/settings_service.dart';
 import 'package:resmart/widgets/location_dialog.dart';
 
 class WeatherService {
