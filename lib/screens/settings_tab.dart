@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'; // Added import
 import '../services/settings_service.dart';
 //import 'widgets/services/weather_service.dart';
 import '../config/theme.dart';
-import '../services/launch-urls.dart';
+import '../services/launch_urls.dart';
 
 // Make SettingsScreen a ConsumerStatefulWidget instead of StatefulWidget
 class SettingsScreen extends ConsumerStatefulWidget {
