@@ -33,7 +33,7 @@ lib
 |   |   |- widgets/        # Shared widgets for Devices Tab
 |   |- tools_tab/                # Tools-related feature
 |       |- logic/           # Business logic for Tools Tab
-|       |- widgets/         # Shared widgets for Tools Tab
+|       |- widgets/             # Shared widgets for Tools Tab
 |- widgets/                      # Shared UI components
 |   |- location_dialog.dart
 |   |- navbar.dart
