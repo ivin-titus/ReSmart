@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
-import 'shared_styles.dart';
-import 'services/settings_service.dart';
+import '../../../config/shared_styles.dart';
+import '../../../services/settings_service.dart';
 
 
 // Convert settings format to DateFormat pattern
