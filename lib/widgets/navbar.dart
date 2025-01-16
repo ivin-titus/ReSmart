@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'tools_tab.dart';
-import 'devices_tab.dart';
-import 'ai_tab.dart';
-import 'aod_screen.dart';
-import 'settings.dart';
-import './widgets/services/theme_provider.dart';
+import '../screens/tools_tab.dart';
+import '../screens/devices_tab.dart';
+import '../screens/assistant_tab.dart';
+import '../screens/aod_screen.dart';
+import '../screens/settings_tab.dart';
+import '../config/theme.dart';
 
 class NavBar extends ConsumerStatefulWidget {
   const NavBar({super.key});
