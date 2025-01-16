@@ -70,6 +70,7 @@ lib
 5. **Models**: Add `AIResponseModel` in `models/` for handling API responses.
 6. **Integration**: Connect everything in `ai_tab_screen.dart` and include it in your app's navigation (e.g., `BottomNavigationBar` or `Drawer`).
 
+
 ---
 
 ### Why This Structure is Friendly for Tabs and Features
