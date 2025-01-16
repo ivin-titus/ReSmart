@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:location/location.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'navbar.dart';
-import './widgets/location_dialog.dart';
-import './widgets/services/settings_service.dart';
-import './widgets/services/theme_provider.dart';
+import 'widgets/navbar.dart';
+import 'widgets/location_dialog.dart';
+import 'services/settings_service.dart';
+import 'config/theme_provider.dart';
 
 // Custom error widget for lower memory usage
 class CustomErrorWidget extends StatelessWidget {
