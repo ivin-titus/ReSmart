@@ -11,7 +11,7 @@
     1. "Continue with Email" (email icon next to text).
     2. "Continue with Google" (Google logo next to text).
     3. "Continue with GitHub" (GitHub logo next to text).
-    4. "Continue without an Account".
+    4. "Continue without an Account" (Guest user icon next to text).
   - Footer with "Terms and Conditions" link.
 
 ---
@@ -39,8 +39,7 @@
     2. Last Name.
     3. Email.
     4. Username.
-    5. Password.
-    6. Phone Number (optional, small text: "Can be added later").
+    5. Phone Number (optional, small text: "Can be added later").
   - Checkbox: "I agree to the Terms and Conditions".
   - Button: "Register".
 
@@ -111,5 +110,3 @@ To ensure consistency across the app:
 - **Footer**: Small text link: "Terms and Conditions".
 
 ---
-
-If you’d like, I can create a visual wireframe or mockup for one or more screens! Let me know. 😊
