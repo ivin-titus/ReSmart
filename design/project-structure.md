@@ -9,9 +9,9 @@ lib
 |   |- shared_styles.dart        # File that saves shared config for widgets
 |   |- weather_icon_provider.dart # Provides icons to weatherwidgets     
 |- services/                     # Backend logic and APIs
-|   |- firebase_service.dart     # Firebase-related logic
 |   |- weather_service.dart      # Weather data fetching
 |   |- settings_service.dart     # App settings management
+|   |- launch_urls.dart          # opens urls on a button click
 |- models/                       # Data models
 |   |- user_model.dart           # User data structure
 |   |- device_model.dart         # Device data structure
@@ -23,17 +23,17 @@ lib
 |   |- settings_tab.dart         # Settings screen
 |- features/                     # Sub-features or major sections of the app
 |   |- aod_screen/
-|   |  |- logic/
-|   |  |- widgets/
-|   |- assistant_tab/                   # AI-related feature
-|   |   |- logic/              # Business logic for AI Tab
-|   |   |- widgets/            # Shared widgets for AI Tab
+|   |  |- logic/                 # Business logic for AOD Screen
+|   |  |- widgets/               # Shared widgets for AOD Screen
+|   |- assistant_tab/            # AI-related feature
+|   |   |- logic/                # Business logic for AI Tab
+|   |   |- widgets/              # Shared widgets for AI Tab
 |   |- devices_tab/              # Devices-related feature
-|   |   |- logic/          # Business logic for Devices Tab
-|   |   |- widgets/        # Shared widgets for Devices Tab
+|   |   |- logic/                # Business logic for Devices Tab
+|   |   |- widgets/              # Shared widgets for Devices Tab
 |   |- tools_tab/                # Tools-related feature
-|       |- logic/           # Business logic for Tools Tab
-|       |- widgets/             # Shared widgets for Tools Tab
+|       |- logic/                # Business logic for Tools Tab
+|       |- widgets/              # Shared widgets for Tools Tab
 |- widgets/                      # Shared UI components
 |   |- location_dialog.dart
 |   |- navbar.dart
