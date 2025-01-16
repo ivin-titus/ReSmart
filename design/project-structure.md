@@ -23,6 +23,8 @@ lib
 |   |- settings_tab.dart         # Settings screen
 |- features/                     # Sub-features or major sections of the app
 |   |- aod_screen/
+|   |  |- logic/
+|   |  |- widgets/
 |   |- assistant_tab/                   # AI-related feature
 |   |   |- logic/              # Business logic for AI Tab
 |   |   |- widgets/            # Shared widgets for AI Tab
@@ -33,9 +35,8 @@ lib
 |       |- logic/           # Business logic for Tools Tab
 |       |- widgets/         # Shared widgets for Tools Tab
 |- widgets/                      # Shared UI components
-|   |- custom_button.dart        # Reusable button widget
-|   |- loading_indicator.dart    # Loading spinner widget
-|   |- weather_widget.dart       # Weather-specific widget
+|   |- location_dialog.dart
+|   |- navbar.dart
 |- utils/                        # Helper functions and utilities
 |   |- validators.dart           # Form validation logic
 |   |- extensions.dart           # Dart extensions
