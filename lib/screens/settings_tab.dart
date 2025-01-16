@@ -6,6 +6,7 @@ import '../services/settings_service.dart';
 //import 'widgets/services/weather_service.dart';
 import '../config/theme.dart';
 import '../services/launch_urls.dart';
+import 'package:resmart/widgets/policy_dialogs.dart';
 
 // Make SettingsScreen a ConsumerStatefulWidget instead of StatefulWidget
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -577,15 +578,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           subtitle: const Text('0.1.0 beta'),
         ),
         ListTile(
-          leading: const Icon(Icons.privacy_tip_outlined, color: Colors.blue),
-          title: const Text('Privacy Policy & Terms'),
-          onTap: () => UrlLauncherUtil.launchURL('https://github.com/ivin-titus/ReSmart/blob/master/privacy_policy_and_terms_and_conditions.md'),
+          leading: const Icon(Icons.security, color: Colors.blue),
+          title: const Text('Privacy Policy'),
+          onTap: () => PolicyDialogs.showPrivacyDialog(context),
+        ),
+        ListTile(
+          leading: const Icon(Icons.description, color: Colors.blue),
+          title: const Text('Terms and Conditions'),
+          onTap: () => PolicyDialogs.showTermsDialog(context),
         ),
         ListTile(
           leading: const Icon(Icons.person_outline, color: Colors.blue),
           title: const Text('Developer Info'),
-          onTap: () => UrlLauncherUtil.launchURL('https://github.com/ivin-titus'),
-
+          onTap: () =>
+              UrlLauncherUtil.launchURL('https://github.com/ivin-titus'),
         ),
       ],
     );
@@ -625,7 +631,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Reserved area for account login (future feature) 
+                // Reserved area for account login (future feature)
                 Container(
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.all(16),

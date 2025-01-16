@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:resmart/services/launch_urls.dart';
+import 'package:resmart/widgets/policy_dialogs.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -31,9 +31,10 @@ class WelcomeScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     Text(
                       'Welcome to Resmart',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
@@ -66,18 +67,14 @@ class WelcomeScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextButton(
-                          onPressed: () {
-                            UrlLauncherUtil.launchURL(
-                                'https://github.com/ivin-titus/ReSmart/blob/master/terms_and_conditions.md');
-                          },
+                          onPressed: () =>
+                              PolicyDialogs.showTermsDialog(context),
                           child: const Text('Terms and Conditions'),
                         ),
                         const SizedBox(width: 16),
                         TextButton(
-                          onPressed: () {
-                            UrlLauncherUtil.launchURL(
-                                'https://github.com/ivin-titus/ReSmart/blob/master/privacy_policy.md');
-                          },
+                          onPressed: () =>
+                              PolicyDialogs.showPrivacyDialog(context),
                           child: const Text('Privacy Policy'),
                         ),
                       ],
@@ -109,7 +106,7 @@ class _LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    
+
     // Common button style properties
     final ButtonStyle baseStyle = ButtonStyle(
       padding: MaterialStateProperty.all(
