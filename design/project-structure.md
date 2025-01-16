@@ -6,6 +6,8 @@ lib
 |- config/                       # Configuration and constants
 |   |- theme.dart                # App theme
 |   |- env.dart                  # Environment variables
+|   |- shared_styles.dart       # File that saves shared config for widgets
+|   |- weather_icon_provider.dart # Provides icons to weatherwidgets     
 |- services/                     # Backend logic and APIs
 |   |- firebase_service.dart     # Firebase-related logic
 |   |- weather_service.dart      # Weather data fetching
