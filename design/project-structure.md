@@ -6,7 +6,7 @@ lib
 |- config/                       # Configuration and constants
 |   |- theme.dart                # App theme
 |   |- env.dart                  # Environment variables
-|   |- shared_styles.dart       # File that saves shared config for widgets
+|   |- shared_styles.dart        # File that saves shared config for widgets
 |   |- weather_icon_provider.dart # Provides icons to weatherwidgets     
 |- services/                     # Backend logic and APIs
 |   |- firebase_service.dart     # Firebase-related logic
@@ -16,21 +16,22 @@ lib
 |   |- user_model.dart           # User data structure
 |   |- device_model.dart         # Device data structure
 |- screens/                      # Main screens of the app
-|   |- home_screen.dart          # Home/Dashboard screen
-|   |- ai_tab_screen.dart        # AI Tab screen
-|   |- device_tab_screen.dart    # Devices Tab screen
-|   |- tools_tab_screen.dart     # Tools Tab screen
-|   |- settings_screen.dart      # Settings screen
+|   |- aod_screen.dart           # Home/Dashboard screen
+|   |- assistant_tab.dart        # AI Tab screen
+|   |- device_tab.dart           # Devices Tab screen
+|   |- tools_tab.dart            # Tools Tab screen
+|   |- settings_tab.dart         # Settings screen
 |- features/                     # Sub-features or major sections of the app
-|   |- ai_tab/                   # AI-related feature
-|   |   |- ai_logic.dart         # Business logic for AI Tab
-|   |   |- ai_widgets.dart       # Shared widgets for AI Tab
+|   |- aod_screen/
+|   |- assistant_tab/                   # AI-related feature
+|   |   |- logic/              # Business logic for AI Tab
+|   |   |- widgets/            # Shared widgets for AI Tab
 |   |- devices_tab/              # Devices-related feature
-|   |   |- device_logic.dart     # Business logic for Devices Tab
-|   |   |- device_widgets.dart   # Shared widgets for Devices Tab
+|   |   |- logic/          # Business logic for Devices Tab
+|   |   |- widgets/        # Shared widgets for Devices Tab
 |   |- tools_tab/                # Tools-related feature
-|       |- tools_logic.dart      # Business logic for Tools Tab
-|       |- tools_widgets.dart    # Shared widgets for Tools Tab
+|       |- logic/           # Business logic for Tools Tab
+|       |- widgets/         # Shared widgets for Tools Tab
 |- widgets/                      # Shared UI components
 |   |- custom_button.dart        # Reusable button widget
 |   |- loading_indicator.dart    # Loading spinner widget
