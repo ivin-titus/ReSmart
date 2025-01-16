@@ -5,7 +5,7 @@ import '../screens/devices_tab.dart';
 import '../screens/assistant_tab.dart';
 import '../screens/aod_screen.dart';
 import '../screens/settings_tab.dart';
-import '../config/theme_provider.dart';
+import '../config/theme.dart';
 
 class NavBar extends ConsumerStatefulWidget {
   const NavBar({super.key});
