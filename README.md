@@ -36,6 +36,7 @@ ReSmart is a Flutter-based application designed to repurpose old smartphones int
 
 ### **APIs and Plugins**
 - **Weather Data**: OpenWeatherMap
+- **Quotes Data**: ZenQuotes
 - **Notifications**: Firebase Cloud Messaging (FCM)
 - **IoT Communication**: WebSocket, MQTT (optional)
 
