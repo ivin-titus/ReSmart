@@ -38,9 +38,9 @@
     1. First Name.
     2. Last Name.
     3. Username.
-    4. Date of Birth ( optional,  small text: "Can be added later" )
-    5. Phone Number (optional, small text: "Can be added later").
-  - Checkbox: "I agree to the Terms and Conditions".
+    4.  Phone Number (optional, small text: "Can be added later").
+    5. Date of Birth ( optional,  small text: "Can be added later" )
+  - Checkbox: "I agree to the Privacy Policy and Terms and Conditions".
   - Button: "Register".
 
 #### d) **Nickname Input Screen**
