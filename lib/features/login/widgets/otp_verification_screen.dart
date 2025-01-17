@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:resmart/features/login/widgets/email_user_register.dart';
 
 class OTPVerificationDialog extends StatefulWidget {
   final String contactInfo;
@@ -237,9 +238,26 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton(
+                  // test: Actual implimentation needed
                   onPressed: _isValid
-                      ? () {
+                      ? () async {
                           widget.onVerified(_mainController.text);
+                          await RegistrationDialog.show(context, (userData) {
+                            debugPrint('Registration Data:');
+                            userData.forEach(
+                                (key, value) => debugPrint('$key: $value'));
+
+                            // Example validation checks
+                            debugPrint('\nValidation Results:');
+                            debugPrint(
+                                'Has required fields: ${userData['firstName']?.isNotEmpty == true && userData['lastName']?.isNotEmpty == true && userData['username']?.isNotEmpty == true}');
+                            debugPrint(
+                                'Optional phone: ${userData['phone'] ?? 'Not provided'}');
+                            debugPrint(
+                                'Optional DOB: ${userData['dateOfBirth'] ?? 'Not provided'}');
+                            debugPrint(
+                                'Timestamp present: ${userData['createdAt'] != null}');
+                          });
                           Navigator.pop(context);
                         }
                       : null,
