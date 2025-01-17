@@ -24,7 +24,7 @@
   - Input field: "Enter your email".
   - Button: "Next".
 
-#### b) **Existing User OTP Verification**
+#### b) **User OTP Verification**
 - **Elements**:
   - Header: "Enter OTP".
   - OTP input fields (4-6 digits).
@@ -37,20 +37,13 @@
   - Input fields:
     1. First Name.
     2. Last Name.
-    3. Email.
-    4. Username.
+    3. Username.
+    4. Date of Birth ( optional,  small text: "Can be added later" )
     5. Phone Number (optional, small text: "Can be added later").
   - Checkbox: "I agree to the Terms and Conditions".
   - Button: "Register".
 
-#### d) **Email Verification**
-- **Elements**:
-  - Header: "Verify Your Email".
-  - Instructional text: "Enter the OTP sent to your email".
-  - OTP input fields.
-  - Button: "Verify".
-
-#### e) **Nickname Input Screen**
+#### d) **Nickname Input Screen**
 - **Elements**:
   - Header: "Welcome to Resmart".
   - Optional input field: "Enter a nickname (optional)".

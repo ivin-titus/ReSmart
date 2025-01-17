@@ -8,7 +8,7 @@ class PolicyDialogs {
       context: context,
       builder: (BuildContext context) {
         return _PolicyPopup(
-          title: 'Terms and Conditions ( Summarized )',
+          title: 'Terms and Conditions (Summary)',
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -39,7 +39,7 @@ class PolicyDialogs {
       context: context,
       builder: (BuildContext context) {
         return _PolicyPopup(
-          title: 'Privacy Policy ( Summarized )',
+          title: 'Privacy Policy (Summary)',
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
