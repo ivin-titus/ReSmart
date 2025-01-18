@@ -1,5 +1,5 @@
-// otp_verification_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:resmart/features/login/widgets/email_user_register.dart';
 import 'package:resmart/features/login/widgets/email_input_screen.dart';
@@ -161,15 +161,12 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           if (ValidationUtils.isValidEmail(
                               widget.contactInfo)) {
-                            debugPrint('This is a valid email!');
-                            EmailInputDialog.show(context, (email){
+                            EmailInputDialog.show(context, (email) {
                               debugPrint('Email submitted: $email');
-                              // Handle email submission
                             });
                           } else {
                             PhoneInputDialog.show(context, (phone) {
                               debugPrint('Phone submitted: $phone');
-                              // Handle phone submission
                             });
                           }
                         });
@@ -201,10 +198,12 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                       children: List.generate(otpLength, (index) {
                         final isCurrent = index == currentLength;
                         final isFilled = index < currentLength;
-                        return SizedBox(
+                        return Container(
                           width: boxWidth,
                           height: 56,
+                          alignment: Alignment.center,
                           child: Stack(
+                            alignment: Alignment.center,
                             children: [
                               TextField(
                                 enabled: false,
@@ -215,8 +214,7 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                                   fillColor: isFilled
                                       ? colorScheme.primary.withOpacity(0.1)
                                       : null,
-                                  contentPadding:
-                                      const EdgeInsets.symmetric(vertical: 8),
+                                  contentPadding: EdgeInsets.zero,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                     borderSide: BorderSide(
@@ -250,18 +248,16 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                                 style: TextStyle(
                                   color: colorScheme.onSurface,
                                   fontSize: 20,
-                                  fontWeight: FontWeight.w400,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                               if (isCurrent)
-                                Center(
-                                  child: FadeTransition(
-                                    opacity: _cursorController,
-                                    child: Container(
-                                      width: 2,
-                                      height: 24,
-                                      color: colorScheme.primary,
-                                    ),
+                                FadeTransition(
+                                  opacity: _cursorController,
+                                  child: Container(
+                                    width: 2,
+                                    height: 24,
+                                    color: colorScheme.primary,
                                   ),
                                 ),
                             ],
@@ -269,21 +265,30 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                         );
                       }),
                     ),
-                    Opacity(
-                      opacity: 0,
+                    Positioned.fill(
                       child: TextField(
                         controller: _mainController,
                         keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                         maxLength: otpLength,
                         autofocus: true,
-                        decoration: const InputDecoration(counterText: ''),
+                        decoration: const InputDecoration(
+                          counterText: '',
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                        ),
+                        style: const TextStyle(
+                          color: Colors.transparent,
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton(
-                  // test: Actual implimentation needed
                   onPressed: _isValid
                       ? () async {
                           widget.onVerified(_mainController.text);
@@ -292,17 +297,6 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                             debugPrint('Registration Data:');
                             userData.forEach(
                                 (key, value) => debugPrint('$key: $value'));
-
-                            // Example validation checks
-                            /*debugPrint('\nValidation Results:');
-                            debugPrint(
-                                'Has required fields: ${userData['firstName']?.isNotEmpty == true && userData['lastName']?.isNotEmpty == true && userData['username']?.isNotEmpty == true}');
-                            debugPrint(
-                                'Optional phone: ${userData['phone'] ?? 'Not provided'}');
-                            debugPrint(
-                                'Optional DOB: ${userData['dateOfBirth'] ?? 'Not provided'}');
-                            debugPrint(
-                                'Timestamp present: ${userData['createdAt'] != null}');*/
                           });
                           Navigator.pop(context);
                         }
