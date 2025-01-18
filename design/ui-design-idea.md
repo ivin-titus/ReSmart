@@ -2,7 +2,7 @@
 
 ## **Login Screen**
 
-### **1. Welcome Screen** (front-end done)
+### **1. Welcome Screen** [front-end done]
 **Purpose**: The starting point for all users.
 - **Elements**:
   - App logo (centered at the top).
@@ -18,28 +18,26 @@
 
 ### **2. Email Flow Screens**
 
-#### a) **Email Input Screen** (front-end done)
+#### a) **Email Input Screen**              [front-end done]
 - **Elements**:
   - Header: "Sign in with Email".
   - Input field: "Enter your email".
   - Button: "Next".
 
-#### b) **User OTP Verification** (front-end done)
+#### b) **User OTP Verification**          [front-end done]
 - **Elements**:
   - Header: "Enter OTP".
   - OTP input fields (4-6 digits).
   - Button: "Verify".
   - Resend OTP option.
 
-#### c) **New User Registration** (front-end done)
+#### c) **New User Registration**           [front-end done]
 - **Elements**:
   - Header: "Create Your Account".
   - Input fields:
     1. First Name.
     2. Last Name.
     3. Username.
-    4.  Phone Number (optional, small text: "Can be added later").
-    5. Date of Birth ( optional,  small text: "Can be added later" )
   - Checkbox: "I agree to the Privacy Policy and Terms and Conditions".
   - Button: "Register".
 
@@ -58,7 +56,7 @@
   - Header: "Sign in with Google" or "Sign in with GitHub".
   - Button for authentication (handled by respective SDKs).
 
-#### b) **Phone Verification Screen** (for new users)
+#### b) **Phone Verification Screen** (for new users) [frontend done]
 - **Elements**:
   - Header: "Verify Your Phone".
   - Input field: "Enter your phone number".

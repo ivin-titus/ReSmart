@@ -23,12 +23,11 @@ class RegistrationDialog extends StatefulWidget {
       builder: (context) => WillPopScope(
         onWillPop: () async {
           DateTime now = DateTime.now();
-          if (context.mounted && 
-              Navigator.of(context).userGestureInProgress) {
+          if (context.mounted && Navigator.of(context).userGestureInProgress) {
             return false;
           }
-          
-          if (_lastBackPress == null || 
+
+          if (_lastBackPress == null ||
               now.difference(_lastBackPress!) > const Duration(seconds: 2)) {
             _lastBackPress = now;
             ScaffoldMessenger.of(context).showSnackBar(
@@ -55,14 +54,12 @@ class RegistrationDialog extends StatefulWidget {
   State<RegistrationDialog> createState() => _RegistrationDialogState();
 }
 
-
 class _RegistrationDialogState extends State<RegistrationDialog> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _scrollController = ScrollController();
-
 
   bool _agreedToTerms = false;
   bool _isLoading = false;
@@ -93,7 +90,6 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
     super.dispose();
   }
 
-
   bool _isFormValid() {
     return _formKey.currentState?.validate() == true &&
         _agreedToTerms &&
@@ -103,10 +99,8 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
   }
 
   void _handleRegister() {
-    if (_formKey.currentState!.validate() &&
-        _agreedToTerms) {
+    if (_formKey.currentState!.validate() && _agreedToTerms) {
       setState(() => _isLoading = true);
-
 
       final userData = {
         'firstName': _firstNameController.text,
@@ -271,38 +265,46 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
 
     return Center(
       child: Container(
-        margin: const EdgeInsets.all(24),
-        constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
+        margin: const EdgeInsets.symmetric(horizontal: 24),
+        constraints: const BoxConstraints(maxWidth: 400),
         decoration: BoxDecoration(
           color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 15,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Material(
           color: Colors.transparent,
+          borderRadius: BorderRadius.circular(24),
+          clipBehavior: Clip.antiAlias,
           child: Stack(
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Padding(
+                  Container(
                     padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: colorScheme.outline.withOpacity(0.1),
+                        ),
+                      ),
+                    ),
                     child: Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.close,
-                              color: colorScheme.onSurface),
+                          icon: Icon(Icons.close, color: colorScheme.onSurface),
                           onPressed: () => Navigator.maybePop(context),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 12),
                         Text(
                           'Create Your Account',
                           style: textTheme.titleLarge?.copyWith(
@@ -312,19 +314,22 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
                       ],
                     ),
                   ),
-                  Expanded(
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.7,
+                    ),
                     child: Scrollbar(
                       controller: _scrollController,
                       child: SingleChildScrollView(
                         controller: _scrollController,
-                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
                         child: Form(
                           key: _formKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               _buildEmailField(),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 20),
                               _buildTextField(
                                 controller: _firstNameController,
                                 label: 'First Name',
@@ -360,9 +365,9 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 20),
                               _buildTermsCheckbox(),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 20),
                               _buildRegisterButton(),
                             ],
                           ),
@@ -373,10 +378,16 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
                 ],
               ),
               if (_isLoading)
-                Container(
-                  color: Colors.black26,
-                  child: const Center(
-                    child: CircularProgressIndicator(),
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black26,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          colorScheme.primary,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
             ],
