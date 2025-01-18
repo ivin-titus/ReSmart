@@ -41,11 +41,29 @@
   - Checkbox: "I agree to the Privacy Policy and Terms and Conditions".
   - Button: "Register".
 
-#### d) **Nickname Input Screen**
-- **Elements**:
-  - Header: "Welcome to Resmart".
-  - Optional input field: "Enter a nickname (optional)".
-  - Button: "Continue".
+Here's an enhanced version of the **Nickname Input Screen** with more polished language, better flow, and a more user-friendly approach:
+
+---
+
+### **d) Nickname Input Screen**                [front-end done]
+
+**Elements:**
+- **Header:**  
+   - "Welcome to Resmart, [User's Name]!"  
+     _(Personalized greeting based on user data, if available.)_
+- **Input Field:**  
+   - **Label:** "Choose your nickname (Optional)"  
+     _"A nickname helps personalize your experience."_
+     _(Tooltip or info icon for explanation if necessary)_
+- **Informational Text:**  
+   - "You can always update your nickname, Date of Birth, additional phone numbers, or email addresses later in the settings for added security."  
+     _(A softer tone, emphasizing flexibility and security.)_
+- **Call-to-Action Text:**  
+   - "Why add more? More details means better security and personalization."  
+     _(Reinforcing the security aspect with a positive, reassuring tone.)_
+- **Action Button:**  
+   - **Label:** "Continue"  
+     _(Simple and clear, no need for extra verbiage.)_
 
 ---
 
@@ -70,14 +88,46 @@
 
 ### **4. Guest Access Flow**
 
-#### a) **Guest Warning Screen**
-- **Elements**:
-  - Header: "Proceed as Guest".
-  - Warning text: "Some features may not be available without an account".
-  - Checkbox: "I agree to the Terms and Conditions".
-  - Button: "Continue".
+Here's an enhanced version of your **Guest Warning Screen**, with clearer language, a more user-friendly tone, and better structure:
 
 ---
+
+### **a) Guest Warning Screen**
+
+**Elements:**
+
+- **Header:**  
+   - "Proceed as a Guest – Limited Access"  
+     _(The addition of "Limited Access" sets clear expectations about functionality.)_
+
+- **Warning Text:**  
+   - **Main Text:**  
+     "By proceeding as a guest, some features will be unavailable until you create an account."  
+     _(This rephrasing ensures clarity and softens the warning tone.)_
+
+   - **Feature List (with bullets for clarity):**  
+     "Without an account, the following features will be restricted or unavailable:  
+     - Advanced AI Assistant capabilities  
+     - Widgets on the Always-On display  
+     - Companion device section in the Device tab  
+     - Shared notifications across devices  
+     - Some tools in the Tools tab"  
+     _(Clarifying the restrictions with bullet points makes it easier to read and understand.)_
+
+- **Disclaimer Text (with an emphasis on user control and consent):**  
+   - "You can unlock all features by signing up, but if you choose to proceed without an account, you'll still be able to use basic functionality."
+
+- **Checkbox with Agreement:**  
+   - **Text:**  
+     "I agree to the [Privacy Policy] and [Terms & Conditions]"  
+     _(Hyperlinked text buttons for legal agreement, keeping it clean and concise.)_
+
+- **Action Button:**  
+   - **Label:**  
+     "Continue as Guest"  
+     _(A more descriptive action button, indicating the choice to proceed as a guest.)_
+
+--- 
 
 ### **UI Components Consistency**
 To ensure consistency across the app:
