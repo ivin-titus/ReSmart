@@ -86,16 +86,11 @@ Here's an enhanced version of the **Nickname Input Screen** with more polished l
 
 ---
 
-### **4. Guest Access Flow**
+### **4. Guest Access Flow**                         [frontend done]
 
-Here's an enhanced version of your **Guest Warning Screen**, with clearer language, a more user-friendly tone, and better structure:
-
----
-
-### **a) Guest Warning Screen**
+### **a) Guest Warning Screen** 
 
 **Elements:**
-
 - **Header:**  
    - "Proceed as a Guest – Limited Access"  
      _(The addition of "Limited Access" sets clear expectations about functionality.)_
