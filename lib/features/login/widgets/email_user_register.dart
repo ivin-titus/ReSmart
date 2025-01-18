@@ -25,33 +25,39 @@ class RegistrationDialog extends StatefulWidget {
       barrierColor: Colors.black54,
       builder: (context) => WillPopScope(
         onWillPop: () async {
-          final shouldPop = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Exit Registration?'),
-              content: const Text('Are you sure you want to exit?'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Exit'),
-                ),
-              ],
-            ),
-          );
-          return shouldPop ?? false;
+          DateTime now = DateTime.now();
+          if (context.mounted && 
+              Navigator.of(context).userGestureInProgress) {
+            return false;
+          }
+          
+          if (_lastBackPress == null || 
+              now.difference(_lastBackPress!) > const Duration(seconds: 2)) {
+            _lastBackPress = now;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Press back again to exit'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            return false;
+          }
+          return true;
         },
-        child: RegistrationDialog(onRegister: onRegister, email: email),
+        child: RegistrationDialog(
+          onRegister: onRegister,
+          email: email,
+        ),
       ),
     );
   }
 
+  static DateTime? _lastBackPress;
+
   @override
   State<RegistrationDialog> createState() => _RegistrationDialogState();
 }
+
 
 class _RegistrationDialogState extends State<RegistrationDialog> {
   final _formKey = GlobalKey<FormState>();
