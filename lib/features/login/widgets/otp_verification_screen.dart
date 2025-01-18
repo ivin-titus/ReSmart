@@ -111,6 +111,11 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
     }
   }
 
+  bool isValidEmail(String content) {
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(content);
+  }
+
   @override
   void dispose() {
     _mainController.dispose();
@@ -156,8 +161,20 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                       icon:
                           Icon(Icons.arrow_back, color: colorScheme.onSurface),
                       onPressed: () {
-                        Navigator.pop(
-                            context); // Go back to the previous screen or popup
+                        Navigator.pop(context);
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (isValidEmail(widget.contactInfo)) {
+                            EmailInputDialog.show(context, (email) {
+                              debugPrint('Email submitted: $email');
+                              // Handle email submission
+                            });
+                          } else {
+                            PhoneInputDialog.show(context, (phone) {
+                              debugPrint('Phone submitted: $phone');
+                              // Handle phone submission
+                            });
+                          }
+                        });
                       },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
