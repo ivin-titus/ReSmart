@@ -88,7 +88,7 @@ class WelcomeScreen extends StatelessWidget {
                       onPressed: () async {
                         await GuestWarningDialog.show(
                           context,
-                          () => print('Continuing as guest'),
+                          () => debugPrint('Continuing as guest'),
                         );
                       },
                     ),
