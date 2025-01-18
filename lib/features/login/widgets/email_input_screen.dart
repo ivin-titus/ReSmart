@@ -1,4 +1,6 @@
+// email_input_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:resmart/features/login/widgets/otp_verification_screen.dart';
 
 class EmailInputDialog extends StatefulWidget {
@@ -10,12 +12,35 @@ class EmailInputDialog extends StatefulWidget {
       BuildContext context, Function(String) onEmailSubmitted) {
     return showDialog(
       context: context,
-      barrierDismissible: true,
+      barrierDismissible: false, // Prevent dismiss on outside tap
       barrierColor: Colors.black54,
-      builder: (context) =>
-          EmailInputDialog(onEmailSubmitted: onEmailSubmitted),
+      builder: (context) => WillPopScope( // Handle back button
+        onWillPop: () async {
+          DateTime now = DateTime.now();
+          if (context.mounted && 
+              Navigator.of(context).userGestureInProgress) {
+            return false;
+          }
+          
+          if (_lastBackPress == null || 
+              now.difference(_lastBackPress!) > const Duration(seconds: 2)) {
+            _lastBackPress = now;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Press back again to exit'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            return false;
+          }
+          return true;
+        },
+        child: EmailInputDialog(onEmailSubmitted: onEmailSubmitted),
+      ),
     );
   }
+
+  static DateTime? _lastBackPress;
 
   @override
   State<EmailInputDialog> createState() => _EmailInputDialogState();
@@ -25,7 +50,7 @@ class _EmailInputDialogState extends State<EmailInputDialog> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   bool _isValid = false;
-  
+
   void _validateEmail(String value) {
     setState(() {
       _isValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);

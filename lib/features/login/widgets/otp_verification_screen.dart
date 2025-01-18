@@ -1,5 +1,4 @@
 // otp_verification_screen.dart
-
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:resmart/features/login/widgets/email_user_register.dart';
@@ -19,12 +18,35 @@ class OTPVerificationDialog extends StatefulWidget {
       BuildContext context, String contactInfo, Function(String) onVerified) {
     return showDialog(
       context: context,
-      barrierDismissible: true,
+      barrierDismissible: false,
       barrierColor: Colors.black54,
-      builder: (context) => OTPVerificationDialog(
-          contactInfo: contactInfo, onVerified: onVerified),
+      builder: (context) => WillPopScope(
+        onWillPop: () async {
+          DateTime now = DateTime.now();
+          if (context.mounted && Navigator.of(context).userGestureInProgress) {
+            return false;
+          }
+
+          if (_lastBackPress == null ||
+              now.difference(_lastBackPress!) > const Duration(seconds: 2)) {
+            _lastBackPress = now;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Press back again to exit'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            return false;
+          }
+          return true;
+        },
+        child: OTPVerificationDialog(
+            contactInfo: contactInfo, onVerified: onVerified),
+      ),
     );
   }
+
+  static DateTime? _lastBackPress;
 
   @override
   State<OTPVerificationDialog> createState() => _OTPVerificationDialogState();
@@ -130,7 +152,8 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                 Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+                      icon:
+                          Icon(Icons.arrow_back, color: colorScheme.onSurface),
                       onPressed: () {
                         Navigator.pop(context);
                         WidgetsBinding.instance.addPostFrameCallback((_) {
