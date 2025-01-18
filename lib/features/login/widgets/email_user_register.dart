@@ -65,7 +65,6 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
 
 
   bool _agreedToTerms = false;
-  String? _phoneError;
   bool _isLoading = false;
 
   @override
@@ -98,7 +97,6 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
   bool _isFormValid() {
     return _formKey.currentState?.validate() == true &&
         _agreedToTerms &&
-        _phoneError == null &&
         _firstNameController.text.isNotEmpty &&
         _lastNameController.text.isNotEmpty &&
         _usernameController.text.length > 4;
@@ -106,8 +104,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
 
   void _handleRegister() {
     if (_formKey.currentState!.validate() &&
-        _agreedToTerms &&
-        _phoneError == null) {
+        _agreedToTerms) {
       setState(() => _isLoading = true);
 
 
