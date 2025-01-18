@@ -145,4 +145,4 @@ To ensure consistency across the app:
   4. **Guest**: "Continue without an Account".
 - **Footer**: Small text link: "Terms and Conditions".
 
----
+--- 
