@@ -74,14 +74,14 @@ class WelcomeScreen extends StatelessWidget {
                       children: [
                         TextButton(
                           onPressed: () =>
-                              PolicyDialogs.showTermsDialog(context),
-                          child: const Text('Terms and Conditions'),
+                              PolicyDialogs.showPrivacyDialog(context),
+                          child: const Text('Privacy Policy'),
                         ),
                         const SizedBox(width: 16),
                         TextButton(
                           onPressed: () =>
-                              PolicyDialogs.showPrivacyDialog(context),
-                          child: const Text('Privacy Policy'),
+                              PolicyDialogs.showTermsDialog(context),
+                          child: const Text('Terms and Conditions'),
                         ),
                       ],
                     ),

@@ -121,7 +121,7 @@ class _EmailInputDialogState extends State<EmailInputDialog> {
                                     context,
                                     email,
                                     (otp) {
-                                      print('OTP verified: $otp');
+                                      debugPrint('OTP verified: $otp');
                                       // Handle verification
                                     },
                                   );
