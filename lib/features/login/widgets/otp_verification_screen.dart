@@ -161,6 +161,7 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           if (ValidationUtils.isValidEmail(
                               widget.contactInfo)) {
+                            debugPrint('This is a valid email!');
                             EmailInputDialog.show(context, (email) {
                               debugPrint('Email submitted: $email');
                               // Handle email submission
