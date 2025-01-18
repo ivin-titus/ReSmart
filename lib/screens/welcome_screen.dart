@@ -5,6 +5,7 @@ import 'package:resmart/widgets/policy_dialogs.dart';
 import 'package:resmart/features/login/widgets/email_input_screen.dart';
 import 'package:resmart/features/login/widgets/phone_input_screen.dart';
 import 'package:resmart/features/login/widgets/add_nickname_screen.dart';
+import 'package:resmart/features/login/widgets/guest_user_screen.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -84,7 +85,12 @@ class WelcomeScreen extends StatelessWidget {
                       icon: Icons.person_outline,
                       text: 'Continue without an Account',
                       isOutlined: true,
-                      onPressed: () {},
+                      onPressed: () async {
+                        await GuestWarningDialog.show(
+                          context,
+                          () => print('Continuing as guest'),
+                        );
+                      },
                     ),
                     SizedBox(height: constraints.maxHeight * 0.1),
                     Row(
