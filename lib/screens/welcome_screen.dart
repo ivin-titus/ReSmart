@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:resmart/widgets/policy_dialogs.dart';
 import 'package:resmart/features/login/widgets/email_input_screen.dart';
+import 'package:resmart/features/login/widgets/phone_input_screen.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -54,7 +55,12 @@ class WelcomeScreen extends StatelessWidget {
                     _LoginButton(
                       icon: FontAwesomeIcons.google,
                       text: 'Continue with Google',
-                      onPressed: () {},
+                      onPressed: () {
+                        PhoneInputDialog.show(context, (phone) {
+                          debugPrint('Phone submitted: $phone');
+                          // Handle phone submission
+                        });
+                      },
                     ),
                     const SizedBox(height: 12),
                     _LoginButton(
