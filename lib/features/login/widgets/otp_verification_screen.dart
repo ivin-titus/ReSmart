@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:resmart/features/login/widgets/email_user_register.dart';
 import 'package:resmart/features/login/widgets/email_input_screen.dart';
 import 'package:resmart/features/login/widgets/phone_input_screen.dart';
+import 'package:resmart/utils/email_validator.dart';
 
 class OTPVerificationDialog extends StatefulWidget {
   final String contactInfo;
@@ -111,11 +112,6 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
     }
   }
 
-  bool isValidEmail(String content) {
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    return emailRegex.hasMatch(content);
-  }
-
   @override
   void dispose() {
     _mainController.dispose();
@@ -163,7 +159,8 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                       onPressed: () {
                         Navigator.pop(context);
                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (isValidEmail(widget.contactInfo)) {
+                          if (ValidationUtils.isValidEmail(
+                              widget.contactInfo)) {
                             EmailInputDialog.show(context, (email) {
                               debugPrint('Email submitted: $email');
                               // Handle email submission

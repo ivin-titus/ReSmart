@@ -1,7 +1,7 @@
-// email_input_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:resmart/features/login/widgets/otp_verification_screen.dart';
+import 'package:resmart/utils/email_validator.dart';
 
 class EmailInputDialog extends StatefulWidget {
   final Function(String) onEmailSubmitted;
@@ -12,9 +12,9 @@ class EmailInputDialog extends StatefulWidget {
       BuildContext context, Function(String) onEmailSubmitted) {
     return showDialog(
       context: context,
-      barrierDismissible: false, // Prevent dismiss on outside tap
+      barrierDismissible: false,
       barrierColor: Colors.black54,
-      builder: (context) => WillPopScope( // Handle back button
+      builder: (context) => WillPopScope(
         onWillPop: () async {
           DateTime now = DateTime.now();
           if (context.mounted && 
@@ -53,7 +53,7 @@ class _EmailInputDialogState extends State<EmailInputDialog> {
 
   void _validateEmail(String value) {
     setState(() {
-      _isValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
+      _isValid = ValidationUtils.isValidEmail(value);
     });
   }
 
@@ -124,19 +124,10 @@ class _EmailInputDialogState extends State<EmailInputDialog> {
                           ),
                         ),
                         onChanged: _validateEmail,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
-                          }
-                          if (!_isValid) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
-                        },
+                        validator: ValidationUtils.getEmailError,
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton(
-                        // test: Actual implimentation needed
                         onPressed: _isValid
                             ? () async {
                                 if (_formKey.currentState!.validate()) {
@@ -147,7 +138,6 @@ class _EmailInputDialogState extends State<EmailInputDialog> {
                                     email,
                                     (otp) {
                                       debugPrint('OTP verified: $otp');
-                                      // Handle verification
                                     },
                                   );
                                 }
