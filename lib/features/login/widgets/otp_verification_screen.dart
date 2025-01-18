@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:resmart/features/login/widgets/email_user_register.dart';
+import 'package:resmart/features/login/widgets/email_input_screen.dart';
 
 class OTPVerificationDialog extends StatefulWidget {
   final String contactInfo;
@@ -129,8 +130,16 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                 Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.close, color: colorScheme.onSurface),
-                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          EmailInputDialog.show(context, (email) {
+                            debugPrint('Email submitted: $email');
+                            // Handle email submission
+                          });
+                        });
+                      },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                     ),
@@ -244,7 +253,8 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                   onPressed: _isValid
                       ? () async {
                           widget.onVerified(_mainController.text);
-                          await RegistrationDialog.show(context, (userData) {
+                          await RegistrationDialog.show(
+                              context, widget.contactInfo, (userData) {
                             debugPrint('Registration Data:');
                             userData.forEach(
                                 (key, value) => debugPrint('$key: $value'));

@@ -1,19 +1,24 @@
-// email_user_register.dart 
+// email_user_register.dart
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:resmart/models/countries.dart';
 import 'package:resmart/utils/phone_validator.dart';
 import 'package:resmart/widgets/policy_dialogs.dart';
+import 'package:resmart/features/login/widgets/email_input_screen.dart';
 import 'package:resmart/widgets/country_code_dialog.dart';
 
 class RegistrationDialog extends StatefulWidget {
   final Function(Map<String, dynamic>) onRegister;
+  final String email;
+  const RegistrationDialog({
+    super.key,
+    required this.onRegister,
+    required this.email,
+  });
 
-  const RegistrationDialog({super.key, required this.onRegister});
-
-  static Future<void> show(
-      BuildContext context, Function(Map<String, dynamic>) onRegister) async {
+  static Future<void> show(BuildContext context, String email,
+      Function(Map<String, dynamic>) onRegister) async {
     return showDialog(
       context: context,
       barrierDismissible: false,
@@ -39,7 +44,7 @@ class RegistrationDialog extends StatefulWidget {
           );
           return shouldPop ?? false;
         },
-        child: RegistrationDialog(onRegister: onRegister),
+        child: RegistrationDialog(onRegister: onRegister, email: email),
       ),
     );
   }
@@ -137,6 +142,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
         'lastName': _lastNameController.text,
         'username': _usernameController.text,
         'phone': phoneNumber,
+        'email': widget.email,
         'countryCode': _selectedCountry.code,
         'dateOfBirth': _dateOfBirth?.toIso8601String(),
         'createdAt': DateTime.now().toIso8601String(),
@@ -153,6 +159,36 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  Widget _buildEmailField() {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'Email: ${widget.email}',
+            style: Theme.of(context).textTheme.bodyMedium,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(); // Close the existing widget
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              EmailInputDialog.show(context, (email) {
+                debugPrint('Email submitted: $email');
+                // Handle email submission
+              });
+            });
+          },
+          style: TextButton.styleFrom(
+            minimumSize: Size.zero,
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+          ),
+          child: const Text('edit'),
+        ),
+      ],
+    );
   }
 
   Widget _buildTextField({
@@ -398,7 +434,8 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
                     child: Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.close, color: colorScheme.onSurface),
+                          icon: Icon(Icons.close,
+                              color: colorScheme.onSurface),
                           onPressed: () => Navigator.maybePop(context),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
@@ -424,6 +461,8 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
+                              _buildEmailField(),
+                              const SizedBox(height: 16),
                               _buildTextField(
                                 controller: _firstNameController,
                                 label: 'First Name',

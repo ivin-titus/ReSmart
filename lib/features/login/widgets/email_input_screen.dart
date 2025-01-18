@@ -25,7 +25,7 @@ class _EmailInputDialogState extends State<EmailInputDialog> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   bool _isValid = false;
-
+  
   void _validateEmail(String value) {
     setState(() {
       _isValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
