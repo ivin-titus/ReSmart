@@ -1,3 +1,5 @@
+// otp_verification_screen.dart
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:resmart/features/login/widgets/email_user_register.dart';
@@ -248,7 +250,7 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                                 (key, value) => debugPrint('$key: $value'));
 
                             // Example validation checks
-                            debugPrint('\nValidation Results:');
+                            /*debugPrint('\nValidation Results:');
                             debugPrint(
                                 'Has required fields: ${userData['firstName']?.isNotEmpty == true && userData['lastName']?.isNotEmpty == true && userData['username']?.isNotEmpty == true}');
                             debugPrint(
@@ -256,7 +258,7 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                             debugPrint(
                                 'Optional DOB: ${userData['dateOfBirth'] ?? 'Not provided'}');
                             debugPrint(
-                                'Timestamp present: ${userData['createdAt'] != null}');
+                                'Timestamp present: ${userData['createdAt'] != null}');*/
                           });
                           Navigator.pop(context);
                         }

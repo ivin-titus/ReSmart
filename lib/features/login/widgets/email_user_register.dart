@@ -1,8 +1,9 @@
+// email_user_register.dart 
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:resmart/utils/phone_validator.dart';
 import 'package:resmart/models/countries.dart';
+import 'package:resmart/utils/phone_validator.dart';
 import 'package:resmart/widgets/policy_dialogs.dart';
 import 'package:resmart/widgets/country_code_dialog.dart';
 
@@ -55,7 +56,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
   final _phoneController = TextEditingController();
   final _scrollController = ScrollController();
 
-  Country _selectedCountry = countries.firstWhere((c) => c.code == 'US');
+  Country _selectedCountry = countries.firstWhere((c) => c.code == 'IN');
   DateTime? _dateOfBirth;
   bool _agreedToTerms = false;
   String? _phoneError;
