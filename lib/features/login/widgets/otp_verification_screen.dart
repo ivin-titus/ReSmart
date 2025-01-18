@@ -202,65 +202,42 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                           width: boxWidth,
                           height: 56,
                           alignment: Alignment.center,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              TextField(
-                                enabled: false,
-                                textAlign: TextAlign.center,
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  filled: true,
-                                  fillColor: isFilled
-                                      ? colorScheme.primary.withOpacity(0.1)
-                                      : null,
-                                  contentPadding: EdgeInsets.zero,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: isCurrent
-                                          ? colorScheme.primary
-                                          : Colors.grey.withOpacity(0.5),
-                                      width: isCurrent ? 2 : 1,
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: isCurrent
-                                          ? colorScheme.primary
-                                          : Colors.grey.withOpacity(0.5),
-                                      width: isCurrent ? 2 : 1,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: isCurrent
-                                          ? colorScheme.primary
-                                          : Colors.grey.withOpacity(0.5),
-                                      width: isCurrent ? 2 : 1,
-                                    ),
-                                  ),
-                                ),
-                                controller: TextEditingController(
-                                    text: _displayValues[index]),
-                                style: TextStyle(
-                                  color: colorScheme.onSurface,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isFilled
+                                  ? colorScheme.primary.withOpacity(0.1)
+                                  : null,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isCurrent
+                                    ? colorScheme.primary
+                                    : Colors.grey.withOpacity(0.5),
+                                width: isCurrent ? 2 : 1,
                               ),
-                              if (isCurrent)
-                                FadeTransition(
-                                  opacity: _cursorController,
-                                  child: Container(
-                                    width: 2,
-                                    height: 24,
-                                    color: colorScheme.primary,
+                            ),
+                            alignment: Alignment.center,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Text(
+                                  _displayValues[index],
+                                  style: TextStyle(
+                                    color: colorScheme.onSurface,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                            ],
+                                if (isCurrent && !isFilled)
+                                  FadeTransition(
+                                    opacity: _cursorController,
+                                    child: Container(
+                                      width: 2,
+                                      height: 24,
+                                      color: colorScheme.primary,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
                         );
                       }),
@@ -283,6 +260,8 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                         style: const TextStyle(
                           color: Colors.transparent,
                         ),
+                        cursorWidth: 0,
+                        showCursor: false,
                       ),
                     ),
                   ],
