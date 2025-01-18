@@ -156,7 +156,7 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                           Icon(Icons.arrow_back, color: colorScheme.onSurface),
                       onPressed: () {
                         Navigator.pop(context);
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) { 
                           EmailInputDialog.show(context, (email) {
                             debugPrint('Email submitted: $email');
                             // Handle email submission
