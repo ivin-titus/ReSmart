@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:resmart/widgets/navbar.dart';
 import 'package:resmart/widgets/policy_dialogs.dart';
 
 class GuestWarningDialog extends StatefulWidget {
@@ -188,8 +189,13 @@ class _GuestWarningDialogState extends State<GuestWarningDialog> {
                           ElevatedButton(
                             onPressed: _agreedToTerms
                                 ? () {
-                                    widget.onContinue();
-                                    Navigator.pop(context);
+                                    Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const NavBar(),
+                                      ),
+                                      (route) => false,
+                                    );
                                   }
                                 : null,
                             style: ButtonStyle(
