@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:resmart/widgets/policy_dialogs.dart';
 import 'package:resmart/features/login/widgets/email_input_screen.dart';
 import 'package:resmart/features/login/widgets/phone_input_screen.dart';
+import 'package:resmart/features/login/widgets/add_nickname_screen.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -33,7 +34,7 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Welcome to Resmart',
+                      'Welcome to ReSmart',
                       style:
                           Theme.of(context).textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
@@ -66,7 +67,17 @@ class WelcomeScreen extends StatelessWidget {
                     _LoginButton(
                       icon: FontAwesomeIcons.github,
                       text: 'Continue with GitHub',
-                      onPressed: () {},
+                      onPressed: () async {
+                        await NicknameInputDialog.show(
+                          context,
+                          "Ivin", // Optional user name
+                          (nickname) {
+                            // Handle the nickname
+                            debugPrint('Submitted nickname: $nickname');
+                            // Add Firebase update logic here
+                          },
+                        );
+                      },
                     ),
                     const SizedBox(height: 12),
                     _LoginButton(
