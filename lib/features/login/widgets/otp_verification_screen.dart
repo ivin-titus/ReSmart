@@ -156,20 +156,8 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                       icon:
                           Icon(Icons.arrow_back, color: colorScheme.onSurface),
                       onPressed: () {
-                        Navigator.pop(context);
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (_isEmail) {
-                            EmailInputDialog.show(context, (email) {
-                              debugPrint('Email submitted: $email');
-                              // Handle email submission
-                            });
-                          } else {
-                            PhoneInputDialog.show(context, (phone) {
-                              debugPrint('Phone submitted: $phone');
-                              // Handle phone submission
-                            });
-                          }
-                        });
+                        Navigator.pop(
+                            context); // Go back to the previous screen or popup
                       },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
