@@ -1,12 +1,9 @@
 // email_user_register.dart
-import 'package:intl/intl.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:resmart/models/countries.dart';
-import 'package:resmart/utils/phone_validator.dart';
 import 'package:resmart/widgets/policy_dialogs.dart';
 import 'package:resmart/features/login/widgets/email_input_screen.dart';
-import 'package:resmart/widgets/country_code_dialog.dart';
 
 class RegistrationDialog extends StatefulWidget {
   final Function(Map<String, dynamic>) onRegister;
@@ -64,11 +61,9 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _usernameController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _scrollController = ScrollController();
 
-  Country _selectedCountry = countries.firstWhere((c) => c.code == 'IN');
-  DateTime? _dateOfBirth;
+
   bool _agreedToTerms = false;
   String? _phoneError;
   bool _isLoading = false;
@@ -76,7 +71,6 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
   @override
   void initState() {
     super.initState();
-    _phoneController.addListener(_validatePhone);
     _firstNameController.addListener(_validateForm);
     _lastNameController.addListener(_validateForm);
     _usernameController.addListener(_validateForm);
@@ -93,23 +87,13 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
     _firstNameController.removeListener(_validateForm);
     _lastNameController.removeListener(_validateForm);
     _usernameController.removeListener(_validateForm);
-    _phoneController.removeListener(_validatePhone);
     _firstNameController.dispose();
     _lastNameController.dispose();
     _usernameController.dispose();
-    _phoneController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _validatePhone() {
-    setState(() {
-      _phoneError = PhoneValidator.validatePhone(
-        _phoneController.text,
-        _selectedCountry.dialCode,
-      );
-    });
-  }
 
   bool _isFormValid() {
     return _formKey.currentState?.validate() == true &&
@@ -120,37 +104,18 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
         _usernameController.text.length > 4;
   }
 
-  Future<void> _showDatePicker() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: now.subtract(const Duration(days: 365 * 18)),
-      firstDate: DateTime(1900),
-      lastDate: now,
-    );
-    if (picked != null) {
-      setState(() => _dateOfBirth = picked);
-    }
-  }
-
   void _handleRegister() {
     if (_formKey.currentState!.validate() &&
         _agreedToTerms &&
         _phoneError == null) {
       setState(() => _isLoading = true);
 
-      final phoneNumber = _phoneController.text.isEmpty
-          ? null
-          : '${_selectedCountry.dialCode}${_phoneController.text}';
 
       final userData = {
         'firstName': _firstNameController.text,
         'lastName': _lastNameController.text,
         'username': _usernameController.text,
-        'phone': phoneNumber,
         'email': widget.email,
-        'countryCode': _selectedCountry.code,
-        'dateOfBirth': _dateOfBirth?.toIso8601String(),
         'createdAt': DateTime.now().toIso8601String(),
       };
 
@@ -220,112 +185,6 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
         ),
       ),
       validator: validator,
-    );
-  }
-
-  Widget _buildPhoneField() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 100,
-          padding: const EdgeInsets.only(right: 8),
-          child: Stack(
-            children: [
-              DropdownButtonFormField<Country>(
-                value: _selectedCountry,
-                decoration: InputDecoration(
-                  labelText: 'Code',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 16,
-                  ),
-                ),
-                items: countries.map((country) {
-                  return DropdownMenuItem<Country>(
-                    value: country,
-                    child: Text(
-                      country.dialCode,
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (Country? newValue) {
-                  if (newValue != null) {
-                    setState(() {
-                      _selectedCountry = newValue;
-                      _validatePhone();
-                    });
-                  }
-                },
-              ),
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () async {
-                    final result = await showDialog<Country>(
-                      context: context,
-                      builder: (context) => CountryCodeDialog(
-                        countries: countries,
-                        selectedCountry: _selectedCountry,
-                      ),
-                    );
-                    if (result != null) {
-                      setState(() {
-                        _selectedCountry = result;
-                        _validatePhone();
-                      });
-                    }
-                  },
-                  child: Container(
-                    color: Colors.transparent,
-                    height: 56,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: _buildTextField(
-            controller: _phoneController,
-            label: 'Phone Number (Optional)',
-            // helperText: 'Can be added later',
-            errorText: _phoneError,
-            keyboardType: TextInputType.phone,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDateField() {
-    final textTheme = Theme.of(context).textTheme;
-
-    return InkWell(
-      onTap: _isLoading ? null : _showDatePicker,
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: 'Date of Birth (Optional)',
-          // helperText: 'Can be added later',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        child: Text(
-          _dateOfBirth != null
-              ? DateFormat('MMM d, yyyy').format(_dateOfBirth!)
-              : 'Select Date',
-          style: textTheme.bodyLarge?.copyWith(
-            color: _isLoading ? Theme.of(context).disabledColor : null,
-          ),
-        ),
-      ),
     );
   }
 
@@ -504,10 +363,6 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 16),
-                              _buildPhoneField(),
-                              const SizedBox(height: 16),
-                              _buildDateField(),
                               const SizedBox(height: 24),
                               _buildTermsCheckbox(),
                               const SizedBox(height: 24),
