@@ -2,7 +2,7 @@
 
 ## **Login Screen**
 
-### **1. Welcome Screen**
+### **1. Welcome Screen** (front-end done)
 **Purpose**: The starting point for all users.
 - **Elements**:
   - App logo (centered at the top).
@@ -18,20 +18,20 @@
 
 ### **2. Email Flow Screens**
 
-#### a) **Email Input Screen**
+#### a) **Email Input Screen** (front-end done)
 - **Elements**:
   - Header: "Sign in with Email".
   - Input field: "Enter your email".
   - Button: "Next".
 
-#### b) **User OTP Verification**
+#### b) **User OTP Verification** (front-end done)
 - **Elements**:
   - Header: "Enter OTP".
   - OTP input fields (4-6 digits).
   - Button: "Verify".
   - Resend OTP option.
 
-#### c) **New User Registration**
+#### c) **New User Registration** (front-end done)
 - **Elements**:
   - Header: "Create Your Account".
   - Input fields:
