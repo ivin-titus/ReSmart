@@ -29,7 +29,7 @@ class _GuestWarningDialogState extends State<GuestWarningDialog> {
   Widget _buildFeatureList() {
     final features = [
       'Advanced AI Assistant capabilities',
-      'Some widgets on the Always-On display',
+      'Widgets on the Always-On display',
       'Companion device section in the Device tab',
       'Shared notifications across devices',
       'Some tools in the Tools tab',
@@ -45,7 +45,7 @@ class _GuestWarningDialogState extends State<GuestWarningDialog> {
                   children: [
                     const Padding(
                       padding: EdgeInsets.only(top: 6, right: 8),
-                      child: Icon(Icons.remove, size: 16),
+                      child: Text('•', style: TextStyle(fontSize: 16)),
                     ),
                     Expanded(
                       child: Text(feature),
@@ -136,10 +136,23 @@ class _GuestWarningDialogState extends State<GuestWarningDialog> {
                       constraints: const BoxConstraints(),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      'Proceed as a Guest with Limited Access',
-                      style: textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Proceed as a Guest',
+                            style: textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Limited Access to Features',
+                            style: textTheme.titleSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
