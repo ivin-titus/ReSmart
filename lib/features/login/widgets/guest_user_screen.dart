@@ -30,7 +30,7 @@ class _GuestWarningDialogState extends State<GuestWarningDialog> {
   Widget _buildFeatureList() {
     final features = [
       'Advanced AI Assistant capabilities',
-      'Widgets on the Always-On display',
+      'Some Widgets on the Always-On display',
       'Companion device section in the Device tab',
       'Shared notifications across devices',
       'Some tools in the Tools tab',
