@@ -1,5 +1,3 @@
-// email_user_register.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:resmart/widgets/policy_dialogs.dart';
@@ -135,11 +133,10 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop(); // Close the existing widget
+            Navigator.of(context).pop();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               EmailInputDialog.show(context, (email) {
                 debugPrint('Email submitted: $email');
-                // Handle email submission
               });
             });
           },
@@ -284,19 +281,12 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
           clipBehavior: Clip.antiAlias,
           child: Stack(
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: colorScheme.outline.withOpacity(0.1),
-                        ),
-                      ),
-                    ),
-                    child: Row(
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
                       children: [
                         IconButton(
                           icon: Icon(Icons.close, color: colorScheme.onSurface),
@@ -304,7 +294,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 8),
                         Text(
                           'Create Your Account',
                           style: textTheme.titleLarge?.copyWith(
@@ -313,69 +303,69 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
                         ),
                       ],
                     ),
-                  ),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.7,
-                    ),
-                    child: Scrollbar(
-                      controller: _scrollController,
-                      child: SingleChildScrollView(
+                    const SizedBox(height: 12),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.7,
+                      ),
+                      child: Scrollbar(
                         controller: _scrollController,
-                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _buildEmailField(),
-                              const SizedBox(height: 20),
-                              _buildTextField(
-                                controller: _firstNameController,
-                                label: 'First Name',
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your first name';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              _buildTextField(
-                                controller: _lastNameController,
-                                label: 'Last Name',
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your last name';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              _buildTextField(
-                                controller: _usernameController,
-                                label: 'Username',
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter a username';
-                                  }
-                                  if (value.length < 5) {
-                                    return 'Username must be at least 5 characters';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 20),
-                              _buildTermsCheckbox(),
-                              const SizedBox(height: 20),
-                              _buildRegisterButton(),
-                            ],
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _buildEmailField(),
+                                const SizedBox(height: 20),
+                                _buildTextField(
+                                  controller: _firstNameController,
+                                  label: 'First Name',
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter your first name';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                _buildTextField(
+                                  controller: _lastNameController,
+                                  label: 'Last Name',
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter your last name';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                _buildTextField(
+                                  controller: _usernameController,
+                                  label: 'Username',
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter a username';
+                                    }
+                                    if (value.length < 5) {
+                                      return 'Username must be at least 5 characters';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 20),
+                                _buildTermsCheckbox(),
+                                const SizedBox(height: 20),
+                                _buildRegisterButton(),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               if (_isLoading)
                 Positioned.fill(
