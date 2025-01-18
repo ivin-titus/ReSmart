@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:resmart/features/login/widgets/email_user_register.dart';
 import 'package:resmart/features/login/widgets/email_input_screen.dart';
+import 'package:resmart/features/login/widgets/phone_input_screen.dart';
 
 class OTPVerificationDialog extends StatefulWidget {
   final String contactInfo;
@@ -156,11 +157,18 @@ class _OTPVerificationDialogState extends State<OTPVerificationDialog>
                           Icon(Icons.arrow_back, color: colorScheme.onSurface),
                       onPressed: () {
                         Navigator.pop(context);
-                        WidgetsBinding.instance.addPostFrameCallback((_) { 
-                          EmailInputDialog.show(context, (email) {
-                            debugPrint('Email submitted: $email');
-                            // Handle email submission
-                          });
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (_isEmail) {
+                            EmailInputDialog.show(context, (email) {
+                              debugPrint('Email submitted: $email');
+                              // Handle email submission
+                            });
+                          } else {
+                            PhoneInputDialog.show(context, (phone) {
+                              debugPrint('Phone submitted: $phone');
+                              // Handle phone submission
+                            });
+                          }
                         });
                       },
                       padding: EdgeInsets.zero,

@@ -89,7 +89,7 @@ class _PhoneInputDialogState extends State<PhoneInputDialog> {
             children: [
               InputDecorator(
                 decoration: InputDecoration(
-                  labelText: 'Country',
+                  labelText: 'Code',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),

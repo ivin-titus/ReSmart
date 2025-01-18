@@ -290,7 +290,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
                       children: [
                         IconButton(
                           icon: Icon(Icons.close, color: colorScheme.onSurface),
-                          onPressed: () => Navigator.maybePop(context),
+                          onPressed: () => Navigator.pop(context),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
