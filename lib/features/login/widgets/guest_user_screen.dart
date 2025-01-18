@@ -30,7 +30,7 @@ class _GuestWarningDialogState extends State<GuestWarningDialog> {
   Widget _buildFeatureList() {
     final features = [
       'Advanced AI Assistant capabilities',
-      'Some Widgets on the Always-On display',
+      'Widgets on the Always-On display',
       'Companion device section in the Device tab',
       'Shared notifications across devices',
       'Some tools in the Tools tab',
@@ -41,17 +41,27 @@ class _GuestWarningDialogState extends State<GuestWarningDialog> {
       children: features
           .map((feature) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 6, right: 8),
-                      child: Text('•', style: TextStyle(fontSize: 16)),
-                    ),
-                    Expanded(
-                      child: Text(feature),
-                    ),
-                  ],
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Text(
+                            '•',
+                            style: TextStyle(
+                              fontSize: 16,
+                              height: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(feature),
+                      ),
+                    ],
+                  ),
                 ),
               ))
           .toList(),
@@ -191,8 +201,7 @@ class _GuestWarningDialogState extends State<GuestWarningDialog> {
                                 ? () {
                                     Navigator.of(context).pushAndRemoveUntil(
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            const NavBar(),
+                                        builder: (context) => const NavBar(),
                                       ),
                                       (route) => false,
                                     );
