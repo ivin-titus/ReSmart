@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:resmart/features/login/widgets/email_user_register.dart';
-import 'package:resmart/features/login/widgets/email_input_screen.dart';
-import 'package:resmart/features/login/widgets/phone_input_screen.dart';
-import 'package:resmart/utils/email_validator.dart';
+
 
 class OTPVerificationDialog extends StatefulWidget {
   final String contactInfo;
