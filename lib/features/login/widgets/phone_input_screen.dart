@@ -147,7 +147,7 @@ class _PhoneInputDialogState extends State<PhoneInputDialog> {
               ),
               prefixIcon: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12), // Add padding to the left
+                    const EdgeInsets.symmetric(horizontal: 12),
                 child: Icon(Icons.phone_outlined),
               ),
             ),
