@@ -1,4 +1,3 @@
 // Stores info about havoc caused just before taking a break
 
 Just a minor issue - logo/ icon not showing after setting a custom one
-
