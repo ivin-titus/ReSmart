@@ -31,12 +31,15 @@ lib
 |   |- devices_tab/              # Devices-related feature
 |   |   |- logic/                # Business logic for Devices Tab
 |   |   |- widgets/              # Shared widgets for Devices Tab
+|   |- login/                    # Login related feature
+|   |   |- logic/                # Business logic for login Tab
+|   |   |- widgets/              # Shared widgets for login Tab
 |   |- tools_tab/                # Tools-related feature
-|       |- logic/                # Business logic for Tools Tab
-|       |- widgets/              # Shared widgets for Tools Tab
+|   |   |- logic/                # Business logic for Tools Tab
+|   |   |- widgets/              # Shared widgets for Tools Tab
 |- widgets/                      # Shared UI components
-|   |- location_dialog.dart
-|   |- navbar.dart
+|   |- location_dialog.dart      # Popup for location entry
+|   |- navbar.dart               # Navigation bar
 |- utils/                        # Helper functions and utilities
 |   |- validators.dart           # Form validation logic
 |   |- extensions.dart           # Dart extensions
