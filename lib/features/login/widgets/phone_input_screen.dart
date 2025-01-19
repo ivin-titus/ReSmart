@@ -1,3 +1,4 @@
+// phone_input_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:resmart/models/countries.dart';
@@ -83,7 +84,7 @@ class _PhoneInputDialogState extends State<PhoneInputDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 85,
+          width: 60,
           margin: const EdgeInsets.only(right: 12),
           child: Stack(
             children: [
@@ -127,7 +128,7 @@ class _PhoneInputDialogState extends State<PhoneInputDialog> {
                       });
                     }
                   },
-                  child: const SizedBox(height: 56, width: double.infinity),
+                  child: const SizedBox(height: 48, width: double.infinity),
                 ),
               ),
             ],
@@ -144,7 +145,11 @@ class _PhoneInputDialogState extends State<PhoneInputDialog> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              prefixIcon: const Icon(Icons.phone_outlined),
+              prefixIcon: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12), // Add padding to the left
+                child: Icon(Icons.phone_outlined),
+              ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
