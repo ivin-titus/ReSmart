@@ -30,93 +30,104 @@ class EmailVerificationDialog extends StatelessWidget {
     );
   }
 
+  Widget _buildActionButton(
+      BuildContext context, String text, VoidCallback onTap) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return InkWell(
+      onTap: onTap,
+      child: Text(
+        text,
+        style: TextStyle(
+          color: colorScheme.primary,
+          decoration: TextDecoration.underline,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     return Center(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 24),
-        constraints: const BoxConstraints(maxWidth: 400),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 15,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
-          clipBehavior: Clip.antiAlias,
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.close, color: colorScheme.onSurface),
-                      onPressed: () => Navigator.pop(context),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Check Your Email',
-                      style: textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
+      child: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          constraints: const BoxConstraints(maxWidth: 400),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 15,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(24),
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.close, color: colorScheme.onSurface),
+                        onPressed: () => Navigator.pop(context),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'We\'ve sent you a link to log in. Please click the link to continue.',
-                  style: textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Can\'t find the email? Check Spam folder or',
-                      style: textTheme.bodySmall,
-                    ),
-                    TextButton(
-                      onPressed: onResendLink,
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Check Your Email',
+                          style: textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                      child: const Text('Resend Link'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Trouble with your email?',
-                      style: textTheme.bodySmall,
-                    ),
-                    TextButton(
-                      onPressed: onUseOTP,
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'We\'ve sent you a link to log in.\n Please click the link to continue.',
+                    style: textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 4,
+                    children: [
+                      Text(
+                        'Can\'t find the email? Check Spam folder or',
+                        style: textTheme.bodyMedium,
                       ),
-                      child: const Text('Use OTP Instead'),
-                    ),
-                  ],
-                ),
-              ],
+                      _buildActionButton(context, 'Resend Link', onResendLink),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 4,
+                    children: [
+                      Text(
+                        'Trouble with your email?',
+                        style: textTheme.bodyMedium,
+                      ),
+                      _buildActionButton(context, 'Use OTP Instead', onUseOTP),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
