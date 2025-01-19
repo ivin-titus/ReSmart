@@ -69,13 +69,14 @@ class WelcomeScreen extends StatelessWidget {
                       icon: FontAwesomeIcons.github,
                       text: 'Continue with GitHub',
                       onPressed: () async {
+                        // To show the dialog:
                         await NicknameInputDialog.show(
                           context,
-                          "Ivin", // Optional user name
-                          (nickname) {
-                            // Handle the nickname
-                            debugPrint('Submitted nickname: $nickname');
-                            // Add Firebase update logic here
+                          "Ivin", // Pass null if no username
+                          (nickname, allowAnalytics) {
+                            // Handle the submitted data
+                            print('Nickname: $nickname');
+                            print('Analytics enabled: $allowAnalytics');
                           },
                         );
                       },

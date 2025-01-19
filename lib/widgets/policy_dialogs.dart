@@ -68,6 +68,42 @@ class PolicyDialogs {
       },
     );
   }
+
+  static Future<void> showAnalyticsInfo(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return _PolicyPopup(
+          title: 'Analytics Information',
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _BulletPoint(
+                'We collect anonymous data to improve your app experience, including device info, usage metrics, performance data, and crash reports.',
+              ),
+              _BulletPoint(
+                'This data is anonymized, non-personally identifiable, and used only for app improvements.',
+              ),
+              _BulletPoint(
+                'You can view, delete, or opt out of analytics at any time in the Manage Account section.',
+                isBold: true,
+              ),
+              _BulletPoint(
+                'No data is shared with third parties without your consent.',
+              ),
+            ],
+          ),
+          onReadMore: () {
+            Navigator.of(context).pop();
+            UrlLauncherUtil.launchURL(
+              'https://github.com/ivin-titus/ReSmart/blob/master/privacy_policy_and_terms_and_conditions.md#detailed-privacy-policy',
+            );
+          },
+        );
+      },
+    );
+  }
 }
 
 class _PolicyPopup extends StatelessWidget {
