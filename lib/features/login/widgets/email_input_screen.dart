@@ -1,3 +1,4 @@
+// email input screen
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:resmart/features/login/widgets/otp_verification_screen.dart';
