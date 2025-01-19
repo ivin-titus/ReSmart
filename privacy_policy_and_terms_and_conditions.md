@@ -114,6 +114,6 @@ You can opt out or change this consent at any time by visiting the **Manage Acco
 
 If you have any questions or concerns about these Terms and Conditions or our Privacy Policy, please feel free to contact us:
 - **Support Email**: ivintitus@hotmail.com
-- **GitHub Repository**: [Ivin Titus - GitHub](https://github.com/ivin-titus/ReSmart)
+- **GitHub Repository**: [ReSmart](https://github.com/ivin-titus/ReSmart)
 
 We value your feedback and are always available to address any concerns regarding your privacy and data rights.
