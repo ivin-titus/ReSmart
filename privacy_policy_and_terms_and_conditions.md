@@ -36,7 +36,7 @@ The app may receive updates or modifications. Continued use after updates signif
 ### **5. Limitation of Liability**
 We are not liable for any damages, losses, or issues arising from the use of this app.
 
----
+<br>
 
 ## **Detailed Privacy Policy**
 
@@ -108,6 +108,7 @@ The first time you use the app, we will request your consent to collect anonymou
 
 You can opt out or change this consent at any time by visiting the **Manage Account** section of the app.
 
+<br>
 
 ## **Contact Us**
 
