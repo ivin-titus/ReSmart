@@ -97,7 +97,7 @@ class PolicyDialogs {
           onReadMore: () {
             Navigator.of(context).pop();
             UrlLauncherUtil.launchURL(
-              'https://github.com/ivin-titus/ReSmart/blob/master/privacy_policy_and_terms_and_conditions.md#analytics-information',
+              'https://github.com/ivin-titus/ReSmart/blob/master/privacy_policy_and_terms_and_conditions.md#detailed-privacy-policy',
             );
           },
         );
