@@ -24,6 +24,9 @@ ReSmart is a Flutter-based application designed to repurpose old smartphones int
 - **PC Client**
   - A companion app for managing connected features on your PC.
 - **Theme Support**
+- **Webcam Integration** (New)
+  - Users can connect their device’s camera and microphone to their PC (e.g., as a webcam).
+  - Utilizes ADB or USB for device communication.
 
 ## **Technologies Used**
 
@@ -39,6 +42,7 @@ ReSmart is a Flutter-based application designed to repurpose old smartphones int
 - **Quotes Data**: ZenQuotes
 - **Notifications**: Firebase Cloud Messaging (FCM)
 - **IoT Communication**: WebSocket, MQTT (optional)
+- **Device Communication**: ADB (Android Debug Bridge), USB connection
 
 ## **Why ReSmart?**
 ReSmart addresses the growing e-waste problem by providing an innovative way to reuse old smartphones. Its rich feature set makes it a versatile tool for both casual and professional use.
