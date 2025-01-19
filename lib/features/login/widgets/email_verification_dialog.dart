@@ -1,3 +1,4 @@
+// email verification dialog
 import 'package:flutter/material.dart';
 
 class EmailVerificationDialog extends StatelessWidget {
