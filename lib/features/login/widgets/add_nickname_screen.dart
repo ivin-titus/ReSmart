@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:resmart/widgets/policy_dialogs.dart';
 
 class NicknameInputDialog extends StatefulWidget {
   final String? userName;
-  final Function(String?) onNicknameSubmitted;
+  final Function(String?, bool) onNicknameSubmitted;
 
   const NicknameInputDialog({
     super.key,
@@ -13,7 +14,7 @@ class NicknameInputDialog extends StatefulWidget {
   static Future<void> show(
     BuildContext context,
     String? userName,
-    Function(String?) onNicknameSubmitted,
+    Function(String?, bool) onNicknameSubmitted,
   ) {
     return showDialog(
       context: context,
@@ -34,6 +35,37 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nicknameController = TextEditingController();
   final _scrollController = ScrollController();
+  bool _allowAnalytics = true;
+
+  Widget _buildAnalyticsConsent() {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Row(
+      children: [
+        Checkbox(
+          value: _allowAnalytics,
+          onChanged: (value) => setState(() => _allowAnalytics = value!),
+        ),
+        Expanded(
+          child: Wrap(
+            children: [
+              const Text('Help us to improve '),
+              InkWell(
+                onTap: () => PolicyDialogs.showAnalyticsInfo(context),
+                child: Text(
+                  'Know more',
+                  style: TextStyle(
+                    color: colorScheme.primary,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,13 +151,16 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        // const SizedBox(height: 2),
+                        _buildAnalyticsConsent(),
+                        const SizedBox(height: 12),
                         InkWell(
                           onTap: () {
                             final nickname = _nicknameController.text.isEmpty
                                 ? null
                                 : _nicknameController.text;
-                            widget.onNicknameSubmitted(nickname);
+                            widget.onNicknameSubmitted(
+                                nickname, _allowAnalytics);
                             Navigator.pop(context);
                           },
                           borderRadius: BorderRadius.circular(10),
