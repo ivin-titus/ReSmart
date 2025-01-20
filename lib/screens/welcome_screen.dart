@@ -59,11 +59,11 @@ class WelcomeScreen extends StatelessWidget {
                       icon: FontAwesomeIcons.google,
                       text: 'Continue with Google',
                       onPressed: () {
-                        /* PhoneInputDialog.show(context, (phone) {
+                         PhoneInputDialog.show(context, (phone) {
                           debugPrint('Phone submitted: $phone');
                           // Handle phone submission
-                        });*/
-                        EmailVerificationDialog.show(
+                        });
+                        /*EmailVerificationDialog.show(
                           context,
                           email: 'user@example.com',
                           onResendLink: () {
@@ -72,7 +72,7 @@ class WelcomeScreen extends StatelessWidget {
                           onUseOTP: () {
                             // Handle OTP navigation
                           },
-                        );
+                        );*/
                       },
                     ),
                     const SizedBox(height: 12),
