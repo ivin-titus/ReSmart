@@ -39,84 +39,125 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
 
   Widget _buildAnalyticsConsent() {
     final colorScheme = Theme.of(context).colorScheme;
-
-    return Row(
-      children: [
-        Checkbox(
-          value: _allowAnalytics,
-          onChanged: (value) => setState(() => _allowAnalytics = value!),
-        ),
-        Expanded(
-          child: Wrap(
-            children: [
-              const Text('Help us to improve '),
-              InkWell(
-                onTap: () => PolicyDialogs.showAnalyticsInfo(context),
-                child: Text(
-                  'Know more',
-                  style: TextStyle(
-                    color: colorScheme.primary,
-                    decoration: TextDecoration.underline,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        border: Border.all(color: colorScheme.outline.withOpacity(0.5)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Checkbox(
+            value: _allowAnalytics,
+            onChanged: (value) => setState(() => _allowAnalytics = value!),
+          ),
+          Expanded(
+            child: Wrap(
+              children: [
+                const Text('Help us to improve '),
+                InkWell(
+                  onTap: () => PolicyDialogs.showAnalyticsInfo(context),
+                  child: Text(
+                    'Know more',
+                    style: TextStyle(
+                      color: colorScheme.primary,
+                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Center(
-      child: Container(
-        margin: const EdgeInsets.all(24),
-        constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Welcome to ReSmart${widget.userName != null ? ", ${widget.userName}!" : "!"}',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+      child: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          constraints: const BoxConstraints(maxWidth: 400),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 15,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(24),
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -30,
+                  right: -30,
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                  const SizedBox(height: 24),
-                  Form(
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Form(
                     key: _formKey,
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.close, color: colorScheme.onSurface),
+                              onPressed: () => Navigator.pop(context),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Welcome to ReSmart${widget.userName != null ? ", ${widget.userName}!" : "!"}',
+                                style: textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
                         TextFormField(
                           controller: _nicknameController,
                           decoration: InputDecoration(
                             labelText: 'Choose your nickname (Optional)',
-                            helperText:
-                                'A nickname helps personalize your experience',
+                            helperText: 'A nickname helps personalize your experience',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: colorScheme.primary, width: 2),
                             ),
                             prefixIcon: const Padding(
                               padding: EdgeInsets.only(left: 6),
@@ -130,12 +171,11 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                         const SizedBox(height: 16),
                         Text(
                           'You can always update your nickname, Date of Birth, additional phone numbers, or email addresses later in the settings for added security.',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 16),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: Icon(
@@ -144,59 +184,53 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                           ),
                           title: Text(
                             'Why add more?',
-                            style: Theme.of(context).textTheme.titleSmall,
+                            style: textTheme.titleSmall,
                           ),
                           subtitle: Text(
                             'More details means better security and personalization.',
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: textTheme.bodyMedium,
                           ),
                         ),
-                        // const SizedBox(height: 2),
+                        const SizedBox(height: 16),
                         _buildAnalyticsConsent(),
-                        const SizedBox(height: 12),
-                        InkWell(
-                          onTap: () {
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: () {
                             final nickname = _nicknameController.text.isEmpty
                                 ? null
                                 : _nicknameController.text;
-                            widget.onNicknameSubmitted(
-                                nickname, _allowAnalytics);
+                            widget.onNicknameSubmitted(nickname, _allowAnalytics);
                             Navigator.pop(context);
                           },
-                          borderRadius: BorderRadius.circular(10),
-                          child: Ink(
-                            decoration: BoxDecoration(
-                              color: colorScheme.primary,
-                              borderRadius: BorderRadius.circular(10),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(colorScheme.primary),
+                            foregroundColor: MaterialStateProperty.all(colorScheme.onPrimary),
+                            minimumSize: MaterialStateProperty.all(
+                              const Size(double.infinity, 48),
                             ),
-                            child: Container(
-                              height: 45,
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Ready to go!',
-                                style: TextStyle(
-                                  color: colorScheme.onPrimary,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
+                            ),
+                          ),
+                          child: const Text(
+                            'Ready to go!',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 }
