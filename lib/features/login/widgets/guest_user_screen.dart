@@ -1,3 +1,4 @@
+// guest user screen
 import 'package:flutter/material.dart';
 import 'package:resmart/widgets/navbar.dart';
 import 'package:resmart/widgets/policy_dialogs.dart';
