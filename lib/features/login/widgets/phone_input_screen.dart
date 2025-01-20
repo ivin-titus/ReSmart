@@ -1,4 +1,3 @@
-// phone_input_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:resmart/models/countries.dart';
@@ -10,8 +9,7 @@ class PhoneInputDialog extends StatefulWidget {
 
   const PhoneInputDialog({super.key, required this.onPhoneSubmitted});
 
-  static Future<void> show(
-      BuildContext context, Function(String?) onPhoneSubmitted) {
+  static Future<void> show(BuildContext context, Function(String?) onPhoneSubmitted) {
     return showDialog(
       context: context,
       barrierDismissible: false,
@@ -84,7 +82,7 @@ class _PhoneInputDialogState extends State<PhoneInputDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 60,
+          width: 75,
           margin: const EdgeInsets.only(right: 12),
           child: Stack(
             children: [
@@ -92,7 +90,7 @@ class _PhoneInputDialogState extends State<PhoneInputDialog> {
                 decoration: InputDecoration(
                   labelText: 'Code',
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -128,7 +126,7 @@ class _PhoneInputDialogState extends State<PhoneInputDialog> {
                       });
                     }
                   },
-                  child: const SizedBox(height: 48, width: double.infinity),
+                  child: const SizedBox(height: 56, width: double.infinity),
                 ),
               ),
             ],
@@ -143,12 +141,18 @@ class _PhoneInputDialogState extends State<PhoneInputDialog> {
               labelText: 'Phone Number',
               errorText: _phoneError,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
               ),
-              prefixIcon: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12),
-                child: Icon(Icons.phone_outlined),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                ),
+              ),
+              prefixIcon: Icon(
+                Icons.phone_outlined,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             validator: (value) {
@@ -166,93 +170,116 @@ class _PhoneInputDialogState extends State<PhoneInputDialog> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Center(
-      child: Container(
-        margin: const EdgeInsets.all(24),
-        constraints: const BoxConstraints(maxWidth: 400),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          constraints: const BoxConstraints(maxWidth: 400),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 15,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(24),
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.close, color: colorScheme.onSurface),
-                      onPressed: () => Navigator.pop(context),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                Positioned(
+                  top: -30,
+                  right: -30,
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Register',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  'Enter your phone number to continue',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                ),
-                const SizedBox(height: 24),
-                Form(
-                  key: _formKey,
+                Padding(
+                  padding: const EdgeInsets.all(24),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _buildPhoneInput(),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: _isValid
-                            ? () {
-                                if (_formKey.currentState!.validate()) {
-                                  final phoneNumber =
-                                      '${_selectedCountry.dialCode}${_phoneController.text}';
-                                  Navigator.pop(context);
-                                  widget.onPhoneSubmitted(phoneNumber);
-                                }
-                              }
-                            : null,
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.resolveWith((states) {
-                            if (states.contains(MaterialState.disabled)) {
-                              return colorScheme.primary.withOpacity(0.3);
-                            }
-                            return colorScheme.primary;
-                          }),
-                          foregroundColor:
-                              MaterialStateProperty.all(colorScheme.onPrimary),
-                          minimumSize: MaterialStateProperty.all(
-                            const Size(double.infinity, 45),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.close, color: colorScheme.onSurface),
+                            onPressed: () => Navigator.pop(context),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
                           ),
-                          shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Register with Phone',
+                              style: textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.primary,
+                              ),
                             ),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildPhoneInput(),
+                            const SizedBox(height: 24),
+                            ElevatedButton(
+                              onPressed: _isValid
+                                  ? () {
+                                      if (_formKey.currentState!.validate()) {
+                                        final phoneNumber =
+                                            '${_selectedCountry.dialCode}${_phoneController.text}';
+                                        Navigator.pop(context);
+                                        widget.onPhoneSubmitted(phoneNumber);
+                                      }
+                                    }
+                                  : null,
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith((states) {
+                                  return states.contains(MaterialState.disabled)
+                                      ? colorScheme.primary.withOpacity(0.3)
+                                      : colorScheme.primary;
+                                }),
+                                foregroundColor:
+                                    MaterialStateProperty.all(colorScheme.onPrimary),
+                                minimumSize: MaterialStateProperty.all(
+                                  const Size(double.infinity, 48),
+                                ),
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                elevation: MaterialStateProperty.all(0),
+                              ),
+                              child: const Text(
+                                'Next',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        child: const Text('Next'),
                       ),
                     ],
                   ),

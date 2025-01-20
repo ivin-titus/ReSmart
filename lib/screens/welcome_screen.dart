@@ -6,6 +6,7 @@ import 'package:resmart/features/login/widgets/email_input_screen.dart';
 import 'package:resmart/features/login/widgets/phone_input_screen.dart';
 import 'package:resmart/features/login/widgets/add_nickname_screen.dart';
 import 'package:resmart/features/login/widgets/guest_user_screen.dart';
+import 'package:resmart/features/login/widgets/email_verification_dialog.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -46,8 +47,8 @@ class WelcomeScreen extends StatelessWidget {
                     _LoginButton(
                       icon: Icons.email_outlined,
                       text: 'Continue with Email',
-                      onPressed: () {
-                        EmailInputDialog.show(context, (email) {
+                      onPressed: () async {
+                        EmailInputDialog.show(context, ( email ) {
                           debugPrint('Email submitted: $email');
                           // Handle email submission
                         });
@@ -62,6 +63,16 @@ class WelcomeScreen extends StatelessWidget {
                           debugPrint('Phone submitted: $phone');
                           // Handle phone submission
                         });
+                        EmailVerificationDialog.show(
+                          context,
+                          email: 'user@example.com',
+                          onResendLink: () {
+                            // Handle resend link logic
+                          },
+                          onUseOTP: () {
+                            // Handle OTP navigation
+                          },
+                        );
                       },
                     ),
                     const SizedBox(height: 12),
