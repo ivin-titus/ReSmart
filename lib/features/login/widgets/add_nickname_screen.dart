@@ -124,7 +124,8 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                         Row(
                           children: [
                             IconButton(
-                              icon: Icon(Icons.close, color: colorScheme.onSurface),
+                              icon: Icon(Icons.close,
+                                  color: colorScheme.onSurface),
                               onPressed: () => Navigator.pop(context),
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
@@ -144,20 +145,30 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                         const SizedBox(height: 32),
                         TextFormField(
                           controller: _nicknameController,
+                          maxLength: 20,
+                          buildCounter: (context,
+                                  {required currentLength,
+                                  required isFocused,
+                                  maxLength}) =>
+                              null,
                           decoration: InputDecoration(
                             labelText: 'Choose your nickname (Optional)',
-                            helperText: 'A nickname helps personalize your experience',
+                            helperText:
+                                'A nickname helps personalize your experience',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
+                              borderSide: BorderSide(
+                                  color: colorScheme.outline.withOpacity(0.5)),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
+                              borderSide: BorderSide(
+                                  color: colorScheme.outline.withOpacity(0.5)),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: colorScheme.primary, width: 2),
+                              borderSide: BorderSide(
+                                  color: colorScheme.primary, width: 2),
                             ),
                             prefixIcon: const Padding(
                               padding: EdgeInsets.only(left: 6),
@@ -167,10 +178,16 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                               minWidth: 52,
                             ),
                           ),
+                          validator: (value) {
+                            if (value != null && value.length > 20) {
+                              return 'Nickname must be 20 characters or less';
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'You can always update your nickname, Date of Birth, additional phone numbers, or email addresses later in the settings for added security.',
+                          'You can update your nickname, date of birth, additional phone numbers, or email addresses anytime in settings to enhance security.',
                           style: textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -199,12 +216,15 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                             final nickname = _nicknameController.text.isEmpty
                                 ? null
                                 : _nicknameController.text;
-                            widget.onNicknameSubmitted(nickname, _allowAnalytics);
+                            widget.onNicknameSubmitted(
+                                nickname, _allowAnalytics);
                             Navigator.pop(context);
                           },
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(colorScheme.primary),
-                            foregroundColor: MaterialStateProperty.all(colorScheme.onPrimary),
+                            backgroundColor:
+                                MaterialStateProperty.all(colorScheme.primary),
+                            foregroundColor: MaterialStateProperty.all(
+                                colorScheme.onPrimary),
                             minimumSize: MaterialStateProperty.all(
                               const Size(double.infinity, 48),
                             ),
