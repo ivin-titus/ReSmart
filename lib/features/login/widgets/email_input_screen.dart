@@ -1,4 +1,3 @@
-// email input screen
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:resmart/features/login/widgets/otp_verification_screen.dart';
@@ -61,108 +60,143 @@ class _EmailInputDialogState extends State<EmailInputDialog> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Center(
-      child: Container(
-        margin: const EdgeInsets.all(24),
-        constraints: const BoxConstraints(maxWidth: 400),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          constraints: const BoxConstraints(maxWidth: 400),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 15,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(24),
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.close, color: colorScheme.onSurface),
-                      onPressed: () => Navigator.pop(context),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                Positioned(
+                  top: -30,
+                  right: -30,
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Continue with Email',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 12),
-                Form(
-                  key: _formKey,
+                Padding(
+                  padding: const EdgeInsets.all(24),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          labelText: 'Enter your email',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.close, color: colorScheme.onSurface),
+                            onPressed: () => Navigator.pop(context),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
                           ),
-                          prefixIcon: const Padding(
-                            padding: EdgeInsets.only(left: 6),
-                            child: Icon(Icons.email_outlined),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Continue with Email',
+                              style: textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.primary,
+                              ),
+                            ),
                           ),
-                          prefixIconConstraints: const BoxConstraints(
-                            minWidth: 52,
-                          ),
-                        ),
-                        onChanged: _validateEmail,
-                        validator: ValidationUtils.getEmailError,
+                        ],
                       ),
                       const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: _isValid
-                            ? () async {
-                                if (_formKey.currentState!.validate()) {
-                                  final email = _emailController.text;
-                                  Navigator.pop(context);
-                                  await OTPVerificationDialog.show(
-                                    context,
-                                    email,
-                                    (otp) {
-                                      debugPrint('OTP verified: $otp');
-                                    },
-                                  );
-                                }
-                              }
-                            : null,
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.resolveWith((states) {
-                            if (states.contains(MaterialState.disabled)) {
-                              return colorScheme.primary.withOpacity(0.3);
-                            }
-                            return colorScheme.primary;
-                          }),
-                          foregroundColor:
-                              MaterialStateProperty.all(colorScheme.onPrimary),
-                          minimumSize: MaterialStateProperty.all(
-                              const Size(double.infinity, 45)),
-                          shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            TextFormField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: InputDecoration(
+                                labelText: 'Email address',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: colorScheme.primary,
+                                    width: 2,
+                                  ),
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.email_outlined,
+                                  color: colorScheme.primary,
+                                ),
+                                prefixIconConstraints: const BoxConstraints(
+                                  minWidth: 52,
+                                ),
+                              ),
+                              onChanged: _validateEmail,
+                              validator: ValidationUtils.getEmailError,
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton(
+                              onPressed: _isValid
+                                  ? () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        final email = _emailController.text;
+                                        Navigator.pop(context);
+                                        await OTPVerificationDialog.show(
+                                          context,
+                                          email,
+                                          (otp) {
+                                            debugPrint('OTP verified: $otp');
+                                          },
+                                        );
+                                      }
+                                    }
+                                  : null,
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith((states) {
+                                  return states.contains(MaterialState.disabled)
+                                      ? colorScheme.primary.withOpacity(0.3)
+                                      : colorScheme.primary;
+                                }),
+                                foregroundColor:
+                                    MaterialStateProperty.all(colorScheme.onPrimary),
+                                minimumSize: MaterialStateProperty.all(
+                                    const Size(double.infinity, 48)),
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                ),
+                                elevation: MaterialStateProperty.all(0),
+                              ),
+                              child: const Text(
+                                'Next',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
                         ),
-                        child: const Text('Next'),
-                      )
+                      ),
                     ],
                   ),
                 ),
