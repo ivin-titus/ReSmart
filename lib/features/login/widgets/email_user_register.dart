@@ -122,31 +122,67 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
   }
 
   Widget _buildEmailField() {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            'Email: ${widget.email}',
-            style: Theme.of(context).textTheme.bodyMedium,
-            overflow: TextOverflow.ellipsis,
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: colorScheme.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.email_outlined,
+            size: 20,
+            color: colorScheme.primary,
           ),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              EmailInputDialog.show(context, (email) {
-                debugPrint('Email submitted: $email');
-              });
-            });
-          },
-          style: TextButton.styleFrom(
-            minimumSize: Size.zero,
-            padding: const EdgeInsets.symmetric(horizontal: 2),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Row(
+              children: [
+                Text(
+                  widget.email,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            EmailInputDialog.show(context, (email) {
+                              debugPrint('Email submitted: $email');
+                            });
+                          });
+                        },
+                        child: Text(
+                          'edit',
+                          style: TextStyle(
+                            color: colorScheme.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
-          child: const Text('edit'),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -159,6 +195,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
     String? helperText,
     String? errorText,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     return TextFormField(
       controller: controller,
       enabled: !_isLoading,
@@ -169,7 +206,16 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
         helperText: helperText,
         errorText: errorText,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
       ),
       validator: validator,
@@ -178,80 +224,84 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
 
   Widget _buildTermsCheckbox() {
     final colorScheme = Theme.of(context).colorScheme;
-
-    return Row(
-      children: [
-        Checkbox(
-          value: _agreedToTerms,
-          onChanged: _isLoading
-              ? null
-              : (value) {
-                  setState(() => _agreedToTerms = value!);
-                },
-        ),
-        Expanded(
-          child: Wrap(
-            children: [
-              const Text('I agree to the '),
-              InkWell(
-                onTap: _isLoading
-                    ? null
-                    : () => PolicyDialogs.showPrivacyDialog(context),
-                child: Text(
-                  'Privacy Policy',
-                  style: TextStyle(
-                    color: _isLoading
-                        ? Theme.of(context).disabledColor
-                        : colorScheme.primary,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-              const Text(' and '),
-              InkWell(
-                onTap: _isLoading
-                    ? null
-                    : () => PolicyDialogs.showTermsDialog(context),
-                child: Text(
-                  'Terms and Conditions',
-                  style: TextStyle(
-                    color: _isLoading
-                        ? Theme.of(context).disabledColor
-                        : colorScheme.primary,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-            ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        border: Border.all(color: colorScheme.outline.withOpacity(0.5)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Checkbox(
+            value: _agreedToTerms,
+            onChanged: _isLoading
+                ? null
+                : (value) {
+                    setState(() => _agreedToTerms = value!);
+                  },
           ),
-        ),
-      ],
+          Expanded(
+            child: Wrap(
+              children: [
+                const Text('I agree to the '),
+                InkWell(
+                  onTap: _isLoading
+                      ? null
+                      : () => PolicyDialogs.showPrivacyDialog(context),
+                  child: Text(
+                    'Privacy Policy',
+                    style: TextStyle(
+                      color: _isLoading
+                          ? Theme.of(context).disabledColor
+                          : colorScheme.primary,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                const Text(' and '),
+                InkWell(
+                  onTap: _isLoading
+                      ? null
+                      : () => PolicyDialogs.showTermsDialog(context),
+                  child: Text(
+                    'Terms and Conditions',
+                    style: TextStyle(
+                      color: _isLoading
+                          ? Theme.of(context).disabledColor
+                          : colorScheme.primary,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildRegisterButton() {
     final colorScheme = Theme.of(context).colorScheme;
-
     return ElevatedButton(
       onPressed: (!_isLoading && _isFormValid()) ? _handleRegister : null,
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.disabled)) {
-            return colorScheme.primary.withOpacity(0.3);
-          }
-          return colorScheme.primary;
+          return states.contains(MaterialState.disabled)
+              ? colorScheme.primary.withOpacity(0.3)
+              : colorScheme.primary;
         }),
         foregroundColor: MaterialStateProperty.all(colorScheme.onPrimary),
-        minimumSize: MaterialStateProperty.all(
-          const Size(double.infinity, 45),
-        ),
+        minimumSize: MaterialStateProperty.all(const Size(double.infinity, 48)),
         shape: MaterialStateProperty.all(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
+        elevation: MaterialStateProperty.all(0),
       ),
-      child: const Text('Register'),
+      child: Text(
+        'Register',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
     );
   }
 
@@ -261,126 +311,129 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
     final textTheme = Theme.of(context).textTheme;
 
     return Center(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 24),
-        constraints: const BoxConstraints(maxWidth: 400),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 15,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
-          clipBehavior: Clip.antiAlias,
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
+      child: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          constraints: const BoxConstraints(maxWidth: 400),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 15,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(24),
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -30,
+                  right: -30,
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.close, color: colorScheme.onSurface),
-                          onPressed: () => Navigator.pop(context),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.close,
+                                  color: colorScheme.onSurface),
+                              onPressed: () => Navigator.pop(context),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Create Your Account',
+                                style: textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Create Your Account',
-                          style: textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        const SizedBox(height: 32),
+                        _buildEmailField(),
+                        const SizedBox(height: 24),
+                        _buildTextField(
+                          controller: _firstNameController,
+                          label: 'First Name',
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your first name';
+                            }
+                            return null;
+                          },
                         ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: _lastNameController,
+                          label: 'Last Name',
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your last name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: _usernameController,
+                          label: 'Username',
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a username';
+                            }
+                            if (value.length < 5) {
+                              return 'Username must be at least 5 characters';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        _buildTermsCheckbox(),
+                        const SizedBox(height: 24),
+                        _buildRegisterButton(),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.7,
-                      ),
-                      child: Scrollbar(
-                        controller: _scrollController,
-                        child: SingleChildScrollView(
-                          controller: _scrollController,
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                _buildEmailField(),
-                                const SizedBox(height: 20),
-                                _buildTextField(
-                                  controller: _firstNameController,
-                                  label: 'First Name',
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter your first name';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 16),
-                                _buildTextField(
-                                  controller: _lastNameController,
-                                  label: 'Last Name',
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter your last name';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 16),
-                                _buildTextField(
-                                  controller: _usernameController,
-                                  label: 'Username',
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter a username';
-                                    }
-                                    if (value.length < 5) {
-                                      return 'Username must be at least 5 characters';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 20),
-                                _buildTermsCheckbox(),
-                                const SizedBox(height: 20),
-                                _buildRegisterButton(),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              if (_isLoading)
-                Positioned.fill(
-                  child: Container(
-                    color: Colors.black26,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          colorScheme.primary,
+                if (_isLoading)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black26,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            colorScheme.primary,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
