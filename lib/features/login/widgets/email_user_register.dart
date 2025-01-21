@@ -1,3 +1,4 @@
+// email user register 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:resmart/widgets/policy_dialogs.dart';

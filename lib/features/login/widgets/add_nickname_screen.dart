@@ -1,3 +1,4 @@
+// add nickname screen
 import 'package:flutter/material.dart';
 import 'package:resmart/widgets/policy_dialogs.dart';
 
@@ -192,7 +193,7 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        /* const SizedBox(height: 16),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: Icon(
@@ -207,7 +208,7 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                             'More details means better security and personalization.',
                             style: textTheme.bodyMedium,
                           ),
-                        ),
+                        ), */
                         const SizedBox(height: 16),
                         _buildAnalyticsConsent(),
                         const SizedBox(height: 24),
