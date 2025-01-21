@@ -104,7 +104,6 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
         'lastName': _lastNameController.text,
         'username': _usernameController.text,
         'email': widget.email,
-        'createdAt': DateTime.now().toIso8601String(),
       };
 
       try {
