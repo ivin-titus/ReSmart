@@ -3,7 +3,7 @@ import 'package:resmart/widgets/policy_dialogs.dart';
 
 class NicknameInputDialog extends StatefulWidget {
   final String? userName;
-  final Function(String?, bool) onNicknameSubmitted;
+  final Function(Map<String, dynamic>) onNicknameSubmitted;
 
   const NicknameInputDialog({
     super.key,
@@ -14,7 +14,7 @@ class NicknameInputDialog extends StatefulWidget {
   static Future<void> show(
     BuildContext context,
     String? userName,
-    Function(String?, bool) onNicknameSubmitted,
+    Function(Map<String, dynamic>) onNicknameSubmitted,
   ) {
     return showDialog(
       context: context,
@@ -37,7 +37,14 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
   final _scrollController = ScrollController();
   bool _allowAnalytics = true;
   bool _agreedToTerms = false;
-  final bool _isLoading = false;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _nicknameController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   Widget _buildAnalyticsConsent() {
     final colorScheme = Theme.of(context).colorScheme;
@@ -90,9 +97,7 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
             value: _agreedToTerms,
             onChanged: _isLoading
                 ? null
-                : (value) {
-                    setState(() => _agreedToTerms = value!);
-                  },
+                : (value) => setState(() => _agreedToTerms = value!),
           ),
           Expanded(
             child: Wrap(
@@ -137,7 +142,7 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
     );
   }
 
-    @override
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
@@ -215,7 +220,6 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-  
                                 'Choose how we\'ll address you',
                                 style: textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
@@ -283,8 +287,15 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                         ElevatedButton(
                           onPressed: _agreedToTerms && !_isLoading
                               ? () {
-                                  final nickname = _nicknameController.text.isEmpty ? null : _nicknameController.text;
-                                  widget.onNicknameSubmitted(nickname, _allowAnalytics);
+                                  setState(() => _isLoading = true);
+                                  final userData = {
+                                    'nickname': _nicknameController.text.isEmpty 
+                                      ? null 
+                                      : _nicknameController.text,
+                                    'allowAnalytics': _allowAnalytics,
+                                    'createdAt': DateTime.now().toIso8601String(),
+                                  };
+                                  widget.onNicknameSubmitted(userData);
                                   Navigator.pop(context);
                                 }
                               : null,
@@ -317,6 +328,19 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                     ),
                   ),
                 ),
+                if (_isLoading)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black26,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -324,4 +348,4 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
       ),
     );
   }
-  }
+}
