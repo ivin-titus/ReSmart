@@ -1,8 +1,8 @@
 // email user register
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-//import 'package:resmart/widgets/policy_dialogs.dart';
 import 'package:resmart/features/login/widgets/email_input_screen.dart';
+import 'package:resmart/utils/username_validator.dart';
 
 class RegistrationDialog extends StatefulWidget {
   final Function(Map<String, dynamic>) onRegister;
@@ -92,8 +92,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
   bool _isFormValid() {
     return _formKey.currentState?.validate() == true &&
         _firstNameController.text.isNotEmpty &&
-        _lastNameController.text.isNotEmpty &&
-        _usernameController.text.length > 4;
+        _lastNameController.text.isNotEmpty;
   }
 
   void _handleRegister() {
