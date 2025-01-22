@@ -84,7 +84,7 @@ class WelcomeScreen extends StatelessWidget {
 // Show the dialog and handle the submitted data
                         NicknameInputDialog.show(
                           context,
-                          null , // Optional: Pass null if no username
+                          null, // Optional: Pass null if no username
                           (userData) {
                             // Handle the submitted data
                             final nickname = userData['nickname'];

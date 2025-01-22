@@ -1,5 +1,5 @@
 class UsernameValidation {
-  static final RegExp _usernameRegex = RegExp(r'^[a-zA-Z0-9_-]+$');
+  static final RegExp _usernameRegex = RegExp(r'^[a-z0-9_-]+$');
 
   static String? validate(String? value) {
     if (value == null || value.isEmpty) {
