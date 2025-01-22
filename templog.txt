@@ -3,3 +3,4 @@
 Just a minor issue - logo/ icon not showing after setting a custom one
 
 Check all input fields gives desired data
+

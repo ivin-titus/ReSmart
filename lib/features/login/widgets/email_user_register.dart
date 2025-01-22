@@ -62,18 +62,26 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
 
   bool _agreedToTerms = false;
   bool _isLoading = false;
+  String? _usernameError;
 
   @override
   void initState() {
     super.initState();
     _firstNameController.addListener(_validateForm);
     _lastNameController.addListener(_validateForm);
-    _usernameController.addListener(_validateForm);
+    _usernameController.addListener(() {
+      setState(() {
+        _usernameError = UsernameValidation.validate(_usernameController.text);
+      });
+      _validateForm();
+    });
   }
 
   void _validateForm() {
     if (_formKey.currentState != null) {
-      _formKey.currentState!.validate();
+      setState(() {
+        _formKey.currentState!.validate();
+      });
     }
   }
 
@@ -90,9 +98,9 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
   }
 
   bool _isFormValid() {
-    return _formKey.currentState?.validate() == true &&
-        _firstNameController.text.isNotEmpty &&
-        _lastNameController.text.isNotEmpty;
+    return _firstNameController.text.isNotEmpty &&
+        _lastNameController.text.isNotEmpty &&
+        UsernameValidation.validate(_usernameController.text) == null;
   }
 
   void _handleRegister() {
@@ -202,7 +210,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
       decoration: InputDecoration(
         labelText: label,
         helperText: helperText,
-        errorText: errorText,
+        errorText: label == 'Username' ? _usernameError : errorText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
@@ -216,7 +224,14 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
           borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
       ),
-      validator: validator,
+      validator: label == 'Username' ? (value) => _usernameError : validator,
+      onChanged: label == 'Username'
+          ? (value) {
+              setState(() {
+                _usernameError = UsernameValidation.validate(value);
+              });
+            }
+          : null,
     );
   }
 
