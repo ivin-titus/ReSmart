@@ -1,7 +1,6 @@
 // guest user screen
 import 'package:flutter/material.dart';
 import 'package:resmart/widgets/navbar.dart';
-import 'package:resmart/widgets/policy_dialogs.dart';
 
 class GuestWarningDialog extends StatefulWidget {
   final VoidCallback onContinue;
@@ -26,22 +25,6 @@ class GuestWarningDialog extends StatefulWidget {
 
 class _GuestWarningDialogState extends State<GuestWarningDialog> {
   final _scrollController = ScrollController();
-
-  Widget _buildActionButton(
-      BuildContext context, String text, VoidCallback onTap) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onTap,
-      child: Text(
-        text,
-        style: TextStyle(
-          color: colorScheme.primary,
-          decoration: TextDecoration.underline,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
 
   Widget _buildFeatureList() {
     final features = [
