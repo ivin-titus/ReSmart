@@ -4,7 +4,7 @@
 Welcome screen - OK 
 Enter Email - OK
 Enter Verification Code - Ok
-Create Your Account - not ok ! ( because it's not updating state of Register button live )
+Create Your Account - Ok
 Check ur email - No need of input check
 Register With Phone - Ok
 Add nickname screen - OK
