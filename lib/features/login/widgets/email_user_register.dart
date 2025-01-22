@@ -1,4 +1,5 @@
 // email user register
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:resmart/features/login/widgets/email_input_screen.dart';
@@ -60,9 +61,9 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
   final _usernameController = TextEditingController();
   final _scrollController = ScrollController();
 
-  bool _agreedToTerms = false;
   bool _isLoading = false;
   String? _usernameError;
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -94,6 +95,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
     _lastNameController.dispose();
     _usernameController.dispose();
     _scrollController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 
@@ -227,8 +229,11 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
       validator: label == 'Username' ? (value) => _usernameError : validator,
       onChanged: label == 'Username'
           ? (value) {
-              setState(() {
-                _usernameError = UsernameValidation.validate(value);
+              _debounceTimer?.cancel();
+              _debounceTimer =
+                  Timer(const Duration(milliseconds: 500), () async {
+                final error = await UsernameValidation.validate(value);
+                setState(() => _usernameError = error);
               });
             }
           : null,
