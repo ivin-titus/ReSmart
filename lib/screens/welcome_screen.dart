@@ -48,7 +48,7 @@ class WelcomeScreen extends StatelessWidget {
                       icon: Icons.email_outlined,
                       text: 'Continue with Email',
                       onPressed: () async {
-                        EmailInputDialog.show(context, ( email ) {
+                        EmailInputDialog.show(context, (email) {
                           debugPrint('Email submitted: $email');
                           // Handle email submission
                         });
@@ -81,13 +81,20 @@ class WelcomeScreen extends StatelessWidget {
                       text: 'Continue with GitHub',
                       onPressed: () async {
                         // To show the dialog:
-                        await NicknameInputDialog.show(
+// Show the dialog and handle the submitted data
+                        NicknameInputDialog.show(
                           context,
-                          "Ivin", // Pass null if no username
-                          (nickname, allowAnalytics) {
+                          null, // Optional: Pass null if no username
+                          (userData) {
                             // Handle the submitted data
-                            print('Nickname: $nickname');
-                            print('Analytics enabled: $allowAnalytics');
+                            final nickname = userData['nickname'];
+                            final allowAnalytics = userData['allowAnalytics'];
+                            final createdAt = userData['createdAt'];
+
+                            // Use the data as needed
+                            debugPrint('Nickname: $nickname');
+                            debugPrint('Analytics allowed: $allowAnalytics');
+                            debugPrint('Created at: $createdAt');
                           },
                         );
                       },

@@ -3,7 +3,7 @@ import 'package:resmart/widgets/policy_dialogs.dart';
 
 class NicknameInputDialog extends StatefulWidget {
   final String? userName;
-  final Function(String?, bool) onNicknameSubmitted;
+  final Function(Map<String, dynamic>) onNicknameSubmitted;
 
   const NicknameInputDialog({
     super.key,
@@ -14,7 +14,7 @@ class NicknameInputDialog extends StatefulWidget {
   static Future<void> show(
     BuildContext context,
     String? userName,
-    Function(String?, bool) onNicknameSubmitted,
+    Function(Map<String, dynamic>) onNicknameSubmitted,
   ) {
     return showDialog(
       context: context,
@@ -36,6 +36,15 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
   final _nicknameController = TextEditingController();
   final _scrollController = ScrollController();
   bool _allowAnalytics = true;
+  bool _agreedToTerms = false;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _nicknameController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   Widget _buildAnalyticsConsent() {
     final colorScheme = Theme.of(context).colorScheme;
@@ -61,6 +70,65 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                     'Know more',
                     style: TextStyle(
                       color: colorScheme.primary,
+                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTermsCheckbox() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        border: Border.all(color: colorScheme.outline.withOpacity(0.5)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Checkbox(
+            value: _agreedToTerms,
+            onChanged: _isLoading
+                ? null
+                : (value) => setState(() => _agreedToTerms = value!),
+          ),
+          Expanded(
+            child: Wrap(
+              children: [
+                const Text('I agree to the '),
+                InkWell(
+                  onTap: _isLoading
+                      ? null
+                      : () => PolicyDialogs.showPrivacyDialog(context),
+                  child: Text(
+                    'Privacy Policy',
+                    style: TextStyle(
+                      color: _isLoading
+                          ? Theme.of(context).disabledColor
+                          : colorScheme.primary,
+                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const Text(' and '),
+                InkWell(
+                  onTap: _isLoading
+                      ? null
+                      : () => PolicyDialogs.showTermsDialog(context),
+                  child: Text(
+                    'Terms and Conditions',
+                    style: TextStyle(
+                      color: _isLoading
+                          ? Theme.of(context).disabledColor
+                          : colorScheme.primary,
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.w500,
                     ),
@@ -124,8 +192,7 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                         Row(
                           children: [
                             IconButton(
-                              icon: Icon(Icons.close,
-                                  color: colorScheme.onSurface),
+                              icon: Icon(Icons.close, color: colorScheme.onSurface),
                               onPressed: () => Navigator.pop(context),
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
@@ -134,7 +201,7 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                             Expanded(
                               child: Text(
                                 'Welcome to ReSmart${widget.userName != null ? ", ${widget.userName}!" : "!"}',
-                                style: textTheme.titleLarge?.copyWith(
+                                style: textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: colorScheme.primary,
                                 ),
@@ -142,89 +209,104 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 32),
-                        TextFormField(
-                          controller: _nicknameController,
-                          maxLength: 20,
-                          buildCounter: (context,
-                                  {required currentLength,
-                                  required isFocused,
-                                  maxLength}) =>
-                              null,
-                          decoration: InputDecoration(
-                            labelText: 'Choose your nickname (Optional)',
-                            helperText:
-                                'A nickname helps personalize your experience',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                  color: colorScheme.outline.withOpacity(0.5)),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                  color: colorScheme.outline.withOpacity(0.5)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                  color: colorScheme.primary, width: 2),
-                            ),
-                            prefixIcon: const Padding(
-                              padding: EdgeInsets.only(left: 6),
-                              child: Icon(Icons.person_outline),
-                            ),
-                            prefixIconConstraints: const BoxConstraints(
-                              minWidth: 52,
-                            ),
+                        const SizedBox(height: 24),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primaryContainer.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          validator: (value) {
-                            if (value != null && value.length > 20) {
-                              return 'Nickname must be 20 characters or less';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'You can update your nickname, date of birth, additional phone numbers, or email addresses anytime in settings to enhance security.',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: Icon(
-                            Icons.security,
-                            color: colorScheme.primary,
-                          ),
-                          title: Text(
-                            'Why add more?',
-                            style: textTheme.titleSmall,
-                          ),
-                          subtitle: Text(
-                            'More details means better security and personalization.',
-                            style: textTheme.bodyMedium,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Choose how we\'ll address you',
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                controller: _nicknameController,
+                                maxLength: 20,
+                                buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter nickname',
+                                  filled: true,
+                                  fillColor: colorScheme.surface,
+                                  prefixIcon: Icon(Icons.person_outline, color: colorScheme.primary),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: colorScheme.primary, width: 2),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'You can always change this later in settings',
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        _buildAnalyticsConsent(),
+                        const SizedBox(height: 24),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceVariant.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Final steps',
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              _buildAnalyticsConsent(),
+                              const SizedBox(height: 12),
+                              _buildTermsCheckbox(),
+                            ],
+                          ),
+                        ),
                         const SizedBox(height: 24),
                         ElevatedButton(
-                          onPressed: () {
-                            final nickname = _nicknameController.text.isEmpty
-                                ? null
-                                : _nicknameController.text;
-                            widget.onNicknameSubmitted(
-                                nickname, _allowAnalytics);
-                            Navigator.pop(context);
-                          },
+                          onPressed: _agreedToTerms && !_isLoading
+                              ? () {
+                                  setState(() => _isLoading = true);
+                                  final userData = {
+                                    'nickname': _nicknameController.text.isEmpty 
+                                      ? null 
+                                      : _nicknameController.text,
+                                    'allowAnalytics': _allowAnalytics,
+                                    'createdAt': DateTime.now().toIso8601String(),
+                                  };
+                                  widget.onNicknameSubmitted(userData);
+                                  Navigator.pop(context);
+                                }
+                              : null,
                           style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(colorScheme.primary),
-                            foregroundColor: MaterialStateProperty.all(
-                                colorScheme.onPrimary),
+                            backgroundColor: MaterialStateProperty.resolveWith((states) {
+                              if (states.contains(MaterialState.disabled)) {
+                                return colorScheme.primary.withOpacity(0.5);
+                              }
+                              return colorScheme.primary;
+                            }),
+                            foregroundColor: MaterialStateProperty.all(colorScheme.onPrimary),
                             minimumSize: MaterialStateProperty.all(
                               const Size(double.infinity, 48),
                             ),
@@ -234,9 +316,9 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                               ),
                             ),
                           ),
-                          child: const Text(
-                            'Ready to go!',
-                            style: TextStyle(
+                          child: Text(
+                            _isLoading ? 'Setting up...' : 'Ready to go!',
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -246,6 +328,19 @@ class _NicknameInputDialogState extends State<NicknameInputDialog> {
                     ),
                   ),
                 ),
+                if (_isLoading)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black26,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

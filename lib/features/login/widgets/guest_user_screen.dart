@@ -1,6 +1,6 @@
+// guest user screen
 import 'package:flutter/material.dart';
 import 'package:resmart/widgets/navbar.dart';
-import 'package:resmart/widgets/policy_dialogs.dart';
 
 class GuestWarningDialog extends StatefulWidget {
   final VoidCallback onContinue;
@@ -24,24 +24,7 @@ class GuestWarningDialog extends StatefulWidget {
 }
 
 class _GuestWarningDialogState extends State<GuestWarningDialog> {
-  bool _agreedToTerms = false;
   final _scrollController = ScrollController();
-
-  Widget _buildActionButton(
-      BuildContext context, String text, VoidCallback onTap) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onTap,
-      child: Text(
-        text,
-        style: TextStyle(
-          color: colorScheme.primary,
-          decoration: TextDecoration.underline,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
 
   Widget _buildFeatureList() {
     final features = [
@@ -74,68 +57,6 @@ class _GuestWarningDialogState extends State<GuestWarningDialog> {
                 ),
               ))
           .toList(),
-    );
-  }
-
-  final bool _isLoading = false;
-  Widget _buildTermsCheckbox() {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        border: Border.all(color: colorScheme.outline.withOpacity(0.5)),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Checkbox(
-            value: _agreedToTerms,
-            onChanged: _isLoading
-                ? null
-                : (value) {
-                    setState(() => _agreedToTerms = value!);
-                  },
-          ),
-          Expanded(
-            child: Wrap(
-              children: [
-                const Text('I agree to the '),
-                InkWell(
-                  onTap: _isLoading
-                      ? null
-                      : () => PolicyDialogs.showPrivacyDialog(context),
-                  child: Text(
-                    'Privacy Policy',
-                    style: TextStyle(
-                      color: _isLoading
-                          ? Theme.of(context).disabledColor
-                          : colorScheme.primary,
-                      decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                const Text(' and '),
-                InkWell(
-                  onTap: _isLoading
-                      ? null
-                      : () => PolicyDialogs.showTermsDialog(context),
-                  child: Text(
-                    'Terms and Conditions',
-                    style: TextStyle(
-                      color: _isLoading
-                          ? Theme.of(context).disabledColor
-                          : colorScheme.primary,
-                      decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -241,21 +162,15 @@ class _GuestWarningDialogState extends State<GuestWarningDialog> {
                                   ),
                                 ),
                                 const SizedBox(height: 20),
-                                _buildTermsCheckbox(),
-                                const SizedBox(height: 20),
                                 ElevatedButton(
-                                  onPressed: _agreedToTerms
-                                      ? () {
-                                          Navigator.of(context)
-                                              .pushAndRemoveUntil(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const NavBar(),
-                                            ),
-                                            (route) => false,
-                                          );
-                                        }
-                                      : null,
+                                  onPressed: () {
+                                    Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                        builder: (context) => const NavBar(),
+                                      ),
+                                      (route) => false,
+                                    );
+                                  },
                                   style: ButtonStyle(
                                     backgroundColor:
                                         MaterialStateProperty.resolveWith(

@@ -2,5 +2,4 @@
 
 Just a minor issue - logo/ icon not showing after setting a custom one
 
-
-make sure all other widgets on login follows style of otp Verification screen ( email verification dialog is already following that )
+Add a widget to show user profile on settings, with account center => Design those screens first.

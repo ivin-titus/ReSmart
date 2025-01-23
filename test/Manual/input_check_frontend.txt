@@ -1,0 +1,12 @@
+
+# login system
+
+Welcome screen - OK 
+Enter Email - OK
+Enter Verification Code - Ok
+Create Your Account - Ok
+Check ur email - No need of input check
+Register With Phone - Ok
+Add nickname screen - OK
+Continue as Guest - No need of input check
+

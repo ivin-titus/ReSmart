@@ -1,7 +1,9 @@
+// email user register
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:resmart/widgets/policy_dialogs.dart';
 import 'package:resmart/features/login/widgets/email_input_screen.dart';
+import 'package:resmart/utils/username_validator.dart';
 
 class RegistrationDialog extends StatefulWidget {
   final Function(Map<String, dynamic>) onRegister;
@@ -59,20 +61,28 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
   final _usernameController = TextEditingController();
   final _scrollController = ScrollController();
 
-  bool _agreedToTerms = false;
   bool _isLoading = false;
+  String? _usernameError;
+  Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
     _firstNameController.addListener(_validateForm);
     _lastNameController.addListener(_validateForm);
-    _usernameController.addListener(_validateForm);
+    _usernameController.addListener(() {
+      setState(() {
+        _usernameError = UsernameValidation.validate(_usernameController.text);
+      });
+      _validateForm();
+    });
   }
 
   void _validateForm() {
     if (_formKey.currentState != null) {
-      _formKey.currentState!.validate();
+      setState(() {
+        _formKey.currentState!.validate();
+      });
     }
   }
 
@@ -85,19 +95,18 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
     _lastNameController.dispose();
     _usernameController.dispose();
     _scrollController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 
   bool _isFormValid() {
-    return _formKey.currentState?.validate() == true &&
-        _agreedToTerms &&
-        _firstNameController.text.isNotEmpty &&
+    return _firstNameController.text.isNotEmpty &&
         _lastNameController.text.isNotEmpty &&
-        _usernameController.text.length > 4;
+        UsernameValidation.validate(_usernameController.text) == null;
   }
 
   void _handleRegister() {
-    if (_formKey.currentState!.validate() && _agreedToTerms) {
+    if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
       final userData = {
@@ -105,7 +114,6 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
         'lastName': _lastNameController.text,
         'username': _usernameController.text,
         'email': widget.email,
-        'createdAt': DateTime.now().toIso8601String(),
       };
 
       try {
@@ -204,7 +212,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
       decoration: InputDecoration(
         labelText: label,
         helperText: helperText,
-        errorText: errorText,
+        errorText: label == 'Username' ? _usernameError : errorText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
@@ -218,66 +226,17 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
           borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
       ),
-      validator: validator,
-    );
-  }
-
-  Widget _buildTermsCheckbox() {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        border: Border.all(color: colorScheme.outline.withOpacity(0.5)),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Checkbox(
-            value: _agreedToTerms,
-            onChanged: _isLoading
-                ? null
-                : (value) {
-                    setState(() => _agreedToTerms = value!);
-                  },
-          ),
-          Expanded(
-            child: Wrap(
-              children: [
-                const Text('I agree to the '),
-                InkWell(
-                  onTap: _isLoading
-                      ? null
-                      : () => PolicyDialogs.showPrivacyDialog(context),
-                  child: Text(
-                    'Privacy Policy',
-                    style: TextStyle(
-                      color: _isLoading
-                          ? Theme.of(context).disabledColor
-                          : colorScheme.primary,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-                const Text(' and '),
-                InkWell(
-                  onTap: _isLoading
-                      ? null
-                      : () => PolicyDialogs.showTermsDialog(context),
-                  child: Text(
-                    'Terms and Conditions',
-                    style: TextStyle(
-                      color: _isLoading
-                          ? Theme.of(context).disabledColor
-                          : colorScheme.primary,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      validator: label == 'Username' ? (value) => _usernameError : validator,
+      onChanged: label == 'Username'
+          ? (value) {
+              _debounceTimer?.cancel();
+              _debounceTimer =
+                  Timer(const Duration(milliseconds: 500), () async {
+                final error = await UsernameValidation.validate(value);
+                setState(() => _usernameError = error);
+              });
+            }
+          : null,
     );
   }
 
@@ -299,7 +258,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
         elevation: MaterialStateProperty.all(0),
       ),
       child: Text(
-        'Register',
+        'Continue',
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
     );
@@ -373,7 +332,7 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 24),
                         _buildEmailField(),
                         const SizedBox(height: 24),
                         _buildTextField(
@@ -411,8 +370,6 @@ class _RegistrationDialogState extends State<RegistrationDialog> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 24),
-                        _buildTermsCheckbox(),
                         const SizedBox(height: 24),
                         _buildRegisterButton(),
                       ],
