@@ -1,5 +1,3 @@
-/*  Old
-
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -7,71 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.resmart"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
-    }
-
-    defaultConfig {
-        // Specify your unique Application ID
-        applicationId = "com.example.resmart"
-        // Min and target SDK versions as per your requirements
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
-    }
-
-    buildTypes {
-        release {
-            // Signing configuration for release
-            signingConfig = signingConfigs.debug
-        }
-    }
-
-    // For location and GPS feature
-    packagingOptions {
-        pickFirst 'META-INF/gradle/incremental.annotation.processors'  // Fix for some dependencies
-    }
-}
-
-dependencies {
-    // Flutter dependencies (if using Flutter in an Android app)
-    //implementation project(':flutter')  // Only if this is a Flutter module inside an Android project
-    
-    // Additional dependencies
-    implementation 'com.google.android.material:material:1.6.0'  // For material UI components
-    implementation 'androidx.appcompat:appcompat:1.4.0'  // Support for backward compatibility
-
-    // Location and GPS permissions
-    implementation 'com.google.android.gms:play-services-location:18.0.0'  // Location services
-
-    // Other dependencies that Flutter packages may use
-    implementation 'com.squareup.okhttp3:okhttp:4.9.0'  // For HTTP requests
-}
-
-flutter {
-    source = "../.."
-}
-
-*/
-
-plugins {
-    id "com.android.application"
-    id "kotlin-android"
-    id "dev.flutter.flutter-gradle-plugin"
-}
-
-android {
-    namespace = "com.example.resmart"
+    namespace = "com.ivin.resmart"
     
     // Ensure compatibility with both older and modern devices
     compileSdk = flutter.compileSdkVersion  // This should target the latest SDK
@@ -87,7 +21,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.resmart"
+        applicationId = "com.ivin.resmart"
         
         // Set the minimum SDK to 17 for Android 4.2 and above
         minSdkVersion flutter.minSdkVersion  // Android 4.2 (Jelly Bean)
