@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "348325010680",
+    "project_id": "ivin-techz-account-management",
+    "storage_bucket": "ivin-techz-account-management.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:348325010680:android:8953954a5f4dd87cb36f0d",
+        "android_client_info": {
+          "package_name": "com.ivin.resmart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEg3fTDK6Ne-ULKsBuK3tuEdzvt5YAhos"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
