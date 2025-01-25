@@ -1,4 +1,4 @@
-package com.example.resmart
+package com.ivin.resmart
 
 import io.flutter.embedding.android.FlutterActivity
 
