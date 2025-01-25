@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "348325010680",
+    "project_id": "ivin-techz-account-management",
+    "storage_bucket": "ivin-techz-account-management.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:348325010680:android:8953954a5f4dd87cb36f0d",
+        "android_client_info": {
+          "package_name": "com.ivin.resmart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "348325010680-3p3meeo7vkd4n8smg7kda9e489ll18tp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ivin.resmart",
+            "certificate_hash": "eab8df06b8a676416579cb1b6bdda3651adeb90b"
+          }
+        },
+        {
+          "client_id": "348325010680-iocmanbnb2fovubqveimeqrhpngahsca.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEg3fTDK6Ne-ULKsBuK3tuEdzvt5YAhos"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "348325010680-6bd2iri4na83ggigtuhf6t80f18i08ua.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "348325010680-vfva5dd1sb8j0vsr1fj0hanhdcqeo1hf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.resmart"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
