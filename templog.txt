@@ -3,8 +3,3 @@
 Just a minor issue - logo/ icon not showing after setting a custom one
 
 Add a widget to show user profile on settings, with account center => Design those screens first.
-
-Remove Google login frature from app // because of some confusions and issues as a beginner => can be added later
-
-Check more about phone no login
-
