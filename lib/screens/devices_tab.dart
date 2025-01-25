@@ -22,7 +22,6 @@ class DevicesTab extends StatelessWidget {
         body: Column(
           children: [
             Text(''),
-
             ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacement(

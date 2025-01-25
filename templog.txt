@@ -1,6 +1,5 @@
 // Stores info about havoc caused just before taking a break
 
-
 Just a minor issue - logo/ icon not showing after setting a custom one
 
 Add a widget to show user profile on settings, with account center => Design those screens first.
