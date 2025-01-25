@@ -63,7 +63,7 @@ dependencies {
     // For HTTP requests
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
-        // Firebase BoM (Bill of Materials to ensure compatibility)
+    // Firebase BoM (Bill of Materials to ensure compatibility)
     // implementation platform('com.google.firebase:firebase-bom:33.8.0')
 
     // Add the Firebase SDKs you want to use
