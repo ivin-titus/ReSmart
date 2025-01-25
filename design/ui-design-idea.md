@@ -2,6 +2,7 @@
 
 ## **Login Screen**
 
+
 ### **1. Welcome Screen** [front-end done]
 **Purpose**: The starting point for all users.
 - **Elements**:
@@ -14,9 +15,8 @@
     4. "Continue without an Account" (Guest user icon next to text).
   - Footer with "Terms and Conditions" link.
 
----
-
 ### **2. Email Flow Screens**
+
 
 #### a) **Email Input Screen**              [front-end done]
 - **Elements**:
@@ -37,13 +37,26 @@
   - Input fields:
     1. First Name.
     2. Last Name.
-    3. Username.
-  - Checkbox: "I agree to the Privacy Policy and Terms and Conditions".
+    3. Email.
+    4. Username.
+    5. Phone Number (optional, small text: "Can be added later").
+  - Checkbox: "I agree to the Terms and Conditions".
   - Button: "Register".
 
-Here's an enhanced version of the **Nickname Input Screen** with more polished language, better flow, and a more user-friendly approach:
+#### d) **Email Verification**
+- **Elements**:
+  - Header: "Verify Your Email".
+  - Instructional text: "Enter the OTP sent to your email".
+  - OTP input fields.
+  - Button: "Verify".
 
----
+#### e) **Nickname Input Screen**
+- **Elements**:
+  - Header: "Welcome to Resmart".
+  - Optional input field: "Enter a nickname (optional)".
+  - Button: "Continue".
+  - Checkbox: "I agree to the Privacy Policy and Terms and Conditions".
+  - Button: "Register".
 
 ### **d) Nickname Input Screen**                [front-end done]
 
@@ -65,7 +78,6 @@ Here's an enhanced version of the **Nickname Input Screen** with more polished l
    - **Label:** "Continue"  
      _(Simple and clear, no need for extra verbiage.)_
 
----
 
 ### **3. Google and GitHub Flow Screens**
 
