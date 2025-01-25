@@ -578,7 +578,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           subtitle: const Text('0.1.0 beta'),
         ),
         ListTile(
-
           leading: const Icon(Icons.security, color: Colors.blue),
           title: const Text('Privacy Policy'),
           onTap: () => PolicyDialogs.showPrivacyDialog(context),
@@ -632,7 +631,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 // Reserved area for account login (future feature)
                 Container(
                   padding: const EdgeInsets.all(16),
