@@ -19,9 +19,8 @@ tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
 
-// Update Kotlin Version (This is necessary for compatibility)
 buildscript {
-    ext.kotlin_version = '2.1.0' // Replace with the latest Kotlin version
+    ext.kotlin_version = '2.1.0' 
 
     repositories {
         google()
